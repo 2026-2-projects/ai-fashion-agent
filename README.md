@@ -29,10 +29,3 @@ Router + Tool Calling 구조의 AI Agent를 구현합니다.
 main
 └── develop
     └── feature/*
-
-## 상세 프로젝트 구조
-
-프로젝트 전체 구조, Agent Architecture, 학습 데이터, Tool 구성,
-WBS 기준 개발 흐름 등은 아래 문서를 참고합니다.
-
-→ [프로젝트 상세 구조](docs/project-structure.md)
