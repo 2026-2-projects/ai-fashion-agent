@@ -1,0 +1,2 @@
+# Local Google OAuth credentials and tokens (never commit).
+.secrets/
