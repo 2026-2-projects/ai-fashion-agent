@@ -37,3 +37,7 @@ main
 WBS 기준 개발 흐름 등은 아래 문서를 참고합니다.
 
 → [프로젝트 상세 구조](docs/project-structure.md)
+
+## 외부 기능 연동 검증
+
+- [Web Geolocation 실행 및 수동 검증](frontend/README.md)

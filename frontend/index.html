@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>현재 위치 연동 검증 | AI Fashion Agent</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">WBS 2.5 · Web Geolocation</p>
+    <h1>현재 위치 연동 검증</h1>
+    <p>버튼을 누르면 브라우저에 위치 조회를 요청합니다. 위치 사용은 선택 사항입니다.</p>
+    <p>조회한 좌표와 정확도는 이 화면에만 표시됩니다. 앱은 서버·AI에 전송하거나
+      브라우저 저장소에 저장하지 않습니다. 기기·브라우저는 위치 확인을 위해 자체 위치 서비스를 사용할 수 있습니다.</p>
+    <p class="notice">좌표에 개인 위치가 포함될 수 있으니 화면 공유·스크린샷에 주의하세요.
+      동의하지 않으면 조회하지 않고 페이지를 닫아도 됩니다.</p>
+    <div class="actions">
+      <button type="button" data-request>동의하고 현재 위치 조회</button>
+      <button type="button" class="secondary" data-clear>위치 지우기 / 대기 종료</button>
+    </div>
+    <p data-status role="status" aria-live="polite" aria-atomic="true">아직 위치를 요청하지 않았습니다.</p>
+    <pre data-result hidden aria-label="조회된 위치 데이터"></pre>
+    <p class="hint">HTTPS 또는 localhost가 필요합니다. 정확도(accuracy)는 미터 단위이며 실제 위치와 오차가 있을 수 있습니다.
+      지우기는 브라우저 권한을 철회하지 않습니다. 권한은 브라우저 사이트 설정에서 변경하세요.</p>
+    <noscript>위치 검증 기능을 사용하려면 JavaScript를 활성화해 주세요.</noscript>
+  </main>
+</body>
+</html>
