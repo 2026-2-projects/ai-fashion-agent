@@ -1,0 +1,519 @@
+[
+  {
+    "id": "FR-026",
+    "type": "fashion_recommendation",
+    "reference_datetime": "2026-10-14T20:00:00+09:00",
+    "user_request": "내일 서울 사무실로 출근하고 오전에 거래처 미팅도 있어. 비 온다는데 너무 격식 차리진 않으면서 단정하게 입고 싶어.",
+    "context": {
+      "profile": {
+        "gender": "female",
+        "age_group": "30s",
+        "height_cm": null,
+        "body_type": null
+      },
+      "preference": {
+        "preferred_styles": [
+          "clean",
+          "minimal"
+        ],
+        "preferred_colors": [
+          "navy",
+          "gray",
+          "white"
+        ],
+        "disliked_colors": [
+          "red"
+        ],
+        "preferred_fit": "regular"
+      },
+      "weather": {
+        "temperature_c": 16,
+        "precipitation_probability": 90,
+        "precipitation_type": "rain",
+        "wind_mps": 3.5,
+        "humidity_percent": 85,
+        "sky": "cloudy"
+      },
+      "schedule": {
+        "date": "2026-10-15",
+        "time": "10:00",
+        "place": "서울 강남 사무실",
+        "tpo": "meeting"
+      },
+      "wardrobe": [],
+      "use_wardrobe": false
+    },
+    "answer": {
+      "looks": [
+        {
+          "look_id": 1,
+          "role": "preference_best",
+          "style": "클린 오피스 캐주얼",
+          "items": [
+            {
+              "slot": "top",
+              "name": "화이트 레귤러핏 면·폴리에스터 혼방 셔츠",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "차콜 레귤러핏 발목 길이 폴리에스터 혼방 슬랙스",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 방수 합성피혁 로퍼",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "네이비 레귤러핏 발수 맥코트",
+              "item_id": null
+            }
+          ],
+          "reason": "선호하는 화이트·그레이·네이비와 레귤러핏을 중심으로 미팅에 어울리는 단정한 조합을 구성했습니다. 혼방 셔츠와 슬랙스는 구김 관리 부담을 줄이고, 어두운 발목 길이 하의는 빗물로 인한 밑단 오염을 줄이는 데 도움이 됩니다. 16°C에는 가벼운 코트를 더하고 방수 신발을 선택했습니다. 발수 코트만으로 비를 모두 막을 수는 없으니 이동할 때 우산을 함께 사용하세요."
+        },
+        {
+          "look_id": 2,
+          "role": "preference_alternative",
+          "style": "미니멀 니트 캐주얼",
+          "items": [
+            {
+              "slot": "top",
+              "name": "네이비 레귤러핏 얇은 라운드넥 니트",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "다크그레이 레귤러핏 발목 길이 폴리에스터 혼방 팬츠",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 방수 합성피혁 로퍼",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "차콜 레귤러핏 발수 하프코트",
+              "item_id": null
+            }
+          ],
+          "reason": "선호 색상과 레귤러핏을 유지하면서 셔츠 대신 얇은 니트를 사용해 조금 더 편안한 출근 코디로 바꿨습니다. 장식이 적은 니트와 슬랙스 형태의 팬츠라 거래처 미팅에서도 단정합니다. 16°C에 맞춰 하프코트를 더하고, 비에 밑단이 끌리지 않는 어두운 하의와 방수 로퍼를 선택했습니다."
+        },
+        {
+          "look_id": 3,
+          "role": "exploration",
+          "style": "모던 유틸리티 오피스룩",
+          "items": [
+            {
+              "slot": "top",
+              "name": "그레이 레귤러핏 하이넥 니트",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "블랙 레귤러핏 발목 길이 테이퍼드 혼방 팬츠",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 방수 합성피혁 첼시부츠",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "네이비 레귤러핏 무지 발수 스탠드칼라 재킷",
+              "item_id": null
+            }
+          ],
+          "reason": "선호하는 무채색·네이비와 레귤러핏은 유지하고, 맥코트 대신 스탠드칼라 재킷과 첼시부츠로 실용적인 모던 스타일을 시도하도록 구성했습니다. 로고나 큰 포켓 장식이 없는 재킷이라 미팅에서 지나치게 캐주얼해 보이는 부담을 줄입니다. 16°C에는 니트와 재킷을 겹쳐 입고, 비에 대비해 발수 아우터와 방수 신발을 사용했습니다."
+        }
+      ]
+    }
+  },
+  {
+    "id": "FR-027",
+    "type": "fashion_recommendation",
+    "reference_datetime": "2026-12-18T19:00:00+09:00",
+    "user_request": "내일 오후에 전주 객리단길에서 데이트해. 눈도 오고 춥다는데 따뜻하면서 깔끔하게 입고 싶어. 카페 가기 전에 잠깐 걸을 거야.",
+    "context": {
+      "profile": {
+        "gender": "male",
+        "age_group": "20s",
+        "height_cm": 176,
+        "body_type": null
+      },
+      "preference": {
+        "preferred_styles": [
+          "classic",
+          "clean"
+        ],
+        "preferred_colors": [
+          "beige",
+          "brown",
+          "ivory"
+        ],
+        "disliked_colors": [
+          "pink"
+        ],
+        "preferred_fit": "regular"
+      },
+      "weather": {
+        "temperature_c": -2,
+        "precipitation_probability": 80,
+        "precipitation_type": "snow",
+        "wind_mps": 3.0,
+        "humidity_percent": 75,
+        "sky": "cloudy"
+      },
+      "schedule": {
+        "date": "2026-12-19",
+        "time": "14:00",
+        "place": "전주 객리단길",
+        "tpo": "date"
+      },
+      "wardrobe": [],
+      "use_wardrobe": false
+    },
+    "answer": {
+      "looks": [
+        {
+          "look_id": 1,
+          "role": "preference_best",
+          "style": "따뜻한 클래식 데이트룩",
+          "items": [
+            {
+              "slot": "top",
+              "name": "아이보리 레귤러핏 두꺼운 울 터틀넥 니트",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "브라운 레귤러핏 기모 슬랙스",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "다크브라운 방수 소재 보온 앵클부츠",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "베이지 레귤러핏 발수 겉감의 롱 패딩코트",
+              "item_id": null
+            }
+          ],
+          "reason": "선호하는 클래식 스타일과 아이보리·브라운·베이지를 가장 충실하게 반영했습니다. 레귤러핏 니트와 슬랙스는 데이트에 어울리는 단정한 인상을 줍니다. -2°C에 바람도 있어 두꺼운 터틀넥, 기모 하의, 롱 패딩코트로 보온성을 높이고, 눈에 대비해 방수 소재의 보온 부츠를 선택했습니다. 부츠는 접지력을 고려한 고무 밑창 제품을 고르되 눈길에서는 조심해서 걸으세요."
+        },
+        {
+          "look_id": 2,
+          "role": "preference_alternative",
+          "style": "차분한 클린 겨울룩",
+          "items": [
+            {
+              "slot": "top",
+              "name": "베이지 레귤러핏 두꺼운 울 하프집업 니트",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "차콜 레귤러핏 기모 슬랙스",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "다크브라운 방수 소재 보온 첼시부츠",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "브라운 레귤러핏 발수 겉감의 롱 패딩코트",
+              "item_id": null
+            }
+          ],
+          "reason": "따뜻한 베이지·브라운 계열과 레귤러핏을 유지하면서 하프집업 니트와 차콜 하의로 다른 조합을 제안합니다. 목까지 올려 잠글 수 있는 두꺼운 니트와 롱 패딩코트, 기모 슬랙스가 -2°C의 추위에 대응하고, 눈에 젖기 쉬운 스웨이드 대신 방수 소재의 보온 부츠를 사용했습니다. 카페에서는 코트를 벗고 니트 지퍼를 내려 조절할 수 있습니다."
+        },
+        {
+          "look_id": 3,
+          "role": "exploration",
+          "style": "단정한 아웃도어 캐주얼",
+          "items": [
+            {
+              "slot": "top",
+              "name": "아이보리 레귤러핏 두꺼운 플리스 하이넥 풀오버",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "브라운 레귤러핏 기모 코듀로이 팬츠",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "다크브라운 방수 소재 보온 레이스업 부츠",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "베이지 레귤러핏 발수 겉감의 허벅지 길이 다운 파카",
+              "item_id": null
+            }
+          ],
+          "reason": "평소 클래식 취향에서 플리스와 코듀로이를 활용한 아웃도어 캐주얼로 확장하되, 선호 색상과 레귤러핏, 장식이 적은 디자인으로 깔끔함을 유지했습니다. -2°C의 눈 오는 날에는 목을 덮는 플리스와 다운 파카, 기모 하의로 보온성을 확보하고 방수 소재의 보온 부츠를 신도록 구성했습니다. 눈이 쌓인 길에서는 밑창의 접지력도 확인하세요."
+        }
+      ]
+    }
+  },
+  {
+    "id": "FR-028",
+    "type": "fashion_recommendation",
+    "reference_datetime": "2026-07-24T21:00:00+09:00",
+    "user_request": "내일 오후에 인천 송도 야외 페스티벌 가는데 엄청 덥고 습하대. 헐렁한 스트릿 느낌으로 입고 싶어. 계속 서 있거나 걸을 것 같아.",
+    "context": {
+      "profile": {
+        "gender": "male",
+        "age_group": "20s",
+        "height_cm": 181,
+        "body_type": null
+      },
+      "preference": {
+        "preferred_styles": [
+          "street",
+          "casual"
+        ],
+        "preferred_colors": [
+          "blue",
+          "white",
+          "black"
+        ],
+        "disliked_colors": [
+          "red"
+        ],
+        "preferred_fit": "oversized"
+      },
+      "weather": {
+        "temperature_c": 32,
+        "precipitation_probability": 20,
+        "precipitation_type": "none",
+        "wind_mps": 1.8,
+        "humidity_percent": 85,
+        "sky": "cloudy"
+      },
+      "schedule": {
+        "date": "2026-07-25",
+        "time": "15:00",
+        "place": "인천 송도 야외 공연장",
+        "tpo": "festival"
+      },
+      "wardrobe": [],
+      "use_wardrobe": false
+    },
+    "answer": {
+      "looks": [
+        {
+          "look_id": 1,
+          "role": "preference_best",
+          "style": "여름 스트릿 캐주얼",
+          "items": [
+            {
+              "slot": "top",
+              "name": "화이트 오버핏 얇은 반팔 티셔츠",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "블루 와이드핏 얇은 나일론 카고 반바지",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "화이트 쿠션 스니커즈",
+              "item_id": null
+            }
+          ],
+          "reason": "선호하는 화이트·블루와 넉넉한 실루엣을 중심으로 스트릿 분위기를 반영했습니다. 32°C에 습도 85%인 야외에서는 두꺼운 데님이나 겹쳐 입는 옷 대신 얇은 반팔과 반바지로 답답함을 줄였습니다. 오래 서 있거나 걸어야 하므로 쿠션이 있는 스니커즈를 선택하고 아우터는 넣지 않았습니다."
+        },
+        {
+          "look_id": 2,
+          "role": "preference_alternative",
+          "style": "편안한 스트릿 셔츠룩",
+          "items": [
+            {
+              "slot": "top",
+              "name": "블루 오버핏 얇은 면·리넨 혼방 반팔 셔츠",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "블랙 와이드핏 경량 쇼츠",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 쿠션 스니커즈",
+              "item_id": null
+            }
+          ],
+          "reason": "평소 좋아하는 블루·블랙과 오버핏을 유지하면서 티셔츠 대신 반팔 셔츠로 다른 조합을 제안했습니다. 덥고 습한 날씨에 맞춰 얇은 혼방 셔츠와 경량 반바지를 고르고, 공연장에서 이동하기 편한 스니커즈를 매치했습니다."
+        },
+        {
+          "look_id": 3,
+          "role": "exploration",
+          "style": "스포티 스트릿",
+          "items": [
+            {
+              "slot": "top",
+              "name": "블랙 오버핏 속건 기능성 반팔 티셔츠",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "라이트그레이 와이드핏 경량 나일론 반바지",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "화이트 쿠션 러닝화",
+              "item_id": null
+            }
+          ],
+          "reason": "스트릿의 넉넉한 핏은 유지하고 속건 티셔츠와 러닝화로 스포티한 방향을 시도했습니다. 선호하는 블랙·화이트에 밝은 그레이를 더해 싫어하는 빨간색을 피했습니다. 고온다습한 야외 공연에서 땀이 나거나 많이 걸을 상황을 고려한 가벼운 구성입니다."
+        }
+      ]
+    }
+  },
+  {
+    "id": "FR-029",
+    "type": "fashion_recommendation",
+    "reference_datetime": "2026-04-24T18:30:00+09:00",
+    "user_request": "내일 점심에 친구 결혼식 가. 평소엔 깔끔한 옷을 좋아하는데 하객으로 너무 편하게 보이지 않게 골라줘. 흰색 옷은 피하고 싶어.",
+    "context": {
+      "profile": {
+        "gender": "female",
+        "age_group": "40s",
+        "height_cm": 164,
+        "body_type": null
+      },
+      "preference": {
+        "preferred_styles": [
+          "classic",
+          "clean"
+        ],
+        "preferred_colors": [
+          "navy",
+          "beige",
+          "brown"
+        ],
+        "disliked_colors": [
+          "white"
+        ],
+        "preferred_fit": "slim"
+      },
+      "weather": {
+        "temperature_c": 21,
+        "precipitation_probability": 10,
+        "precipitation_type": "none",
+        "wind_mps": 1.5,
+        "humidity_percent": 48,
+        "sky": "clear"
+      },
+      "schedule": {
+        "date": "2026-04-25",
+        "time": "12:00",
+        "place": "서울 여의도 예식장",
+        "tpo": "wedding"
+      },
+      "wardrobe": [],
+      "use_wardrobe": false
+    },
+    "answer": {
+      "looks": [
+        {
+          "look_id": 1,
+          "role": "preference_best",
+          "style": "클래식 하객룩",
+          "items": [
+            {
+              "slot": "top",
+              "name": "베이지 슬림핏 긴소매 블라우스",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 슬림핏 무릎 아래 펜슬 스커트",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "브라운 낮은 굽 펌프스",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "네이비 슬림핏 얇은 테일러드 재킷",
+              "item_id": null
+            }
+          ],
+          "reason": "선호하는 베이지·네이비와 슬림한 실루엣을 중심으로 클래식한 하객룩을 구성했습니다. 무릎 아래 스커트와 테일러드 재킷으로 격식을 갖추고 요청대로 흰색은 사용하지 않았습니다. 21°C에는 두꺼운 코트 대신 얇은 재킷을 선택해 실내에서 벗어 조절할 수 있습니다."
+        },
+        {
+          "look_id": 2,
+          "role": "preference_alternative",
+          "style": "차분한 팬츠 하객룩",
+          "items": [
+            {
+              "slot": "top",
+              "name": "네이비 슬림핏 긴소매 블라우스",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "베이지 슬림핏 슬랙스",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "브라운 낮은 굽 펌프스",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "베이지 슬림핏 얇은 테일러드 재킷",
+              "item_id": null
+            }
+          ],
+          "reason": "좋아하는 색상과 슬림핏을 유지하면서 스커트 대신 슬랙스로 바꿨습니다. 블라우스와 재킷을 함께 입어 지나치게 캐주얼해 보이는 것을 피하고, 낮은 굽 신발로 이동 부담을 줄였습니다. 맑은 21°C의 봄 날씨에 맞는 얇은 재킷이며 흰색 의류는 제외했습니다."
+        },
+        {
+          "look_id": 3,
+          "role": "exploration",
+          "style": "모던 톤온톤 하객룩",
+          "items": [
+            {
+              "slot": "top",
+              "name": "차콜 슬림핏 드레이프 블라우스",
+              "item_id": null
+            },
+            {
+              "slot": "bottom",
+              "name": "차콜 슬림핏 슬랙스",
+              "item_id": null
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 낮은 굽 펌프스",
+              "item_id": null
+            },
+            {
+              "slot": "outer",
+              "name": "그레이 슬림핏 얇은 테일러드 재킷",
+              "item_id": null
+            }
+          ],
+          "reason": "평소의 클래식한 조합에서 그레이 계열의 톤온톤과 드레이프 블라우스로 모던한 분위기를 시도했습니다. 선호하는 슬림핏과 하객에게 필요한 단정함을 유지하고, 싫어하는 흰색은 넣지 않았습니다. 21°C에 맞춰 얇은 재킷으로 마무리했습니다."
+        }
+      ]
+    }
+  }
+]

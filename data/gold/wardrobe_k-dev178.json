@@ -1,0 +1,368 @@
+[
+  {
+    "id": "TC-016",
+    "type": "tool_calling",
+    "reference_datetime": "2026-05-15T20:00:00+09:00",
+    "user_request": "내 옷장에 있는 옷으로 카페 갈 때 입을 코디 골라줘. 평소 취향은 신경 안 써도 되고 날씨나 일정도 조회하지 않아도 돼.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 301,
+              "category": "top",
+              "item_type": "shirt",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 302,
+              "category": "top",
+              "item_type": "lightweight_knit",
+              "color": "gray",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 303,
+              "category": "bottom",
+              "item_type": "slacks",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 304,
+              "category": "bottom",
+              "item_type": "denim",
+              "color": "blue",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 305,
+              "category": "shoes",
+              "item_type": "sneakers",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "summer",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 306,
+              "category": "shoes",
+              "item_type": "loafers",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "카페 방문용 코디 요청. 옷장에 셔츠·얇은 니트, 슬랙스·데님, 스니커즈·로퍼가 있어 보유 아이템만으로 세 조합을 구성합니다. 취향·날씨·일정은 요청에 따라 조회하지 않았습니다.",
+      "action": "generate_three_looks"
+    }
+  },
+  {
+    "id": "TC-017",
+    "type": "tool_calling",
+    "reference_datetime": "2026-10-16T20:30:00+09:00",
+    "user_request": "내 옷 중 셔츠를 꼭 써서 코디해줘. 스타일은 깔끔하게, 날씨랑 일정은 안 봐도 돼.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 341,
+              "category": "top",
+              "item_type": "shirt",
+              "color": "white",
+              "fit": "oversized",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 342,
+              "category": "top",
+              "item_type": "striped_long_sleeve_tshirt",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 343,
+              "category": "top",
+              "item_type": "lightweight_sweatshirt",
+              "color": "gray",
+              "fit": "oversized",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 344,
+              "category": "bottom",
+              "item_type": "denim",
+              "color": "blue",
+              "fit": "wide",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 345,
+              "category": "bottom",
+              "item_type": "slacks",
+              "color": "black",
+              "fit": "wide",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 346,
+              "category": "shoes",
+              "item_type": "sneakers",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "summer",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 347,
+              "category": "shoes",
+              "item_type": "loafers",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "옷장의 셔츠는 item_id 341인 화이트 오버핏 셔츠입니다. 이 셔츠를 각 조합에 포함하고 보유한 하의 344·345와 신발 346·347을 활용해 단정한 세 조합을 구성합니다. 셔츠 외의 티셔츠·맨투맨을 셔츠로 간주하지 않습니다.",
+      "action": "generate_three_looks"
+    }
+  },
+  {
+    "id": "TC-018",
+    "type": "tool_calling",
+    "reference_datetime": "2026-08-07T19:00:00+09:00",
+    "user_request": "지금 33도라 엄청 더워. 내 옷장에 있는 여름옷만으로 코디해줘. 취향은 상관없고 날씨를 다시 조회할 필요도 없어.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 321,
+              "category": "top",
+              "item_type": "lightweight_polo",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "summer"
+              ]
+            },
+            {
+              "item_id": 322,
+              "category": "top",
+              "item_type": "short_sleeve_tshirt",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "summer"
+              ]
+            },
+            {
+              "item_id": 323,
+              "category": "top",
+              "item_type": "sleeveless_tshirt",
+              "color": "gray",
+              "fit": "regular",
+              "seasons": [
+                "summer"
+              ]
+            },
+            {
+              "item_id": 324,
+              "category": "bottom",
+              "item_type": "lightweight_pants",
+              "color": "ivory",
+              "fit": "wide",
+              "seasons": [
+                "spring",
+                "summer"
+              ]
+            },
+            {
+              "item_id": 325,
+              "category": "bottom",
+              "item_type": "shorts",
+              "color": "navy",
+              "fit": "wide",
+              "seasons": [
+                "summer"
+              ]
+            },
+            {
+              "item_id": 326,
+              "category": "shoes",
+              "item_type": "sneakers",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "summer",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 327,
+              "category": "top",
+              "item_type": "thick_wool_knit",
+              "color": "brown",
+              "fit": "regular",
+              "seasons": [
+                "winter"
+              ]
+            },
+            {
+              "item_id": 328,
+              "category": "outer",
+              "item_type": "down_jacket",
+              "color": "black",
+              "fit": "oversized",
+              "seasons": [
+                "winter"
+              ]
+            },
+            {
+              "item_id": 329,
+              "category": "shoes",
+              "item_type": "insulated_boots",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "winter"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "사용자가 제공한 현재 기온 33°C를 사용합니다. 옷장의 여름용 상의 321·322·323, 하의 324·325, 신발 326만으로 세 조합을 구성하며 겨울용 니트 327·다운 재킷 328·보온 부츠 329는 제외합니다. 추가 날씨 조회는 하지 않았습니다.",
+      "action": "generate_three_looks"
+    }
+  },
+  {
+    "id": "TC-019",
+    "type": "tool_calling",
+    "reference_datetime": "2026-04-10T20:00:00+09:00",
+    "user_request": "지금 내 옷장에 등록된 것만으로 신발까지 포함한 코디가 가능한지 확인해줘. 없는 건 추천하지 말아줘.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 191,
+              "category": "top",
+              "item_type": "shirt",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 192,
+              "category": "bottom",
+              "item_type": "slacks",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 193,
+              "category": "bottom",
+              "item_type": "denim",
+              "color": "blue",
+              "fit": "wide",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "final_response": {
+      "type": "direct_answer",
+      "content": "등록된 화이트 셔츠에 블랙 슬랙스나 블루 데님을 맞추는 상하의 조합은 가능합니다. 다만 옷장에 신발이 등록되어 있지 않아, 신발까지 포함한 코디는 현재 등록된 아이템만으로 완성할 수 없습니다. 보유한 신발을 옷장에 등록하면 그 아이템까지 포함해 추천할 수 있습니다."
+    }
+  }
+]

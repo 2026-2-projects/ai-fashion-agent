@@ -1,0 +1,292 @@
+[
+  {
+    "id": "TC-024",
+    "type": "tool_calling",
+    "reference_datetime": "2026-10-08T21:00:00+09:00",
+    "user_request": "내일 오전 9시에 전주대학교 가는데 내 옷으로만 코디해줘. 날씨도 조회해서 비 오면 신발까지 고려해줘. 취향은 따로 맞추지 않아도 돼.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 311,
+              "category": "top",
+              "item_type": "sweatshirt",
+              "color": "gray",
+              "fit": "oversized",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 312,
+              "category": "top",
+              "item_type": "striped_shirt",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 313,
+              "category": "bottom",
+              "item_type": "ankle_slacks",
+              "color": "black",
+              "fit": "wide",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 314,
+              "category": "bottom",
+              "item_type": "ankle_pants",
+              "color": "navy",
+              "fit": "wide",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 315,
+              "category": "shoes",
+              "item_type": "waterproof_sneakers",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "summer",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 316,
+              "category": "shoes",
+              "item_type": "suede_loafers",
+              "color": "brown",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 317,
+              "category": "outer",
+              "item_type": "water_repellent_jacket",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 318,
+              "category": "outer",
+              "item_type": "cardigan",
+              "color": "beige",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "step": 2,
+        "tool_call": {
+          "name": "get_weather",
+          "arguments": {
+            "place": "전주대학교",
+            "date": "2026-10-09",
+            "time": "09:00"
+          }
+        },
+        "tool_result": {
+          "temperature_c": 18,
+          "precipitation_probability": 90,
+          "precipitation_type": "rain",
+          "wind_mps": 2.8,
+          "humidity_percent": 88,
+          "sky": "cloudy"
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "2026-10-09 09:00 전주대학교, 18°C, 비, 강수확률 90%. 옷장에 있는 방수 스니커즈 315와 발수 재킷 317을 활용하고 스웨이드 로퍼 316은 제외해 보유 의류로 세 조합을 생성합니다. 장소·시간은 요청에 있어 일정 조회를 하지 않았습니다.",
+      "action": "generate_three_looks"
+    }
+  },
+  {
+    "id": "TC-025",
+    "type": "tool_calling",
+    "reference_datetime": "2026-01-16T20:00:00+09:00",
+    "user_request": "내일 오후 3시에 강릉 경포대 갈 건데 내 옷 중에서 추위랑 바람에 맞게 골라줘. 그때 날씨도 확인해줘.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 351,
+              "category": "top",
+              "item_type": "short_sleeve_tshirt",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "summer"
+              ]
+            },
+            {
+              "item_id": 352,
+              "category": "top",
+              "item_type": "thick_wool_knit",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "winter"
+              ]
+            },
+            {
+              "item_id": 353,
+              "category": "top",
+              "item_type": "thick_wool_shirt",
+              "color": "brown",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 354,
+              "category": "top",
+              "item_type": "lightweight_linen_shirt",
+              "color": "olive",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "summer"
+              ]
+            },
+            {
+              "item_id": 355,
+              "category": "bottom",
+              "item_type": "fleece_lined_slacks",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "winter"
+              ]
+            },
+            {
+              "item_id": 356,
+              "category": "bottom",
+              "item_type": "thick_corduroy_pants",
+              "color": "beige",
+              "fit": "wide",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 357,
+              "category": "bottom",
+              "item_type": "shorts",
+              "color": "blue",
+              "fit": "regular",
+              "seasons": [
+                "summer"
+              ]
+            },
+            {
+              "item_id": 358,
+              "category": "shoes",
+              "item_type": "insulated_boots",
+              "color": "brown",
+              "fit": "regular",
+              "seasons": [
+                "winter"
+              ]
+            },
+            {
+              "item_id": 359,
+              "category": "shoes",
+              "item_type": "sneakers",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "summer",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 360,
+              "category": "outer",
+              "item_type": "long_padded_coat",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "winter"
+              ]
+            },
+            {
+              "item_id": 361,
+              "category": "outer",
+              "item_type": "padded_quilted_jacket",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "winter"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "step": 2,
+        "tool_call": {
+          "name": "get_weather",
+          "arguments": {
+            "place": "강릉 경포대",
+            "date": "2026-01-17",
+            "time": "15:00"
+          }
+        },
+        "tool_result": {
+          "temperature_c": -1,
+          "precipitation_probability": 10,
+          "precipitation_type": "none",
+          "wind_mps": 6.5,
+          "humidity_percent": 48,
+          "sky": "clear"
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "2026-01-17 15:00 강릉 경포대, -1°C, 맑음, 풍속 6.5m/s. 겨울용 울 니트 352·울 셔츠 353, 기모 슬랙스 355·두꺼운 코듀로이 팬츠 356, 보온 부츠 358을 활용하고 강한 바람과 추위에 맞춰 롱 패딩코트 360을 각 조합에 포함합니다. 여름용 의류와 겨울 계절 정보가 없는 신발은 제외해 보유 아이템만으로 세 조합을 생성합니다.",
+      "action": "generate_three_looks"
+    }
+  }
+]
