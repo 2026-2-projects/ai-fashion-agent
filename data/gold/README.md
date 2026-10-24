@@ -27,7 +27,7 @@ FR-001...015와 TC-001...005, 총 20개의 Gold Data를 작성하고 하나의 .
 | 내 옷 패션 추천 | `FR-013~015` | 3 | 등록된 옷장의 `item_id`만 사용한 코디 추천 |
 | 사용자 맥락 조회 | `TC-001~004` | 4 | `get_user_context()`를 이용한 취향·프로필 조회 |
 | Tool 호출 없음 | `TC-005` | 1 | 외부 정보 없이 직접 답변할 수 있는 요청 |
-| **해당파일** | [hhoyaa_gold_data.json](hhoyaa_gold_data.json) | - | - |
+| **해당파일** | [hhoyaa_gold_data.json](hhoyaa_gold_data.json) | 20 | - |
 
 ### 구성 특징
 - 장소는 전주 도심 번화가를 중심으로 작성함.
