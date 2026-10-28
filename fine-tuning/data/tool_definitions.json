@@ -1,0 +1,75 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "get_user_context",
+      "description": "사용자의 프로필, 패션 취향, 피드백 요약을 조회합니다.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_wardrobe",
+      "description": "사용자가 등록한 옷장 아이템을 조회합니다.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_weather",
+      "description": "지정한 장소와 날짜, 시간의 날씨를 조회합니다.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "place": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "time": {
+            "type": "string",
+            "description": "HH:MM"
+          }
+        },
+        "required": [
+          "place",
+          "date",
+          "time"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_calendar_events",
+      "description": "지정한 날짜의 캘린더 일정을 조회합니다.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          }
+        },
+        "required": [
+          "date"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+]
