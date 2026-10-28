@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Fine-tuning model artifacts
+*.safetensors
+fine-tuning/qwen35-fashion-pilot-lora/
+fine-tuning/*_result.zip
