@@ -1,0 +1,50 @@
+[
+  {
+    "id": "FR-006",
+    "type": "fashion_recommendation",
+    "expected_first_action": "fashion_recommendation",
+    "response": "{\"looks\":[{\"look_id\":1,\"role\":\"preference_best\",\"style\":\"차분한 올드머니 스타일\",\"items\":[{\"slot\":\"top\",\"name\":\"크림색 니트\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"네이비 스트레이트 슬랙스\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"브라운 레더 로퍼\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"차콜 코튼 재킷\",\"item_id\":null}],\"reason\":\"네이비·크림·브라운을 중심으로 니트와 슬랙스, 레더 로퍼로 구성해 객리단길 와인바의 차분한 분위기를 반영했습니다. 로고가 눈에 띄지 않도록 단정하게 조합하고, 13도의 저녁 날씨에 재킷을 추가했습니다.\"},{\"look_id\":2,\"role\":\"preference_alternative\",\"style\":\"클래식 비지니스 캐주얼\",\"items\":[{\"slot\":\"top\",\"name\":\"화이트 셔츠\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"네이비 스트레이트 슬랙스\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"블랙 레더 로퍼\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"차콜 코튼 재킷\",\"item_id\":null}],\"reason\":\"셔츠와 슬랙스·레더 로퍼로 클래식 비지니스 캐주얼을 구성했습니다. 로고가 없는 단정한 조합으로 소개팅에 적합하며, 재킷은 저녁 차가운 날씨를 고려했습니다.\"},{\"look_id\":3,\"role\":\"exploration\",\"style\":\"모던 올드머니\",\"items\":[{\"slot\":\"top\",\"name\":\"네이비 니트\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"브라운 스트레이트 슬랙스\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"브라운 레더 로퍼\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"차콜 코튼 재킷\",\"item_id\":null}],\"reason\":\"네이비 니트와 브라운 슬랙스·레더 로퍼로 모던 올드머니 스타일을 시도했습니다. 로고가 눈에 띄지 않는 단정한 조합으로 기존 선호색을 유지하면서 새로운 조합을 제안했습니다.\"}]}"
+  },
+  {
+    "id": "FR-015",
+    "type": "fashion_recommendation",
+    "expected_first_action": "fashion_recommendation",
+    "response": "{\"looks\":[{\"look_id\":1,\"role\":\"preference_best\",\"style\":\"기능성 애슬레저\",\"items\":[{\"slot\":\"top\",\"name\":\"그레이 기능성 티셔츠\",\"item_id\":301},{\"slot\":\"bottom\",\"name\":\"블랙 테이퍼드 조거 팬츠\",\"item_id\":305},{\"slot\":\"shoes\",\"name\":\"그레이 러닝 셔틀츠\",\"item_id\":307}],\"reason\":\"선호하는 그레이·블랙·올리브 색상과 기능성 티셔츠·조거 팬츠를 조합했습니다. 16°C와 바람에 맞춰 얇은 기능성 상의와 편한 러닝 셔틀츠를 선택했습니다.\"},{\"look_id\":2,\"role\":\"preference_alternative\",\"style\":\"스포트리블\",-items\":[{\"slot\":\"top\",\"name\":\"블랙 하프 지프\",\"item_id\":302},{\"slot\":\"bottom\",\"name\":\"올리브 니론 팬츠\",\"item_id\":306},{\"slot\":\"outer\",\"name\":\"차콜 트랙 재킷\",\"item_id\":304},{\"slot\":\"shoes\",\"name\":\"블랙 트레일 스니커즈\",\"item_id\":308}],\"reason\":\"하프 지프와 트랙 재킷을 추가해 천변길 걷기용 기능성을 강화했습니다. 니론 팬츠는 습한 날씨에 적합하며, 트레일 스니커즈는 경사지 이동에 유리합니다.\"},{\"look_id\":3,\"role\":\"exploration\",\"style\":\"라이트웨어 스포티\",-items\":[{\"slot\":\"top\",\"name\":\"그레이 기능성 티셔츠\",\"item_id\":301},{\"slot\":\"bottom\",\"name\":\"블랙 테이퍼드 조거 팬츠\",\"item_id\":305},{\"slot\":\"outer\",\"name\":\"올리브 윈드브레이커\",\"item_id\":303},{\"slot\":\"shoes\",\"name\":\"그레이 러닝 셔틀츠\",\"item_id\":307}],\"reason\":\"선호 색상과 기능성 아이템을 유지하면서 윈드브레이커를 추가해 가벼운 스포티한 분위기를 만들었습니다. 브런치 카페에서 벗어날 수 있는 얇은 겹옷을 선택했습니다.\"}]}"
+  },
+  {
+    "id": "FR-018",
+    "type": "fashion_recommendation",
+    "expected_first_action": "fashion_recommendation",
+    "response": "{\"looks\":[{\"look_id\":1,\"role\":\"preference_best\",\"style\":\"클린 미니멀\",\"items\":[{\"slot\":\"top\",\"name\":\"화이트 슬림핏 니트\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"네이비 스트레이트 슬랙스\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"그레이 코튼 재킷\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"블랙 레더 로퍼\",\"item_id\":null}],\"reason\":\"면 재킷과 슬랙스로 면접에 필요한 단정함을 유지하고, 슬림핏과 중성색으로 과장된 느낌을 줄였습니다. 강풍과 습기에 대비해 얇은 재킷을 선택했습니다.\"},{\"look_id\":2,\"role\":\"preference_alternative\",\"style\":\"클린 비지니스 캐주얼\",\"items\":[{\"slot\":\"top\",\"name\":\"라이트 그레이 슬림핏 셔츠\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"네이비 스트레이트 슬랙스\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"블랙 얇은 재킷\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"블랙 레더 로퍼\",\"item_id\":null}],\"reason\":\"셔츠와 얇은 재킷으로 단정함을 유지하면서 니트보다 경량화했습니다. 강풍과 비에 대비해 얇은 재킷을 선택하고, 로퍼로 단정한 발걸음을 유지했습니다.\"},{\"look_id\":3,\"role\":\"exploration\",\"style\":\"모던 미니멀\",\"items\":[{\"slot\":\"top\",\"name\":\"네이비 슬림핏 니트\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"그레이 스트레이트 슬랙스\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"블랙 코튼 재킷\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"블랙 레더 로퍼\",\"item_id\":null}],\"reason\":\"네이비와 그레이의 조합을 유지하면서 니트와 슬랙스의 조합으로 모던한 느낌을 더했습니다. 강풍과 비에 대비해 얇은 재킷을 선택하고, 로퍼로 단정함을 유지했습니다.\"}]}"
+  },
+  {
+    "id": "FR-031",
+    "type": "fashion_recommendation",
+    "expected_first_action": "fashion_recommendation",
+    "response": "{\"looks\":[{\"look_id\":1,\"role\":\"preference_best\",\"style\":\"편안한 캐주얼\",\"items\":[{\"slot\":\"top\",\"name\":\"그레이 오버핏 스웨트셔츠\",\"item_id\":311},{\"slot\":\"bottom\",\"name\":\"블랙 와이드 안클레 슬랙스\",\"item_id\":313},{\"slot\":\"shoes\",\"name\":\"블랙 워터프루프 스니커즈\",\"item_id\":315},{\"slot\":\"outer\",\"name\":\"네이비 워터레펜티블 재킷\",\"item_id\":317}],\"reason\":\"비가 오는 학교 출근에 맞춰 방수 스니커즈와 재킷을 추가하고, 선호하는 그레이·블랙·네이비와 와이드핏을 유지했습니다.\"},{\"look_id\":2,\"role\":\"preference_alternative\",\"style\":\"편안한 캐주얼\",\"items\":[{\"slot\":\"top\",\"name\":\"네이비 스트라이프 셔츠\",\"item_id\":312},{\"slot\":\"bottom\",\"name\":\"네이비 와이드 안클레 팬츠\",\"item_id\":314},{\"slot\":\"shoes\",\"name\":\"블랙 워터프루프 스니커즈\",\"item_id\":315},{\"slot\":\"outer\",\"name\":\"네이비 워터레펜티블 재킷\",\"item_id\":317}],\"reason\":\"스트라이프 셔츠로 상의 변형은 했지만 방수 스니커즈와 재킷은 유지하고 선호 색상·핏을 respek팅했습니다.\"},{\"look_id\":3,\"role\":\"exploration\",\"style\":\"편안한 캐주얼\",\"items\":[{\"slot\":\"top\",\"name\":\"그레이 오버핏 스웨트셔츠\",\"item_id\":311},{\"slot\":\"bottom\",\"name\":\"네이비 와이드 안클레 팬츠\",\"item_id\":314},{\"slot\":\"shoes\",\"name\":\"블랙 워터프루프 스니커즈\",\"item_id\":315},{\"slot\":\"outer\",\"name\":\"베이지 카디건\",\"item_id\":318}],\"reason\":\"선호하는 와이드핏과 스웨트셔츠는 유지하고 카디건으로 상의 변형했습니다. 비가 많이 오면 재킷을 더 입고 사용하세요.\"}]}"
+  },
+  {
+    "id": "FR-039",
+    "type": "fashion_recommendation",
+    "expected_first_action": "fashion_recommendation",
+    "response": "{\"looks\":[{\"look_id\":1,\"role\":\"preference_best\",\"style\":\"편안한 캐주얼\",\"items\":[{\"slot\":\"top\",\"name\":\"라이트 그레이 니트\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"네이비 와이드 팬츠\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"블랙 스니커즈\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"올리브 재킷\",\"item_id\":null}],\"reason\":\"편안한 니트와 와이드 팬츠로 걷기 편하게 구성하고, 내 취향의 네이비·그레이·올리브를 사용했습니다. 강수 확률이 높으니 재킷을 Dodat고요. 밝은 그레이는 사진에서 자연스러운 배경이 됩니다.\"},{\"look_id\":2,\"role\":\"preference_alternative\",\"style\":\"클린 캐주얼\",\"items\":[{\"slot\":\"top\",\"name\":\"라이트 그레이 니트\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"네이비 와이드 팬츠\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"블랙 스니커즈\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"블랙 재킷\",\"item_id\":null}],\"reason\":\"네이비 팬츠와 그레이 니트를 유지하고 재킷을 블랙으로 변경했습니다. 사진에서 단정한 느낌을 줄 수 있으면서도 걷기 편한 조합입니다.\"},{\"look_id\":3,\"role\":\"exploration\",\"style\":\"모던 캐주얼\",\"items\":[{\"slot\":\"top\",\"name\":\"라이트 그레이 니트\",\"item_id\":null},{\"slot\":\"bottom\",\"name\":\"올리브 와이드 팬츠\",\"item_id\":null},{\"slot\":\"shoes\",\"name\":\"블랙 스니커즈\",\"item_id\":null},{\"slot\":\"outer\",\"name\":\"블랙 재킷\",\"item_id\":null}],\"reason\":\"네이비 팬츠 대신 올리브 와이드 팬츠로 취향의 올리브를 더 활용했습니다. 사진에서 차분한 톤을 유지하면서도 새로운 조합을 시도할 수 있습니다.\"}]}"
+  },
+  {
+    "id": "TC-006",
+    "type": "tool_calling",
+    "expected_first_action": "get_calendar_events",
+    "response": "<tool_call>\n<function=get_calendar_events>\n<parameter=date>\n2026-10-03\n</parameter>\n</function>\n</tool_call>"
+  },
+  {
+    "id": "TC-017",
+    "type": "tool_calling",
+    "expected_first_action": "get_wardrobe",
+    "response": "<tool_call>\n<function=get_wardrobe>\n</function>\n</tool_call>"
+  },
+  {
+    "id": "TC-027",
+    "type": "tool_calling",
+    "expected_first_action": "get_calendar_events",
+    "response": "<tool_call>\n<function=get_calendar_events>\n<parameter=date>\n2026-11-06\n</parameter>\n</function>\n</tool_call>"
+  }
+]

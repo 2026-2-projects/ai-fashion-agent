@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "total": 80,
+  "unique_ids": 80,
+  "type_counts": {
+    "fashion_recommendation": 50,
+    "tool_calling": 30
+  },
+  "author_counts": {
+    "김서진": 20,
+    "김진호": 20,
+    "곽준오": 20,
+    "김윤아": 20
+  },
+  "source_counts": {
+    "fr_general_k-dev178.json": 4,
+    "fr_wardrobe_k-dev178.json": 6,
+    "hhoyaa_gold_data.json": 20,
+    "joonoh.json": 20,
+    "wardrobe_k-dev178.json": 4,
+    "wardrobe_weather_k-dev178.json": 2,
+    "weather_k-dev178.json": 4,
+    "yuna.json": 20
+  },
+  "look_counts": {
+    "3": 50
+  },
+  "tool_counts": {
+    "get_user_context": 8,
+    "get_calendar_events": 11,
+    "get_weather": 14,
+    "get_wardrobe": 8
+  },
+  "warnings": [
+    "README의 5 LOOK 변경 메모는 현재 가이드 및 80개 데이터의 3 LOOK 구조와 충돌함. Pilot은 현행 3 LOOK을 유지함.",
+    "합성 데이터 500~1,000개가 없으므로 이번 결과는 최종 학습이 아닌 파이프라인 검증용 Pilot임."
+  ]
+}
