@@ -86,8 +86,8 @@
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "카페 방문용 코디 요청. 옷장에 셔츠·얇은 니트, 슬랙스·데님, 스니커즈·로퍼가 있어 보유 아이템만으로 세 조합을 구성합니다. 취향·날씨·일정은 요청에 따라 조회하지 않았습니다.",
-      "action": "generate_three_looks"
+      "context_summary": "카페 방문용 보유 의류 코디 요청. 셔츠·니트, 슬랙스·데님, 스니커즈·로퍼를 활용한다. 요청에 따라 취향·날씨·일정은 조회하지 않는다. 일반 LOOK 1~3은 비활성화하고 옷장 LOOK 4~5를 구성한다.",
+      "action": "generate_five_looks"
     }
   },
   {
@@ -188,8 +188,8 @@
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "옷장의 셔츠는 item_id 341인 화이트 오버핏 셔츠입니다. 이 셔츠를 각 조합에 포함하고 보유한 하의 344·345와 신발 346·347을 활용해 단정한 세 조합을 구성합니다. 셔츠 외의 티셔츠·맨투맨을 셔츠로 간주하지 않습니다.",
-      "action": "generate_three_looks"
+      "context_summary": "보유한 화이트 오버핏 셔츠 item_id 341을 두 옷장 코디에 반드시 포함한다. 하의 344·345와 신발 346·347을 활용한다. 셔츠 외 의류를 셔츠로 간주하지 않는다. 날씨·일정 조회 없이 옷장 LOOK 4~5를 구성한다. 일반 LOOK 1~3은 비활성화한다.",
+      "action": "generate_five_looks"
     }
   },
   {
@@ -305,8 +305,8 @@
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "사용자가 제공한 현재 기온 33°C를 사용합니다. 옷장의 여름용 상의 321·322·323, 하의 324·325, 신발 326만으로 세 조합을 구성하며 겨울용 니트 327·다운 재킷 328·보온 부츠 329는 제외합니다. 추가 날씨 조회는 하지 않았습니다.",
-      "action": "generate_three_looks"
+      "context_summary": "사용자가 제공한 33°C를 사용하고 날씨를 재조회하지 않는다. 여름 상의 321·322·323, 하의 324·325, 신발 326만 활용한다. 겨울 의류 327·328·329는 제외한다. 취향 조회 없이 옷장 LOOK 4~5를 구성하고 일반 LOOK 1~3은 비활성화한다.",
+      "action": "generate_five_looks"
     }
   },
   {

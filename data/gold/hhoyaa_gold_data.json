@@ -40,8 +40,96 @@
         "place": "전주대학교",
         "tpo": "school"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10011,
+          "category": "top",
+          "item_type": "t_shirt",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10012,
+          "category": "bottom",
+          "item_type": "pants",
+          "color": "charcoal",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10013,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10014,
+          "category": "outer",
+          "item_type": "blouson",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10015,
+          "category": "top",
+          "item_type": "shirt",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10016,
+          "category": "bottom",
+          "item_type": "chino_pants",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10017,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10018,
+          "category": "outer",
+          "item_type": "cardigan",
+          "color": "charcoal",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -71,7 +159,8 @@
               "item_id": null
             }
           ],
-          "reason": "화이트·차콜·네이비와 레귤러핏을 반영하고, 14도의 흐린 아침에 맞춰 가벼운 블루종을 더했습니다."
+          "reason": "화이트·차콜·네이비와 레귤러핏을 반영하고, 14도의 흐린 아침에 맞춰 가벼운 블루종을 더했습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -99,7 +188,8 @@
               "item_id": null
             }
           ],
-          "reason": "미니멀한 색상은 유지하면서 셔츠와 가디건으로 수업과 교내 활동에 어울리게 단정함을 높였습니다."
+          "reason": "미니멀한 색상은 유지하면서 셔츠와 가디건으로 수업과 교내 활동에 어울리게 단정함을 높였습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -127,7 +217,66 @@
               "item_id": null
             }
           ],
-          "reason": "무채색 취향을 유지하면서 활동하기 편한 나일론 팬츠와 바람막이로 스포티하게 확장했습니다."
+          "reason": "무채색 취향을 유지하면서 활동하기 편한 나일론 팬츠와 바람막이로 스포티하게 확장했습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "미니멀 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "화이트 레귤러핏 긴팔 티셔츠",
+              "item_id": 10011
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 스트레이트 치노 팬츠",
+              "item_id": 10016
+            },
+            {
+              "slot": "shoes",
+              "name": "화이트 가죽 스니커즈",
+              "item_id": 10013
+            },
+            {
+              "slot": "outer",
+              "name": "차콜 집업 가디건",
+              "item_id": 10018
+            }
+          ],
+          "reason": "실제로 등록된 화이트 레귤러핏 긴팔 티셔츠와 네이비 스트레이트 치노 팬츠 등을 교차 조합했습니다. 학교 수업 상황과 14℃ 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "클린 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "라이트 그레이 옥스퍼드 셔츠",
+              "item_id": 10015
+            },
+            {
+              "slot": "bottom",
+              "name": "차콜 레귤러핏 코튼 팬츠",
+              "item_id": 10012
+            },
+            {
+              "slot": "shoes",
+              "name": "그레이 캔버스 스니커즈",
+              "item_id": 10017
+            },
+            {
+              "slot": "outer",
+              "name": "네이비 코튼 블루종",
+              "item_id": 10014
+            }
+          ],
+          "reason": "실제로 등록된 라이트 그레이 옥스퍼드 셔츠와 차콜 레귤러핏 코튼 팬츠 등을 교차 조합했습니다. 학교 수업 상황과 14℃ 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -173,8 +322,96 @@
         "place": "전주 객리단길 카페",
         "tpo": "cafe"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10021,
+          "category": "top",
+          "item_type": "shirt",
+          "color": "ivory",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10022,
+          "category": "bottom",
+          "item_type": "slacks",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10023,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10024,
+          "category": "outer",
+          "item_type": "coat",
+          "color": "beige",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10025,
+          "category": "top",
+          "item_type": "knit",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10026,
+          "category": "bottom",
+          "item_type": "pants",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10027,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "charcoal",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10028,
+          "category": "outer",
+          "item_type": "jacket",
+          "color": "ivory",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -204,7 +441,8 @@
               "item_id": null
             }
           ],
-          "reason": "선호 색상으로 깔끔하게 구성하고, 약한 비에 대비해 발수 아우터와 물기 관리가 쉬운 신발을 선택했습니다."
+          "reason": "선호 색상으로 깔끔하게 구성하고, 약한 비에 대비해 발수 아우터와 물기 관리가 쉬운 신발을 선택했습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -232,7 +470,8 @@
               "item_id": null
             }
           ],
-          "reason": "카페에서 편하도록 부드러운 니트와 앵클 팬츠를 조합하고, 습한 날씨에 부담이 적은 경량 아우터를 더했습니다."
+          "reason": "카페에서 편하도록 부드러운 니트와 앵클 팬츠를 조합하고, 습한 날씨에 부담이 적은 경량 아우터를 더했습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -260,7 +499,66 @@
               "item_id": null
             }
           ],
-          "reason": "클린한 인상은 유지하면서 스트라이프와 올리브색으로 변화를 주고, 비에 약한 스웨이드는 피했습니다."
+          "reason": "클린한 인상은 유지하면서 스트라이프와 올리브색으로 변화를 주고, 비에 약한 스웨이드는 피했습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "클린 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "아이보리 레귤러핏 셔츠",
+              "item_id": 10021
+            },
+            {
+              "slot": "bottom",
+              "name": "다크 네이비 앵클 팬츠",
+              "item_id": 10026
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 방수 합성피혁 스니커즈",
+              "item_id": 10023
+            },
+            {
+              "slot": "outer",
+              "name": "아이보리 후드형 경량 재킷",
+              "item_id": 10028
+            }
+          ],
+          "reason": "실제로 등록된 아이보리 레귤러핏 셔츠와 다크 네이비 앵클 팬츠 등을 교차 조합했습니다. 비 오는 날 카페 방문 상황과 18℃, 비 예보 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "편안한 클린 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "라이트 그레이 코튼 니트",
+              "item_id": 10025
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 스트레이트 슬랙스",
+              "item_id": 10022
+            },
+            {
+              "slot": "shoes",
+              "name": "차콜 발수 스니커즈",
+              "item_id": 10027
+            },
+            {
+              "slot": "outer",
+              "name": "베이지 발수 트렌치코트",
+              "item_id": 10024
+            }
+          ],
+          "reason": "실제로 등록된 라이트 그레이 코튼 니트와 네이비 스트레이트 슬랙스 등을 교차 조합했습니다. 비 오는 날 카페 방문 상황과 18℃, 비 예보 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -306,8 +604,104 @@
         "place": "전주 웨리단길 브런치 카페",
         "tpo": "brunch"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10031,
+          "category": "top",
+          "item_type": "t_shirt",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10032,
+          "category": "bottom",
+          "item_type": "leggings",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10033,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10034,
+          "category": "outer",
+          "item_type": "overshirt",
+          "color": "sky_blue",
+          "fit": "oversized",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10035,
+          "category": "top",
+          "item_type": "sleeveless_top",
+          "color": "charcoal",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10036,
+          "category": "bottom",
+          "item_type": "jogger_pants",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10037,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10038,
+          "category": "outer",
+          "item_type": "jacket",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -337,7 +731,8 @@
               "item_id": null
             }
           ],
-          "reason": "운동 중에는 통기성 소재를 활용하고, 22도의 흐린 날씨에는 운동 후 셔츠를 걸쳐 브런치 자리에서 운동복 느낌을 줄였습니다."
+          "reason": "운동 중에는 통기성 소재를 활용하고, 22도의 흐린 날씨에는 운동 후 셔츠를 걸쳐 브런치 자리에서 운동복 느낌을 줄였습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -365,7 +760,8 @@
               "item_id": null
             }
           ],
-          "reason": "운동 시 편안함을 확보하면서 무채색으로 정돈했고, 메시 재킷은 냉방이 강한 실내에서 활용할 수 있습니다."
+          "reason": "운동 시 편안함을 확보하면서 무채색으로 정돈했고, 메시 재킷은 냉방이 강한 실내에서 활용할 수 있습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -388,7 +784,66 @@
               "item_id": null
             }
           ],
-          "reason": "기능성 소재는 유지하면서 피케 셔츠와 플리츠 디자인으로 애슬레저를 스포티 프레피 스타일로 확장했습니다."
+          "reason": "기능성 소재는 유지하면서 피케 셔츠와 플리츠 디자인으로 애슬레저를 스포티 프레피 스타일로 확장했습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "모던 애슬레저 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "라이트 그레이 흡습속건 반팔 티셔츠",
+              "item_id": 10031
+            },
+            {
+              "slot": "bottom",
+              "name": "블랙 경량 나일론 조거 팬츠",
+              "item_id": 10036
+            },
+            {
+              "slot": "shoes",
+              "name": "그레이 메시 러닝 스니커즈",
+              "item_id": 10033
+            },
+            {
+              "slot": "outer",
+              "name": "라이트 그레이 얇은 메시 집업 재킷",
+              "item_id": 10038
+            }
+          ],
+          "reason": "실제로 등록된 라이트 그레이 흡습속건 반팔 티셔츠와 블랙 경량 나일론 조거 팬츠 등을 교차 조합했습니다. 운동 후 브런치 상황과 22℃ 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "소프트 애슬레저 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "차콜 기능성 슬리브리스 톱",
+              "item_id": 10035
+            },
+            {
+              "slot": "bottom",
+              "name": "블랙 7부 기능성 레깅스",
+              "item_id": 10032
+            },
+            {
+              "slot": "shoes",
+              "name": "화이트·그레이 쿠셔닝 스니커즈",
+              "item_id": 10037
+            },
+            {
+              "slot": "outer",
+              "name": "스카이블루 오버핏 경량 반팔 셔츠",
+              "item_id": 10034
+            }
+          ],
+          "reason": "실제로 등록된 차콜 기능성 슬리브리스 톱와 블랙 7부 기능성 레깅스 등을 교차 조합했습니다. 운동 후 브런치 상황과 22℃ 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -434,8 +889,96 @@
         "place": "전주 에코시티 세병호 주변 상가와 카페",
         "tpo": "errand"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10041,
+          "category": "top",
+          "item_type": "sweatshirt",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10042,
+          "category": "bottom",
+          "item_type": "jogger_pants",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10043,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10044,
+          "category": "outer",
+          "item_type": "vest",
+          "color": "olive",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10045,
+          "category": "top",
+          "item_type": "t_shirt",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10046,
+          "category": "bottom",
+          "item_type": "pants",
+          "color": "charcoal",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10047,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10048,
+          "category": "outer",
+          "item_type": "jacket",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -465,7 +1008,8 @@
               "item_id": null
             }
           ],
-          "reason": "편안한 조합에 정돈된 실루엣과 가죽 스니커즈를 더해 잠옷 같은 인상을 줄였고, 베스트로 체온을 조절할 수 있습니다."
+          "reason": "편안한 조합에 정돈된 실루엣과 가죽 스니커즈를 더해 잠옷 같은 인상을 줄였고, 베스트로 체온을 조절할 수 있습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -493,7 +1037,8 @@
               "item_id": null
             }
           ],
-          "reason": "장보기와 도보 이동에 편한 기능성 아이템을 사용하고 색상과 실루엣을 단순하게 맞췄습니다."
+          "reason": "장보기와 도보 이동에 편한 기능성 아이템을 사용하고 색상과 실루엣을 단순하게 맞췄습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -521,7 +1066,66 @@
               "item_id": null
             }
           ],
-          "reason": "수납이 편한 카고 팬츠와 휴대 가능한 윈드브레이커로 일상복의 기능성을 높였습니다."
+          "reason": "수납이 편한 카고 팬츠와 휴대 가능한 윈드브레이커로 일상복의 기능성을 높였습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "클린 원마일웨어 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "멜란지 그레이 코튼 맨투맨",
+              "item_id": 10041
+            },
+            {
+              "slot": "bottom",
+              "name": "차콜 나일론 밴딩 팬츠",
+              "item_id": 10046
+            },
+            {
+              "slot": "shoes",
+              "name": "화이트 미니멀 가죽 스니커즈",
+              "item_id": 10043
+            },
+            {
+              "slot": "outer",
+              "name": "라이트 그레이 경량 집업 재킷",
+              "item_id": 10048
+            }
+          ],
+          "reason": "실제로 등록된 멜란지 그레이 코튼 맨투맨와 차콜 나일론 밴딩 팬츠 등을 교차 조합했습니다. 장보기와 카페 방문 상황과 21℃ 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "스포티 원마일웨어 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "네이비 기능성 긴팔 티셔츠",
+              "item_id": 10045
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 테이퍼드 스트레치 조거 팬츠",
+              "item_id": 10042
+            },
+            {
+              "slot": "shoes",
+              "name": "그레이 쿠셔닝 워킹 스니커즈",
+              "item_id": 10047
+            },
+            {
+              "slot": "outer",
+              "name": "올리브 경량 나일론 베스트",
+              "item_id": 10044
+            }
+          ],
+          "reason": "실제로 등록된 네이비 기능성 긴팔 티셔츠와 네이비 테이퍼드 스트레치 조거 팬츠 등을 교차 조합했습니다. 장보기와 카페 방문 상황과 21℃ 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -567,8 +1171,96 @@
         "place": "전주 덕진공원과 건지산 산책로",
         "tpo": "travel"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10051,
+          "category": "top",
+          "item_type": "base_layer",
+          "color": "beige",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10052,
+          "category": "bottom",
+          "item_type": "cargo_pants",
+          "color": "olive",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10053,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10054,
+          "category": "outer",
+          "item_type": "jacket",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10055,
+          "category": "top",
+          "item_type": "half_zip",
+          "color": "ivory",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10056,
+          "category": "bottom",
+          "item_type": "pants",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10057,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "beige",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10058,
+          "category": "outer",
+          "item_type": "windbreaker",
+          "color": "olive",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -598,7 +1290,8 @@
               "item_id": null
             }
           ],
-          "reason": "강한 바람에는 방풍 셸을 사용하고, 산책로 이동을 고려해 스트레치 팬츠와 접지력이 좋은 신발을 선택했습니다."
+          "reason": "강한 바람에는 방풍 셸을 사용하고, 산책로 이동을 고려해 스트레치 팬츠와 접지력이 좋은 신발을 선택했습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -626,7 +1319,8 @@
               "item_id": null
             }
           ],
-          "reason": "기능성은 유지하면서 밝은 상의와 베이지 신발을 사용해 여행 사진에서 표정이 밝아 보이도록 구성했습니다."
+          "reason": "기능성은 유지하면서 밝은 상의와 베이지 신발을 사용해 여행 사진에서 표정이 밝아 보이도록 구성했습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -654,7 +1348,66 @@
               "item_id": null
             }
           ],
-          "reason": "선호하는 고프코어에서 유틸리티 디테일을 강조한 테크웨어로 확장하되 과도한 장식은 줄였습니다."
+          "reason": "선호하는 고프코어에서 유틸리티 디테일을 강조한 테크웨어로 확장하되 과도한 장식은 줄였습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "어스톤 고프코어 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "베이지 흡습속건 긴팔 베이스레이어",
+              "item_id": 10051
+            },
+            {
+              "slot": "bottom",
+              "name": "블랙 테이퍼드 나일론 팬츠",
+              "item_id": 10056
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 접지형 트레일 스니커즈",
+              "item_id": 10053
+            },
+            {
+              "slot": "outer",
+              "name": "올리브 패커블 윈드브레이커",
+              "item_id": 10058
+            }
+          ],
+          "reason": "실제로 등록된 베이지 흡습속건 긴팔 베이스레이어와 블랙 테이퍼드 나일론 팬츠 등을 교차 조합했습니다. 바람 부는 날 산책 상황과 17℃, 강한 바람 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "라이트 하이킹 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "아이보리 기능성 하프집업",
+              "item_id": 10055
+            },
+            {
+              "slot": "bottom",
+              "name": "올리브 스트레치 카고 팬츠",
+              "item_id": 10052
+            },
+            {
+              "slot": "shoes",
+              "name": "베이지 하이킹 스니커즈",
+              "item_id": 10057
+            },
+            {
+              "slot": "outer",
+              "name": "블랙 방풍 후드 셸 재킷",
+              "item_id": 10054
+            }
+          ],
+          "reason": "실제로 등록된 아이보리 기능성 하프집업와 올리브 스트레치 카고 팬츠 등을 교차 조합했습니다. 바람 부는 날 산책 상황과 17℃, 강한 바람 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -700,8 +1453,96 @@
         "place": "전주 객리단길 와인바",
         "tpo": "date"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10061,
+          "category": "top",
+          "item_type": "knit",
+          "color": "cream",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10062,
+          "category": "bottom",
+          "item_type": "slacks",
+          "color": "brown",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10063,
+          "category": "shoes",
+          "item_type": "loafers",
+          "color": "dark_brown",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10064,
+          "category": "outer",
+          "item_type": "blazer",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10065,
+          "category": "top",
+          "item_type": "shirt",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10066,
+          "category": "bottom",
+          "item_type": "slacks",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10067,
+          "category": "shoes",
+          "item_type": "derby_shoes",
+          "color": "brown",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10068,
+          "category": "outer",
+          "item_type": "cardigan",
+          "color": "camel",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -731,7 +1572,8 @@
               "item_id": null
             }
           ],
-          "reason": "로고 없이 질감과 재단으로 고급감을 내고, 13도의 저녁에는 울 니트와 블레이저로 보온성을 확보했습니다."
+          "reason": "로고 없이 질감과 재단으로 고급감을 내고, 13도의 저녁에는 울 니트와 블레이저로 보온성을 확보했습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -759,7 +1601,8 @@
               "item_id": null
             }
           ],
-          "reason": "셔츠와 슬랙스로 단정함을 확보하고 카멜 가디건으로 격식을 부드럽게 낮춘 소개팅 코디입니다."
+          "reason": "셔츠와 슬랙스로 단정함을 확보하고 카멜 가디건으로 격식을 부드럽게 낮춘 소개팅 코디입니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -787,7 +1630,66 @@
               "item_id": null
             }
           ],
-          "reason": "클래식 취향을 유지하면서 스웨이드 질감과 밝은 팬츠로 조금 더 여유로운 헤리티지 스타일을 제안했습니다."
+          "reason": "클래식 취향을 유지하면서 스웨이드 질감과 밝은 팬츠로 조금 더 여유로운 헤리티지 스타일을 제안했습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "올드머니 클래식 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "크림 메리노울 폴로 니트",
+              "item_id": 10061
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 스트레이트 울 슬랙스",
+              "item_id": 10066
+            },
+            {
+              "slot": "shoes",
+              "name": "다크브라운 페니 로퍼",
+              "item_id": 10063
+            },
+            {
+              "slot": "outer",
+              "name": "카멜 캐시미어 블렌드 가디건",
+              "item_id": 10068
+            }
+          ],
+          "reason": "실제로 등록된 크림 메리노울 폴로 니트와 네이비 스트레이트 울 슬랙스 등을 교차 조합했습니다. 저녁 소개팅 상황과 13℃ 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "컨템퍼러리 클래식 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "화이트 옥스퍼드 셔츠",
+              "item_id": 10065
+            },
+            {
+              "slot": "bottom",
+              "name": "브라운 울 블렌드 플리츠 슬랙스",
+              "item_id": 10062
+            },
+            {
+              "slot": "shoes",
+              "name": "브라운 플레인토 더비",
+              "item_id": 10067
+            },
+            {
+              "slot": "outer",
+              "name": "네이비 싱글 울 블레이저",
+              "item_id": 10064
+            }
+          ],
+          "reason": "실제로 등록된 화이트 옥스퍼드 셔츠와 브라운 울 블렌드 플리츠 슬랙스 등을 교차 조합했습니다. 저녁 소개팅 상황과 13℃ 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -833,8 +1735,96 @@
         "place": "전북대학교 동아리방과 구정문 일대",
         "tpo": "campus_event"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10071,
+          "category": "top",
+          "item_type": "shirt",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10072,
+          "category": "bottom",
+          "item_type": "skirt",
+          "color": "beige",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10073,
+          "category": "shoes",
+          "item_type": "loafers",
+          "color": "brown",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10074,
+          "category": "outer",
+          "item_type": "vest",
+          "color": "sky_blue",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10075,
+          "category": "top",
+          "item_type": "shirt",
+          "color": "sky_blue",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10076,
+          "category": "bottom",
+          "item_type": "chino_pants",
+          "color": "cream",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10077,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10078,
+          "category": "outer",
+          "item_type": "cardigan",
+          "color": "beige",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -864,7 +1854,8 @@
               "item_id": null
             }
           ],
-          "reason": "밝은 선호 색상과 프레피 요소를 반영하고, 셔츠와 니트 베스트를 겹쳐 일교차에 대응했습니다."
+          "reason": "밝은 선호 색상과 프레피 요소를 반영하고, 셔츠와 니트 베스트를 겹쳐 일교차에 대응했습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -892,7 +1883,8 @@
               "item_id": null
             }
           ],
-          "reason": "바지와 스니커즈로 활동성을 높이면서 스트라이프와 케이블 니트로 프레피 분위기를 유지했습니다."
+          "reason": "바지와 스니커즈로 활동성을 높이면서 스트라이프와 케이블 니트로 프레피 분위기를 유지했습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -920,7 +1912,66 @@
               "item_id": null
             }
           ],
-          "reason": "밝은 색조는 유지하면서 체크와 하프코트로 차분한 아카데미아 스타일을 경험하도록 구성했습니다."
+          "reason": "밝은 색조는 유지하면서 체크와 하프코트로 차분한 아카데미아 스타일을 경험하도록 구성했습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "라이트 프레피 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "화이트 옥스퍼드 셔츠",
+              "item_id": 10071
+            },
+            {
+              "slot": "bottom",
+              "name": "크림 스트레이트 치노 팬츠",
+              "item_id": 10076
+            },
+            {
+              "slot": "shoes",
+              "name": "브라운 페니 로퍼",
+              "item_id": 10073
+            },
+            {
+              "slot": "outer",
+              "name": "베이지 케이블 가디건",
+              "item_id": 10078
+            }
+          ],
+          "reason": "실제로 등록된 화이트 옥스퍼드 셔츠와 크림 스트레이트 치노 팬츠 등을 교차 조합했습니다. 동아리 모임 상황과 16℃ 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "캠퍼스 프레피 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "스카이블루 스트라이프 셔츠",
+              "item_id": 10075
+            },
+            {
+              "slot": "bottom",
+              "name": "베이지 플리츠 미디스커트",
+              "item_id": 10072
+            },
+            {
+              "slot": "shoes",
+              "name": "화이트 레더 스니커즈",
+              "item_id": 10077
+            },
+            {
+              "slot": "outer",
+              "name": "스카이블루 브이넥 니트 베스트",
+              "item_id": 10074
+            }
+          ],
+          "reason": "실제로 등록된 스카이블루 스트라이프 셔츠와 베이지 플리츠 미디스커트 등을 교차 조합했습니다. 동아리 모임 상황과 16℃ 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -966,8 +2017,96 @@
         "place": "전주대학교 강의실",
         "tpo": "presentation"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10081,
+          "category": "top",
+          "item_type": "shirt",
+          "color": "light_blue",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10082,
+          "category": "bottom",
+          "item_type": "chino_pants",
+          "color": "khaki",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10083,
+          "category": "shoes",
+          "item_type": "loafers",
+          "color": "brown",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10084,
+          "category": "outer",
+          "item_type": "blazer",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10085,
+          "category": "top",
+          "item_type": "shirt",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10086,
+          "category": "bottom",
+          "item_type": "slacks",
+          "color": "charcoal",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10087,
+          "category": "shoes",
+          "item_type": "derby_shoes",
+          "color": "dark_brown",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10088,
+          "category": "outer",
+          "item_type": "cardigan",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -997,7 +2136,8 @@
               "item_id": null
             }
           ],
-          "reason": "버튼다운 셔츠와 치노, 네이비 블레이저의 전통적인 조합으로 발표에 필요한 신뢰감과 학생다운 자연스러움을 함께 살렸습니다."
+          "reason": "버튼다운 셔츠와 치노, 네이비 블레이저의 전통적인 조합으로 발표에 필요한 신뢰감과 학생다운 자연스러움을 함께 살렸습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -1025,7 +2165,8 @@
               "item_id": null
             }
           ],
-          "reason": "블레이저 대신 가디건으로 긴장을 낮추면서 셔츠와 니트 타이로 발표에 어울리는 단정함을 유지했습니다."
+          "reason": "블레이저 대신 가디건으로 긴장을 낮추면서 셔츠와 니트 타이로 발표에 어울리는 단정함을 유지했습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -1053,7 +2194,66 @@
               "item_id": null
             }
           ],
-          "reason": "아이비리그의 대학 문화를 현대적으로 해석해 절제된 바시티 재킷으로 개성을 더했습니다."
+          "reason": "아이비리그의 대학 문화를 현대적으로 해석해 절제된 바시티 재킷으로 개성을 더했습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "아이비리그 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "라이트 블루 버튼다운 셔츠",
+              "item_id": 10081
+            },
+            {
+              "slot": "bottom",
+              "name": "차콜 울 블렌드 슬랙스",
+              "item_id": 10086
+            },
+            {
+              "slot": "shoes",
+              "name": "브라운 페니 로퍼",
+              "item_id": 10083
+            },
+            {
+              "slot": "outer",
+              "name": "그레이 케이블 가디건",
+              "item_id": 10088
+            }
+          ],
+          "reason": "실제로 등록된 라이트 블루 버튼다운 셔츠와 차콜 울 블렌드 슬랙스 등을 교차 조합했습니다. 프로젝트 발표 상황과 16℃ 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "프레피 비즈니스 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "화이트 셔츠와 버건디 니트 타이",
+              "item_id": 10085
+            },
+            {
+              "slot": "bottom",
+              "name": "카키 스트레이트 치노 팬츠",
+              "item_id": 10082
+            },
+            {
+              "slot": "shoes",
+              "name": "다크브라운 더비 슈즈",
+              "item_id": 10087
+            },
+            {
+              "slot": "outer",
+              "name": "네이비 투버튼 블레이저",
+              "item_id": 10084
+            }
+          ],
+          "reason": "실제로 등록된 화이트 셔츠와 버건디 니트 타이와 카키 스트레이트 치노 팬츠 등을 교차 조합했습니다. 프로젝트 발표 상황과 16℃ 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -1099,8 +2299,96 @@
         "place": "전주혁신도시 공공기관 인근 사무실",
         "tpo": "meeting"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10091,
+          "category": "top",
+          "item_type": "blouse",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10092,
+          "category": "bottom",
+          "item_type": "slacks",
+          "color": "charcoal",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10093,
+          "category": "shoes",
+          "item_type": "loafers",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10094,
+          "category": "outer",
+          "item_type": "coat",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10095,
+          "category": "top",
+          "item_type": "knit",
+          "color": "gray",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10096,
+          "category": "bottom",
+          "item_type": "pants",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10097,
+          "category": "shoes",
+          "item_type": "slingbacks",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10098,
+          "category": "outer",
+          "item_type": "jacket",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -1130,7 +2418,8 @@
               "item_id": null
             }
           ],
-          "reason": "19도의 비 오는 날에 맞춰 가볍고 건조가 빠른 소재를 사용하고, 발목 길이 하의와 방수 신발로 빗물 오염 부담을 줄였습니다."
+          "reason": "19도의 비 오는 날에 맞춰 가볍고 건조가 빠른 소재를 사용하고, 발목 길이 하의와 방수 신발로 빗물 오염 부담을 줄였습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -1158,7 +2447,8 @@
               "item_id": null
             }
           ],
-          "reason": "차분한 색상과 셋업형 실루엣으로 미팅에 적합한 인상을 주고, 얇은 재킷으로 실내외 온도 차에 대응했습니다."
+          "reason": "차분한 색상과 셋업형 실루엣으로 미팅에 적합한 인상을 주고, 얇은 재킷으로 실내외 온도 차에 대응했습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -1186,7 +2476,66 @@
               "item_id": null
             }
           ],
-          "reason": "오피스룩의 단정함을 유지하면서 기능성 팬츠와 절제된 발수 재킷으로 실용성을 높였습니다."
+          "reason": "오피스룩의 단정함을 유지하면서 기능성 팬츠와 절제된 발수 재킷으로 실용성을 높였습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "가을 비즈니스 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "화이트 얇은 긴팔 칼라 블라우스",
+              "item_id": 10091
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 스트레이트 셋업 팬츠",
+              "item_id": 10096
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 방수 합성피혁 로퍼",
+              "item_id": 10093
+            },
+            {
+              "slot": "outer",
+              "name": "네이비 얇은 긴팔 경량 재킷",
+              "item_id": 10098
+            }
+          ],
+          "reason": "실제로 등록된 화이트 얇은 긴팔 칼라 블라우스와 네이비 스트레이트 셋업 팬츠 등을 교차 조합했습니다. 출근과 거래처 미팅 상황과 19℃, 비 예보 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "클린 오피스룩 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "라이트 그레이 얇은 니트 톱",
+              "item_id": 10095
+            },
+            {
+              "slot": "bottom",
+              "name": "차콜 발목 길이 혼방 슬랙스",
+              "item_id": 10092
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 러버솔 슬링백",
+              "item_id": 10097
+            },
+            {
+              "slot": "outer",
+              "name": "네이비 경량 발수 하프코트",
+              "item_id": 10094
+            }
+          ],
+          "reason": "실제로 등록된 라이트 그레이 얇은 니트 톱와 차콜 발목 길이 혼방 슬랙스 등을 교차 조합했습니다. 출근과 거래처 미팅 상황과 19℃, 비 예보 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -1232,8 +2581,96 @@
         "place": "전주 객사와 객리단길 바",
         "tpo": "friends_gathering"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10101,
+          "category": "top",
+          "item_type": "hoodie",
+          "color": "charcoal",
+          "fit": "oversized",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10102,
+          "category": "bottom",
+          "item_type": "cargo_pants",
+          "color": "black",
+          "fit": "wide",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10103,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "black",
+          "fit": "oversized",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10104,
+          "category": "outer",
+          "item_type": "jacket",
+          "color": "cobalt_blue",
+          "fit": "oversized",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10105,
+          "category": "top",
+          "item_type": "turtleneck",
+          "color": "black",
+          "fit": "oversized",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10106,
+          "category": "bottom",
+          "item_type": "denim",
+          "color": "charcoal",
+          "fit": "wide",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10107,
+          "category": "shoes",
+          "item_type": "boots",
+          "color": "black",
+          "fit": "oversized",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10108,
+          "category": "outer",
+          "item_type": "jacket",
+          "color": "black",
+          "fit": "oversized",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -1263,7 +2700,8 @@
               "item_id": null
             }
           ],
-          "reason": "10도의 쌀쌀하고 바람 부는 저녁에 맞춰 후드티와 경량 패딩을 겹치고, 코발트 블루를 포인트로 사용했습니다."
+          "reason": "10도의 쌀쌀하고 바람 부는 저녁에 맞춰 후드티와 경량 패딩을 겹치고, 코발트 블루를 포인트로 사용했습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -1291,7 +2729,8 @@
               "item_id": null
             }
           ],
-          "reason": "모노톤과 와이드 실루엣을 유지하면서 하프길이 패딩재킷과 워커로 보온성과 바람 차단을 보완했습니다."
+          "reason": "모노톤과 와이드 실루엣을 유지하면서 하프길이 패딩재킷과 워커로 보온성과 바람 차단을 보완했습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -1319,7 +2758,66 @@
               "item_id": null
             }
           ],
-          "reason": "스트리트 취향에 테크웨어 소재를 더해 활동성과 방풍 성능을 높인 탐색형 조합입니다."
+          "reason": "스트리트 취향에 테크웨어 소재를 더해 활동성과 방풍 성능을 높인 탐색형 조합입니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "윈터 스트리트 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "차콜 오버핏 미드웨이트 후드티",
+              "item_id": 10101
+            },
+            {
+              "slot": "bottom",
+              "name": "차콜 와이드 데님 팬츠",
+              "item_id": 10106
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 하이톱 가죽 스니커즈",
+              "item_id": 10103
+            },
+            {
+              "slot": "outer",
+              "name": "블랙 하프길이 패딩재킷",
+              "item_id": 10108
+            }
+          ],
+          "reason": "실제로 등록된 차콜 오버핏 미드웨이트 후드티와 차콜 와이드 데님 팬츠 등을 교차 조합했습니다. 친구들과 저녁 모임 상황과 10℃ 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "모노톤 스트리트 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "블랙 오버핏 미드웨이트 터틀넥",
+              "item_id": 10105
+            },
+            {
+              "slot": "bottom",
+              "name": "블랙 와이드 코튼 카고 팬츠",
+              "item_id": 10102
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 러버솔 워커",
+              "item_id": 10107
+            },
+            {
+              "slot": "outer",
+              "name": "코발트 블루 오버핏 경량 패딩재킷",
+              "item_id": 10104
+            }
+          ],
+          "reason": "실제로 등록된 블랙 오버핏 미드웨이트 터틀넥와 블랙 와이드 코튼 카고 팬츠 등을 교차 조합했습니다. 친구들과 저녁 모임 상황과 10℃ 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -1365,8 +2863,96 @@
         "place": "호텔 예식장",
         "tpo": "wedding"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10111,
+          "category": "top",
+          "item_type": "blouse",
+          "color": "ivory",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10112,
+          "category": "bottom",
+          "item_type": "skirt",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10113,
+          "category": "shoes",
+          "item_type": "boots",
+          "color": "dark_brown",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10114,
+          "category": "outer",
+          "item_type": "coat",
+          "color": "burgundy",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10115,
+          "category": "top",
+          "item_type": "knit",
+          "color": "ivory",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10116,
+          "category": "bottom",
+          "item_type": "slacks",
+          "color": "navy",
+          "fit": "wide",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10117,
+          "category": "shoes",
+          "item_type": "loafers",
+          "color": "black",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        },
+        {
+          "item_id": 10118,
+          "category": "outer",
+          "item_type": "coat",
+          "color": "charcoal",
+          "fit": "regular",
+          "seasons": [
+            "fall",
+            "winter"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -1396,7 +2982,8 @@
               "item_id": null
             }
           ],
-          "reason": "예식에 맞는 단정한 소재와 길이를 선택하고, 13도의 비 예보에 대비해 울 코트와 생활방수 부츠를 조합했습니다."
+          "reason": "예식에 맞는 단정한 소재와 길이를 선택하고, 13도의 비 예보에 대비해 울 코트와 생활방수 부츠를 조합했습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -1424,7 +3011,8 @@
               "item_id": null
             }
           ],
-          "reason": "스커트 대신 울 슬랙스로 보온성과 이동 편의를 높이고, 테일러드 실루엣으로 격식을 유지했습니다."
+          "reason": "스커트 대신 울 슬랙스로 보온성과 이동 편의를 높이고, 테일러드 실루엣으로 격식을 유지했습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -1452,7 +3040,66 @@
               "item_id": null
             }
           ],
-          "reason": "클래식 색상은 유지하면서 케이프 실루엣으로 변화를 주고, 불투명 타이츠와 생활방수 부츠로 비 오는 날씨를 고려했습니다."
+          "reason": "클래식 색상은 유지하면서 케이프 실루엣으로 변화를 주고, 불투명 타이츠와 생활방수 부츠로 비 오는 날씨를 고려했습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "클래식 웨딩 게스트룩 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "아이보리 실크 블렌드 하이넥 블라우스",
+              "item_id": 10111
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 울 와이드 슬랙스",
+              "item_id": 10116
+            },
+            {
+              "slot": "shoes",
+              "name": "다크브라운 생활방수 앵클부츠",
+              "item_id": 10113
+            },
+            {
+              "slot": "outer",
+              "name": "차콜 벨티드 울 코트",
+              "item_id": 10118
+            }
+          ],
+          "reason": "실제로 등록된 아이보리 실크 블렌드 하이넥 블라우스와 네이비 울 와이드 슬랙스 등을 교차 조합했습니다. 결혼식 참석 상황과 13℃, 비 예보 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "테일러드 포멀 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "아이보리 얇은 울 니트",
+              "item_id": 10115
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 울 미디스커트",
+              "item_id": 10112
+            },
+            {
+              "slot": "shoes",
+              "name": "블랙 방수 합성피혁 로퍼",
+              "item_id": 10117
+            },
+            {
+              "slot": "outer",
+              "name": "버건디 울 롱코트",
+              "item_id": 10114
+            }
+          ],
+          "reason": "실제로 등록된 아이보리 얇은 울 니트와 네이비 울 미디스커트 등을 교차 조합했습니다. 결혼식 참석 상황과 13℃, 비 예보 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -1498,8 +3145,80 @@
         "place": "성수동 전시공간과 레스토랑",
         "tpo": "exhibition_date"
       },
-      "wardrobe": [],
-      "use_wardrobe": false
+      "wardrobe": [
+        {
+          "item_id": 10121,
+          "category": "top",
+          "item_type": "shirt",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10122,
+          "category": "bottom",
+          "item_type": "slacks",
+          "color": "navy",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10123,
+          "category": "shoes",
+          "item_type": "loafers",
+          "color": "dark_brown",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10124,
+          "category": "top",
+          "item_type": "knit",
+          "color": "sage_green",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10125,
+          "category": "bottom",
+          "item_type": "pants",
+          "color": "ivory",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        },
+        {
+          "item_id": 10126,
+          "category": "shoes",
+          "item_type": "sneakers",
+          "color": "white",
+          "fit": "regular",
+          "seasons": [
+            "spring",
+            "summer",
+            "fall"
+          ]
+        }
+      ]
     },
     "answer": {
       "looks": [
@@ -1524,7 +3243,8 @@
               "item_id": null
             }
           ],
-          "reason": "23도의 따뜻한 낮에는 리넨 혼방과 경량 소재로 쾌적함을 확보하고, 저녁에는 셔츠·슬랙스·로퍼로 단정함을 유지했습니다."
+          "reason": "23도의 따뜻한 낮에는 리넨 혼방과 경량 소재로 쾌적함을 확보하고, 저녁에는 셔츠·슬랙스·로퍼로 단정함을 유지했습니다.",
+          "status": "available"
         },
         {
           "look_id": 2,
@@ -1547,7 +3267,8 @@
               "item_id": null
             }
           ],
-          "reason": "니트 폴로와 밝은 팬츠로 격식은 낮추고, 세이지 그린을 활용해 미술관에 어울리는 차분한 개성을 더했습니다."
+          "reason": "니트 폴로와 밝은 팬츠로 격식은 낮추고, 세이지 그린을 활용해 미술관에 어울리는 차분한 개성을 더했습니다.",
+          "status": "available"
         },
         {
           "look_id": 3,
@@ -1570,7 +3291,56 @@
               "item_id": null
             }
           ],
-          "reason": "색상 대비와 와이드 실루엣으로 전시 관람에 어울리는 조형적인 인상을 주되 장식은 최소화했습니다."
+          "reason": "색상 대비와 와이드 실루엣으로 전시 관람에 어울리는 조형적인 인상을 주되 장식은 최소화했습니다.",
+          "status": "available"
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
+          "status": "available",
+          "style": "초가을 스마트 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "화이트 리넨 블렌드 반팔 셔츠",
+              "item_id": 10121
+            },
+            {
+              "slot": "bottom",
+              "name": "아이보리 얇은 코튼 팬츠",
+              "item_id": 10125
+            },
+            {
+              "slot": "shoes",
+              "name": "다크브라운 통기성 가죽 로퍼",
+              "item_id": 10123
+            }
+          ],
+          "reason": "실제로 등록된 화이트 리넨 블렌드 반팔 셔츠와 아이보리 얇은 코튼 팬츠 등을 교차 조합했습니다. 전시 관람과 저녁 식사 상황과 23℃ 조건을 고려한 보유 의류 코디입니다."
+        },
+        {
+          "look_id": 5,
+          "role": "wardrobe_alternative",
+          "status": "available",
+          "style": "모던 리조트 캐주얼 옷장 조합",
+          "items": [
+            {
+              "slot": "top",
+              "name": "세이지 그린 니트 폴로 셔츠",
+              "item_id": 10124
+            },
+            {
+              "slot": "bottom",
+              "name": "네이비 경량 스트레이트 슬랙스",
+              "item_id": 10122
+            },
+            {
+              "slot": "shoes",
+              "name": "화이트 미니멀 스니커즈",
+              "item_id": 10126
+            }
+          ],
+          "reason": "실제로 등록된 세이지 그린 니트 폴로 셔츠와 네이비 경량 스트레이트 슬랙스 등을 교차 조합했습니다. 전시 관람과 저녁 식사 상황과 23℃ 조건을 고려한 보유 의류 코디입니다."
         }
       ]
     }
@@ -1707,14 +3477,37 @@
             "fall"
           ]
         }
-      ],
-      "use_wardrobe": true
+      ]
     },
     "answer": {
       "looks": [
         {
           "look_id": 1,
           "role": "preference_best",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 2,
+          "role": "preference_alternative",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 3,
+          "role": "exploration",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
           "style": "클린 놈코어",
           "items": [
             {
@@ -1738,11 +3531,12 @@
               "item_id": 103
             }
           ],
-          "reason": "옷장 속 기본 아이템과 선호 색상을 활용해 공부와 저녁 식사 모두에 어울리는 단정한 조합을 만들었습니다."
+          "reason": "옷장 속 기본 아이템과 선호 색상을 활용해 공부와 저녁 식사 모두에 어울리는 단정한 조합을 만들었습니다.",
+          "status": "available"
         },
         {
-          "look_id": 2,
-          "role": "preference_alternative",
+          "look_id": 5,
+          "role": "wardrobe_alternative",
           "style": "편안한 캠퍼스 캐주얼",
           "items": [
             {
@@ -1766,35 +3560,8 @@
               "item_id": 103
             }
           ],
-          "reason": "장시간 앉아 공부하기 편한 티셔츠와 와이드 데님을 사용하고 가디건으로 실내 냉방에 대비했습니다."
-        },
-        {
-          "look_id": 3,
-          "role": "exploration",
-          "style": "라이트 유틸리티 캐주얼",
-          "items": [
-            {
-              "slot": "top",
-              "name": "화이트 레귤러핏 셔츠",
-              "item_id": 101
-            },
-            {
-              "slot": "bottom",
-              "name": "네이비 와이드 데님",
-              "item_id": 106
-            },
-            {
-              "slot": "shoes",
-              "name": "브라운 로퍼",
-              "item_id": 108
-            },
-            {
-              "slot": "outer",
-              "name": "차콜 윈드브레이커",
-              "item_id": 104
-            }
-          ],
-          "reason": "기본 셔츠와 데님에 기능성 아우터와 로퍼를 섞어 평소보다 성숙한 믹스 캐주얼을 제안했습니다."
+          "reason": "장시간 앉아 공부하기 편한 티셔츠와 와이드 데님을 사용하고 가디건으로 실내 냉방에 대비했습니다.",
+          "status": "available"
         }
       ]
     }
@@ -1931,14 +3698,37 @@
             "winter"
           ]
         }
-      ],
-      "use_wardrobe": true
+      ]
     },
     "answer": {
       "looks": [
         {
           "look_id": 1,
           "role": "preference_best",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 2,
+          "role": "preference_alternative",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 3,
+          "role": "exploration",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
           "style": "클래식 패밀리룩",
           "items": [
             {
@@ -1962,11 +3752,12 @@
               "item_id": 203
             }
           ],
-          "reason": "아이보리·브라운·카멜의 클래식한 조합으로 가족 모임에 어울리는 차분하고 단정한 인상을 구성했습니다."
+          "reason": "아이보리·브라운·카멜의 클래식한 조합으로 가족 모임에 어울리는 차분하고 단정한 인상을 구성했습니다.",
+          "status": "available"
         },
         {
-          "look_id": 2,
-          "role": "preference_alternative",
+          "look_id": 5,
+          "role": "wardrobe_alternative",
           "style": "네이비 클래식",
           "items": [
             {
@@ -1990,35 +3781,8 @@
               "item_id": 203
             }
           ],
-          "reason": "톤온톤 네이비에 카멜 코트로 대비를 주고, 9도의 날씨에 니트와 앵클부츠로 보온성을 높였습니다."
-        },
-        {
-          "look_id": 3,
-          "role": "exploration",
-          "style": "모던 테일러드",
-          "items": [
-            {
-              "slot": "top",
-              "name": "아이보리 레귤러핏 블라우스",
-              "item_id": 201
-            },
-            {
-              "slot": "bottom",
-              "name": "네이비 미디스커트",
-              "item_id": 206
-            },
-            {
-              "slot": "shoes",
-              "name": "다크브라운 로퍼",
-              "item_id": 207
-            },
-            {
-              "slot": "outer",
-              "name": "네이비 레귤러핏 블레이저",
-              "item_id": 204
-            }
-          ],
-          "reason": "부드러운 코트 조합 대신 블레이저를 활용해 클래식 취향을 좀 더 구조적인 테일러드 스타일로 확장했습니다."
+          "reason": "톤온톤 네이비에 카멜 코트로 대비를 주고, 15도의 날씨에 니트와 앵클부츠로 보온성을 높였습니다.",
+          "status": "available"
         }
       ]
     }
@@ -2027,7 +3791,7 @@
     "id": "FR-015",
     "type": "fashion_recommendation",
     "reference_datetime": "2026-10-16T20:00:00+09:00",
-    "user_request": "내일 아침 전주천 천변길을 걷고 남부시장 근처에서 아침을 먹을 거야. 내 옷장에 있는 기능성 옷으로 애슬레저 코디 세 개 만들어줘.",
+    "user_request": "내일 아침 전주천 천변길을 걷고 남부시장 근처에서 아침을 먹을 거야. 내 옷장에 있는 기능성 옷으로 애슬레저 코디를 추천해줘.",
     "context": {
       "profile": {
         "gender": "male",
@@ -2159,14 +3923,37 @@
             "winter"
           ]
         }
-      ],
-      "use_wardrobe": true
+      ]
     },
     "answer": {
       "looks": [
         {
           "look_id": 1,
           "role": "preference_best",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 2,
+          "role": "preference_alternative",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 3,
+          "role": "exploration",
+          "status": "unavailable",
+          "style": null,
+          "items": [],
+          "reason": "등록된 옷만으로 추천해 달라는 요청에 따라 외부 의류 추천을 비활성화합니다."
+        },
+        {
+          "look_id": 4,
+          "role": "wardrobe_best",
           "style": "모닝 애슬레저",
           "items": [
             {
@@ -2190,11 +3977,12 @@
               "item_id": 303
             }
           ],
-          "reason": "걷기에 적합한 기능성 상의와 러닝화를 사용하고, 바람이 부는 16도의 아침에 윈드브레이커를 더했습니다."
+          "reason": "걷기에 적합한 기능성 상의와 러닝화를 사용하고, 바람이 부는 16도의 아침에 윈드브레이커를 더했습니다.",
+          "status": "available"
         },
         {
-          "look_id": 2,
-          "role": "preference_alternative",
+          "look_id": 5,
+          "role": "wardrobe_alternative",
           "style": "톤다운 스포티",
           "items": [
             {
@@ -2218,35 +4006,8 @@
               "item_id": 304
             }
           ],
-          "reason": "하프집업으로 체온을 조절하고 나일론 팬츠와 트레일 스니커즈로 바람과 산책로 환경에 대응했습니다."
-        },
-        {
-          "look_id": 3,
-          "role": "exploration",
-          "style": "고프코어 애슬레저",
-          "items": [
-            {
-              "slot": "top",
-              "name": "그레이 레귤러핏 기능성 티셔츠",
-              "item_id": 301
-            },
-            {
-              "slot": "bottom",
-              "name": "올리브 레귤러핏 나일론 팬츠",
-              "item_id": 306
-            },
-            {
-              "slot": "shoes",
-              "name": "블랙 트레일 스니커즈",
-              "item_id": 308
-            },
-            {
-              "slot": "outer",
-              "name": "올리브 윈드브레이커",
-              "item_id": 303
-            }
-          ],
-          "reason": "애슬레저의 활동성을 유지하면서 올리브 기능성 아이템과 트레일화를 활용해 고프코어 방향으로 확장했습니다."
+          "reason": "하프집업으로 체온을 조절하고 나일론 팬츠와 트레일 스니커즈로 바람과 산책로 환경에 대응했습니다.",
+          "status": "available"
         }
       ]
     }
@@ -2296,12 +4057,111 @@
             ]
           }
         }
+      },
+      {
+        "step": 2,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 10011,
+              "category": "top",
+              "item_type": "t_shirt",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10012,
+              "category": "bottom",
+              "item_type": "pants",
+              "color": "charcoal",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10013,
+              "category": "shoes",
+              "item_type": "sneakers",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10014,
+              "category": "outer",
+              "item_type": "blouson",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10015,
+              "category": "top",
+              "item_type": "shirt",
+              "color": "gray",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10016,
+              "category": "bottom",
+              "item_type": "chino_pants",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10017,
+              "category": "shoes",
+              "item_type": "sneakers",
+              "color": "gray",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10018,
+              "category": "outer",
+              "item_type": "cardigan",
+              "color": "charcoal",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            }
+          ]
+        }
       }
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "사용자는 미니멀·캐주얼 스타일과 화이트·그레이·네이비, 레귤러핏을 선호하며 과하게 꾸민 느낌과 큰 로고를 선호하지 않음. 객리단길에서 친구를 만나는 상황에 맞춰 세 조합을 생성합니다.",
-      "action": "generate_three_looks"
+      "context_summary": "미니멀·캐주얼 취향, 선호 색상과 피드백을 반영하고 등록된 옷장도 확인했습니다. 친구와 만나는 상황에 맞춰 일반 추천 3개와 보유 의류 추천 2개를 생성합니다.",
+      "action": "generate_five_looks"
     }
   },
   {
@@ -2349,12 +4209,111 @@
             ]
           }
         }
+      },
+      {
+        "step": 2,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 10021,
+              "category": "top",
+              "item_type": "shirt",
+              "color": "ivory",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10022,
+              "category": "bottom",
+              "item_type": "slacks",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10023,
+              "category": "shoes",
+              "item_type": "sneakers",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10024,
+              "category": "outer",
+              "item_type": "coat",
+              "color": "beige",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10025,
+              "category": "top",
+              "item_type": "knit",
+              "color": "gray",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10026,
+              "category": "bottom",
+              "item_type": "pants",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10027,
+              "category": "shoes",
+              "item_type": "sneakers",
+              "color": "charcoal",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 10028,
+              "category": "outer",
+              "item_type": "jacket",
+              "color": "ivory",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            }
+          ]
+        }
       }
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "사용자는 아이보리·베이지·네이비를 선호하고 밝은 노란색과 과도한 패턴을 피하며, 클린·프렌치 캐주얼을 좋아함. 웨리단길 카페 방문에 맞춰 선호 색상 중심의 세 조합을 생성합니다.",
-      "action": "generate_three_looks"
+      "context_summary": "클린·캐주얼 취향과 아이보리·베이지·네이비 선호, 노란색 비선호를 고려하고 옷장도 확인했습니다. 카페 방문용 일반 추천 3개와 보유 의류 추천 2개를 생성합니다.",
+      "action": "generate_five_looks"
     }
   },
   {
@@ -2402,12 +4361,111 @@
             ]
           }
         }
+      },
+      {
+        "step": 2,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 10061,
+              "category": "top",
+              "item_type": "knit",
+              "color": "cream",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 10062,
+              "category": "bottom",
+              "item_type": "slacks",
+              "color": "brown",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 10063,
+              "category": "shoes",
+              "item_type": "loafers",
+              "color": "dark_brown",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 10064,
+              "category": "outer",
+              "item_type": "blazer",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 10065,
+              "category": "top",
+              "item_type": "shirt",
+              "color": "white",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 10066,
+              "category": "bottom",
+              "item_type": "slacks",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 10067,
+              "category": "shoes",
+              "item_type": "derby_shoes",
+              "color": "brown",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 10068,
+              "category": "outer",
+              "item_type": "cardigan",
+              "color": "camel",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            }
+          ]
+        }
       }
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "사용자는 올드머니·클래식 스타일과 네이비·크림·브라운, 레귤러핏을 선호하고 큰 로고와 과도한 스트리트 요소를 피함. 기존 취향을 유지한 두 조합과 아이비리그 또는 프레피 요소를 적용한 탐색 조합을 생성합니다.",
-      "action": "generate_three_looks"
+      "context_summary": "올드머니·클래식 취향을 유지하면서 새로운 요소를 탐색하고 등록된 옷장도 확인했습니다. 일반 추천 3개(취향 2개·탐색 1개)와 보유 의류 추천 2개를 생성합니다.",
+      "action": "generate_five_looks"
     }
   },
   {
@@ -2455,12 +4513,113 @@
             ]
           }
         }
+      },
+      {
+        "step": 2,
+        "tool_call": {
+          "name": "get_wardrobe",
+          "arguments": {}
+        },
+        "tool_result": {
+          "wardrobe": [
+            {
+              "item_id": 201,
+              "category": "top",
+              "item_type": "blouse",
+              "color": "ivory",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 202,
+              "category": "top",
+              "item_type": "knit",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 203,
+              "category": "outer",
+              "item_type": "wool_coat",
+              "color": "camel",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 204,
+              "category": "outer",
+              "item_type": "blazer",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 205,
+              "category": "bottom",
+              "item_type": "slacks",
+              "color": "brown",
+              "fit": "straight",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 206,
+              "category": "bottom",
+              "item_type": "midi_skirt",
+              "color": "navy",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall",
+                "winter"
+              ]
+            },
+            {
+              "item_id": 207,
+              "category": "shoes",
+              "item_type": "loafer",
+              "color": "dark_brown",
+              "fit": "regular",
+              "seasons": [
+                "spring",
+                "fall"
+              ]
+            },
+            {
+              "item_id": 208,
+              "category": "shoes",
+              "item_type": "ankle_boots",
+              "color": "black",
+              "fit": "regular",
+              "seasons": [
+                "fall",
+                "winter"
+              ]
+            }
+          ]
+        }
       }
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "사용자는 30대 여성으로 클래식·클린 스타일과 아이보리·브라운·네이비, 레귤러핏을 선호하며 지나치게 스포티하거나 큰 실루엣은 피함. 전주혁신도시 가족 모임에 적합한 단정한 세 조합을 생성합니다.",
-      "action": "generate_three_looks"
+      "context_summary": "프로필과 클래식·클린 취향, 기존 피드백을 고려하고 보유 의류도 조회했습니다. 가족 모임에 맞는 일반 추천 3개와 보유 의류 추천 2개를 생성합니다.",
+      "action": "generate_five_looks"
     }
   },
   {

@@ -27,8 +27,8 @@
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "2026-04-16 10:00 전주 객사, 18°C, 비, 강수확률 80%, 풍속 2.5m/s, 습도 82%. 사용자가 밝힌 장소·시간의 날씨를 기준으로 세 조합을 생성하며 취향·옷장·일정은 조회하지 않았습니다.",
-      "action": "generate_three_looks"
+      "context_summary": "2026-04-16 10:00 전주 객사, 18°C, 비, 강수확률 80%, 풍속 2.5m/s, 습도 82%. 날씨만 기준으로 일반 LOOK 1~3을 생성한다. 취향·옷장·일정은 조회하지 않는다. 옷장 LOOK 4~5는 미조회로 비활성화한다.",
+      "action": "generate_five_looks"
     }
   },
   {
@@ -59,8 +59,8 @@
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "2026-07-23 12:00 서울 홍대, 30°C, 비, 강수확률 70%, 습도 87%. 덥고 습한 날씨와 비를 고려한 친구 만남용 일반 코디 세 가지를 생성합니다. 사용자 취향이나 보유 의류 조회는 필요하지 않습니다.",
-      "action": "generate_three_looks"
+      "context_summary": "2026-07-23 12:00 서울 홍대, 30°C, 비, 강수확률 70%, 습도 87%. 친구 만남에 적합한 일반 LOOK 1~3을 생성한다. 취향과 보유 의류를 조회하지 않으며 옷장 LOOK 4~5는 비활성화한다.",
+      "action": "generate_five_looks"
     }
   },
   {
@@ -91,8 +91,8 @@
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "기준일 2026-05-13에서 이번 주 토요일은 2026-05-16입니다. 14:00 부산 해운대, 22°C, 맑음, 풍속 5.2m/s. 여행과 해변의 바람을 고려한 일반 코디 세 가지를 생성합니다. 날짜와 목적지는 요청에 있어 캘린더를 조회하지 않았습니다.",
-      "action": "generate_three_looks"
+      "context_summary": "2026-05-16 14:00 부산 해운대, 22°C, 맑음, 풍속 5.2m/s. 해변 바람과 여행을 고려한다. 사용자가 내 옷이 아닌 일반 추천을 요청했으므로 일반 LOOK 1~3만 활성화한다. 옷장 LOOK 4~5는 비활성화한다. 목적지와 날짜가 명시되어 일정 조회는 생략한다.",
+      "action": "generate_five_looks"
     }
   },
   {
@@ -123,8 +123,8 @@
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "2026-09-27 19:00 제주 협재해수욕장, 19°C, 흐림, 풍속 8.3m/s. 요청한 장소와 시간대의 날씨를 기준으로 저녁 산책과 강한 바람에 맞는 일반 코디 세 가지를 생성합니다.",
-      "action": "generate_three_looks"
+      "context_summary": "2026-09-27 19:00 제주 협재해수욕장, 19°C, 흐림, 풍속 8.3m/s. 저녁 산책과 강한 바람을 고려한 일반 LOOK 1~3을 생성한다. 요청한 일반 추천 범위에 따라 옷장 LOOK 4~5는 비활성화한다.",
+      "action": "generate_five_looks"
     }
   }
 ]
