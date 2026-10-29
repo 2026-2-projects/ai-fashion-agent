@@ -4359,7 +4359,7 @@
     "id": "TC-028",
     "type": "tool_calling",
     "reference_datetime": "2026-10-14T11:00:00+09:00",
-    "user_request": "이번 주말 일정 보고 토요일이랑 일요일에 입을 옷 추천해줘.",
+    "user_request": "이번 주말 토요일 일정 보고 그날 입을 코디 추천해줘.",
     "steps": [
       {
         "step": 1,
@@ -4381,24 +4381,6 @@
       },
       {
         "step": 2,
-        "tool_call": {
-          "name": "get_calendar_events",
-          "arguments": {
-            "date": "2026-10-18"
-          }
-        },
-        "tool_result": {
-          "events": [
-            {
-              "time": "12:30",
-              "place": "수원 가족 식당",
-              "summary": "가족 점심 모임"
-            }
-          ]
-        }
-      },
-      {
-        "step": 3,
         "tool_call": {
           "name": "get_user_context",
           "arguments": {}
@@ -4428,7 +4410,7 @@
         }
       },
       {
-        "step": 4,
+        "step": 3,
         "tool_call": {
           "name": "get_wardrobe",
           "arguments": {}
@@ -4576,7 +4558,7 @@
     ],
     "final_response": {
       "type": "fashion_recommendation",
-      "context_summary": "2026-10-17 토요일 14:00 서울 서촌에서 전시 관람, 2026-10-18 일요일 12:30 수원에서 가족 점심 모임. 주말의 서로 다른 TPO를 구분해 3 LOOK 생성. 사용자 취향과 등록된 옷장을 추가로 조회하여 일반 추천 3개 및 옷장 추천 2개를 구성합니다.",
+      "context_summary": "2026-10-17 토요일 14:00 서울 서촌에서 친구와 전시 관람. 해당 일정의 TPO에 맞춰 사용자 취향과 등록된 옷장을 고려하고 일반 추천 3개 및 보유 의류 추천 2개를 생성합니다.",
       "action": "generate_five_looks"
     }
   },
