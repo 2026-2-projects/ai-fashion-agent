@@ -2,7 +2,7 @@
   "release": "qwen3_fashion_664_v1_1",
   "version": "v1.1-qa-handoff",
   "date": "2026-10-30",
-  "status": "QUALITY_CHECKED_HANDOFF_HUMAN_SIGNOFF_PENDING",
+  "status": "QA_PASSED_PRIORITY_57_HUMAN_APPROVED_QWEN_TEMPLATE_PENDING",
   "train_count": 664,
   "validation_count": 8,
   "test_count": 8,
@@ -15,19 +15,28 @@
   "human_semantic_signoff": false,
   "qwen3_chat_template_verified": false,
   "files_sha256": {
-    "README.md": "ef6a9dd9da3f1da82bd5d37163077d20fd220ccb78cc2c2a8bc65c03d3566a44",
+    "README.md": "f80bc6529ed8b6687e7982698712d1babd4aaa3ab2760b8423fe997952727188",
     "audit_flags_all.csv": "2c7de87ed6cdde4c5970ef26a8df85c714192b83f0be7593366942477db09264",
     "heat_outer_review_15.csv": "c76070d77fdcd2db5631a32e556bfbc423ae7cdc5de1f6c00927195bca766458",
     "human_review_queue_50.csv": "e20ebd98c08f9add447ec286781dbae0116f76fdb70c79b82d226311ceba379c",
     "possible_near_duplicates.csv": "7b077390ddda9a27a25c8e9ab8bcc7589166b58185b9d3350b522d53ccd07955",
-    "priority_review_57.csv": "ce96570964ccd4d7907ba8c85b9a7846842b5f3e37e238905deaade6569b378c",
+    "priority_review_57.csv": "f1ffd1661fd730d073b19e27926c21509ef9f4f292ca1901d06e0b8f35559cac",
     "quality_edits.csv": "c892bab326affa9bf7cb9b0849806145a8b89db7b6145d63bdb5847ac869fb19",
-    "quality_report.json": "67ed7e8d9212e39dfa92ccae3a6a662146380e6338b606c2ba4a5e04042069fa",
+    "quality_report.json": "1944517316fa955bb02ba38ee003da39a7814d6b8d6550d53b58996d244d185e",
     "rc2_reference_manifest.json": "93b5cd237b50d9d1c2f93f0c979d131bae1812355d3e57363739285d0f736099",
     "tc_grounding_corrections_report.json": "bc0e9f20a2b6fbd30c43312e7662d1fb0bd0d45d45e3515b808a7525bfe9c38e",
     "test.jsonl": "97a4dc659f5748b5364d2cf8fac82a943430f0361234b5f78e2acb71e6c96454",
     "train.jsonl": "bfdfc535304eee1e50f7a31ca77e2a336c16033c73d20fbe406a801bd49ab99b",
     "train_provenance.jsonl": "466f687e9b50bbebec9ec831cc179ea1531b923ce337867ae3d0eaa48a0cac84",
     "validation.jsonl": "8de0b8a14d0ed112f897080add584a2c8f4560ec57d24e64586b885209775fb4"
+  },
+  "priority_review_57_human_signoff": {
+    "approved": 57,
+    "revision_needed": 0,
+    "deferred": 0,
+    "FR": 32,
+    "TC": 25,
+    "scope": "selected 57 records, not full 664",
+    "confirmation": "reviewer reported directly after inspecting review tool"
   }
 }

@@ -20,5 +20,15 @@
   "priority_review_unique_ids": 57,
   "human_semantic_signoff": false,
   "qwen3_chat_template_verified": false,
-  "note": "자동 및 AI 지원 검수 기록; 전수 전문가/인간 의미 승인 아님. Qwen3 호환성은 학습 담당자가 검증."
+  "note": "구조/자동 검증과 57건 우선 사람 의미 검수를 완료. 664건 전체 전수 검수 및 실제 Qwen3 채팅 템플릿 렌더링은 수행되지 않음.",
+  "priority_57_human_review": {
+    "scope": "57 selected priority records only, not all 664 train records",
+    "total": 57,
+    "approved": 57,
+    "revision_needed": 0,
+    "deferred": 0,
+    "confirmation": "user reported directly after reviewing HTML",
+    "FR": 32,
+    "TC": 25
+  }
 }

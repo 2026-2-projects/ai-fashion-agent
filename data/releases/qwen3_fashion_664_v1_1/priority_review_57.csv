@@ -1,58 +1,58 @@
 ﻿id,type,automated_structural_review,ai_assisted_review_notes,human_signoff
-SYN-FR-0029,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=34℃; removed=0; conditional=5,PENDING
-SYN-FR-0075,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0079,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0105,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0110,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0122,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=35℃; removed=0; conditional=5,PENDING
-SYN-FR-0123,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0131,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0152,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0172,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0173,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=33℃; removed=5; conditional=0,PENDING
-SYN-FR-0206,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=34℃; removed=5; conditional=0,PENDING
-SYN-FR-0247,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=35℃; removed=0; conditional=5,PENDING
-SYN-FR-0267,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0293,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=36℃; removed=5; conditional=0,PENDING
-SYN-FR-0314,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0326,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=35℃; removed=5; conditional=0,PENDING
-SYN-FR-0342,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=34℃; removed=0; conditional=5,PENDING
-SYN-FR-0349,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0363,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0370,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0372,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0373,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=34℃; removed=0; conditional=5,PENDING
-SYN-FR-0386,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0392,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=37℃; removed=5; conditional=0,PENDING
-SYN-FR-0413,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-FR-0439,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=36℃; removed=5; conditional=0,PENDING
-SYN-FR-0464,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=33℃; removed=5; conditional=0,PENDING
-SYN-FR-0485,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=36℃; removed=5; conditional=0,PENDING
-SYN-FR-0494,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=34℃; removed=5; conditional=0,PENDING
-SYN-FR-0532,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입. 고온 겉옷 처리: temperature=35℃; removed=5; conditional=0,PENDING
-SYN-FR-0556,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0047,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0067,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0091,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0095,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0167,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0209,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0213,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0214,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0233,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0239,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0240,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0257,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0262,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0305,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0309,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0310,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0312,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0336,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0353,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0356,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0357,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0360,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0407,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0408,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
-SYN-TC-0425,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 최종 인간 의미 승인 미기입.,PENDING
+SYN-FR-0029,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=34℃; removed=0; conditional=5,APPROVED
+SYN-FR-0075,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0079,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0105,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0110,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0122,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=35℃; removed=0; conditional=5,APPROVED
+SYN-FR-0123,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0131,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0152,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0172,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0173,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=33℃; removed=5; conditional=0,APPROVED
+SYN-FR-0206,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=34℃; removed=5; conditional=0,APPROVED
+SYN-FR-0247,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=35℃; removed=0; conditional=5,APPROVED
+SYN-FR-0267,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0293,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=36℃; removed=5; conditional=0,APPROVED
+SYN-FR-0314,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0326,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=35℃; removed=5; conditional=0,APPROVED
+SYN-FR-0342,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=34℃; removed=0; conditional=5,APPROVED
+SYN-FR-0349,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0363,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0370,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0372,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0373,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=34℃; removed=0; conditional=5,APPROVED
+SYN-FR-0386,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0392,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=37℃; removed=5; conditional=0,APPROVED
+SYN-FR-0413,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-FR-0439,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=36℃; removed=5; conditional=0,APPROVED
+SYN-FR-0464,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=33℃; removed=5; conditional=0,APPROVED
+SYN-FR-0485,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=36℃; removed=5; conditional=0,APPROVED
+SYN-FR-0494,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=34℃; removed=5; conditional=0,APPROVED
+SYN-FR-0532,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료. 고온 겉옷 처리: temperature=35℃; removed=5; conditional=0,APPROVED
+SYN-FR-0556,fashion_recommendation,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0047,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0067,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0091,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0095,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0167,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0209,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0213,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0214,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0233,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0239,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0240,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0257,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0262,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0305,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0309,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0310,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0312,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0336,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0353,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0356,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0357,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0360,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0407,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0408,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED
+SYN-TC-0425,tool_calling,PASS,자동 검사: 구조/날짜/옷장 참조 통과. 우선 검수 대상: 검수자 확인 완료.,APPROVED

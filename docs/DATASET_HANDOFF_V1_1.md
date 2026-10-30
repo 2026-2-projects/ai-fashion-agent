@@ -8,7 +8,7 @@
 | 학습 | 664건 = Gold 64 + Synthetic 600 |
 | 유형 | FR 415 / TC 249 |
 | 검증 / 테스트 | 8 / 8, 동결 (학습 및 합성 참조 금지) |
-| 상태 | 자동 검증 및 AI 보조 품질 점검 완료 / 인간 최종 의미 서명 대기 |
+| 상태 | 자동 검증 통과 / 우선 검수 57건 사람 승인 완료 / 전체 전수 검수는 별도 |
 
 ## 진호에게 전달할 파일
 
@@ -19,7 +19,7 @@
 - `data/releases/qwen3_fashion_664_v1_1/manifest.json` — 버전, 각 파일 SHA256, 상태
 - `data/releases/qwen3_fashion_664_v1_1/quality_report.json` — 실제 품질 점검 결과
 - `data/releases/qwen3_fashion_664_v1_1/quality_edits.csv` — 수정 이력
-- `data/releases/qwen3_fashion_664_v1_1/priority_review_57.csv` — 50개 표본과 고온 15개 중 중복 제외 57건 검수 목록; 사람 서명은 별도
+- `data/releases/qwen3_fashion_664_v1_1/priority_review_57.csv` — 50개 표본과 고온 15개 중 중복 제외 57건; 검수자 확인 후 `human_signoff=APPROVED` (수정 필요 0 / 보류 0)
 
 ## 학습 데이터 형식
 
@@ -46,4 +46,4 @@ git commit -m "data: add QA-reviewed Qwen3 fashion SFT dataset v1.1"
 git push origin HEAD
 ```
 
-GitHub에 게시했다고 최종 인간 서명이 완료된 것은 아니다. 미검증 조건은 항상 문서로 남긴다.
+우선 검수 57건은 검수자의 직접 확인 결과 전부 승인됐다. 이 기록은 전체 664건 전수 품질 보증을 뜻하지 않는다. Qwen3 채팅 템플릿 호환성은 실제 학습 환경에서 별도로 확인해야 한다.

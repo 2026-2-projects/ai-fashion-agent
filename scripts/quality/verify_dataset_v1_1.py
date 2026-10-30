@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import hashlib,json,collections,datetime
+import hashlib,json,collections,datetime,csv
 ROOT=Path(__file__).resolve().parents[2]
 D=ROOT/'data/releases/qwen3_fashion_664_v1_1'
 def read(n):return [json.loads(x) for x in (D/n).read_text(encoding='utf-8').splitlines() if x.strip()]
@@ -46,5 +46,12 @@ def main():
     held=[x['messages'][1]['content'].split('사용자 요청: ',1)[-1].split('\ncontext:',1)[0].strip() for x in val+test]
     assert not set(requests)&set(held)
     print('PASS: SHA256, 664/8/8, 64 Gold + 600 Synthetic, FR/TC, JSON schema, tool calls, wardrobe IDs, exact request overlap')
-    print('CAVEAT: 인간 의미 최종 승인 및 Qwen3 채팅 템플릿 호환성 별도')
+    with (D/'priority_review_57.csv').open(encoding='utf-8-sig',newline='') as f:
+        approved=list(csv.DictReader(f))
+    assert len(approved)==57 and len({r['id'] for r in approved})==57
+    assert all(r['human_signoff']=='APPROVED' for r in approved)
+    review=memo=meta['priority_review_57_human_signoff']
+    assert (review['approved'],review['revision_needed'],review['deferred'])==(57,0,0)
+    print('REVIEW: 57 priority records human-approved (32 FR / 25 TC), revision 0, deferred 0')
+    print('CAVEAT: 전체 664건 전수 인간 검수 및 실제 Qwen3 채팅 템플릿 호환성 검증은 별도')
 if __name__=='__main__':main()
