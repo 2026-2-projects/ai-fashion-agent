@@ -1,0 +1,66 @@
+{
+  "release_id": "qwen3_fashion_664_rc2",
+  "status": "RELEASE_CANDIDATE_HUMAN_SEMANTIC_REVIEW_PENDING",
+  "created_date": "2026-10-30",
+  "model_target": "Qwen3-4B",
+  "format": "JSONL Chat SFT (messages/tools)",
+  "train_count": 664,
+  "train_source_counts": {
+    "gold": 64,
+    "synthetic": 600
+  },
+  "train_type_counts": {
+    "fashion_recommendation": 415,
+    "tool_calling": 249
+  },
+  "val_count": 8,
+  "test_count": 8,
+  "train_id_note": "train.jsonl has no id field; line N mapped to train_provenance.jsonl line N",
+  "held_out_gold_ids": [
+    "FR-006",
+    "FR-015",
+    "FR-024",
+    "FR-026",
+    "FR-028",
+    "FR-030",
+    "FR-034",
+    "FR-037",
+    "FR-042",
+    "FR-048",
+    "TC-003",
+    "TC-005",
+    "TC-012",
+    "TC-015",
+    "TC-016",
+    "TC-017"
+  ],
+  "gold_test_and_validation_untouched": true,
+  "TC_final_responses_corrected": 40,
+  "train_original_manifest_sha256": "a8c612f2c039b7dca3ec25843d076b0359acba46e15b1f7ebaca4a428ff9c355",
+  "train_source_language_review_sha256": "1a1d6143b46a1233fdd7430b69ddf5e88aeaa2a4cf4f0fa4aebec1d6bf61e0e5",
+  "train_new_grounded_review_sha256": "079ba1fea450b078ecaee057c78119cc9009806e7b3770cf83f33c67570dcbb4",
+  "automated_checks": {
+    "json_parse": "passed",
+    "schema_and_source_ids": "passed",
+    "tool_call_linkages": "passed",
+    "gold_held_out_disjoint_ids": "passed",
+    "gold_unchanged_and_tc_tool_io_preserved": "passed",
+    "exact_train_prompt_duplicates": 0,
+    "max_held_out_to_train_request_similarity_character_ratio": 0.6265
+  },
+  "quality_warning": {
+    "source_FR_unverified_feature_screen_count": 294,
+    "TC_potential_feature_claim_screen_count": 0,
+    "human_review_completed": false,
+    "qwen3_tokenizer_chat_template_tested": false
+  },
+  "files_sha256": {
+    "test.jsonl": "97a4dc659f5748b5364d2cf8fac82a943430f0361234b5f78e2acb71e6c96454",
+    "train_provenance.jsonl": "466f687e9b50bbebec9ec831cc179ea1531b923ce337867ae3d0eaa48a0cac84",
+    "validation.jsonl": "8de0b8a14d0ed112f897080add584a2c8f4560ec57d24e64586b885209775fb4",
+    "audit_flags_all.csv": "2c7de87ed6cdde4c5970ef26a8df85c714192b83f0be7593366942477db09264",
+    "train.jsonl": "079ba1fea450b078ecaee057c78119cc9009806e7b3770cf83f33c67570dcbb4",
+    "human_review_queue_50.csv": "e20ebd98c08f9add447ec286781dbae0116f76fdb70c79b82d226311ceba379c",
+    "tc_grounding_corrections_report.json": "bc0e9f20a2b6fbd30c43312e7662d1fb0bd0d45d45e3515b808a7525bfe9c38e"
+  }
+}
