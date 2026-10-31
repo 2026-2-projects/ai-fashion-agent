@@ -1,0 +1,14 @@
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+load_dotenv(BACKEND_DIR / ".env")
+
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+psycopg:///ai_fashion_agent",
+)
+SESSION_SECRET_KEY = os.getenv("SESSION_SECRET_KEY")
+SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true"
