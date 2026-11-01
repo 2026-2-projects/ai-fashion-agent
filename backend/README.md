@@ -281,3 +281,45 @@ psql -d ai_fashion_agent -c '\dt'
 7. 회원 탈퇴 검증은 삭제 가능한 테스트 계정에서만 마지막에 수행합니다.
 
 인계 시에는 테스트 통과 여부와 함께 사용한 Python/PostgreSQL 버전, 스키마 준비 방식, 환경변수 이름만 공유하고 실제 비밀번호와 비밀키는 공유 문서나 Git에 남기지 않습니다.
+
+
+## WBS 4.2 — Wardrobe CRUD
+
+### 구현 기능
+- 사용자별 옷장 데이터 등록·조회·수정·삭제
+- 의류 속성 관리: category, item_type, color, fit, seasons
+- 선택적 의류 이미지 업로드 및 관리
+- 이미지 크기·형식·유효성 검사
+- 사용자 인증 및 본인 소유 데이터 접근 제한
+- 회원 탈퇴 시 관련 의류 데이터와 이미지 파일 정리
+- 비밀번호 검증 실패 시 계정과 이미지 보존
+- Agent 연동을 위한 `get_wardrobe()` Tool 구조 준비
+
+### 주요 기술
+| 기술 | 역할 |
+|---|---|
+| FastAPI | Wardrobe REST API |
+| PostgreSQL | 의류 데이터 영구 저장 |
+| SQLAlchemy | 데이터베이스 연결 및 SQL 처리 |
+| Pillow | 이미지 유효성 검사 |
+| python-multipart | 이미지 업로드 처리 |
+| pytest | API 자동화 테스트 |
+| Ruff | Python 코드 정적 검사 |
+
+### 테스트 실행
+프로젝트의 `backend` 디렉터리에서 실행합니다.
+
+```bash
+.venv/bin/ruff check app tests
+.venv/bin/python -m pytest -q
+```
+
+### 검증 결과
+- Ruff: All checks passed
+- pytest: 12 passed, 1 warning
+- 옷장 CRUD 및 이미지 관련 자동화 테스트 통과
+- 회원 탈퇴 시 이미지 삭제 테스트 통과
+- 잘못된 비밀번호로 탈퇴할 경우 계정 및 이미지 보존 테스트 통과
+
+검증 결과는 로컬 개발 환경 기준입니다.
+Agent의 실제 모델 연동과 전체 서비스 통합 검증은 후속 단계에서 진행합니다.

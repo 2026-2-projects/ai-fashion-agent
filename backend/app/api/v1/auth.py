@@ -1,3 +1,4 @@
+import shutil
 from datetime import datetime
 from secrets import compare_digest, token_urlsafe
 from typing import Annotated
@@ -10,6 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.services import wardrobe_images
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 password_hash = PasswordHash.recommended()
@@ -202,6 +204,8 @@ def delete_account(
     user: Annotated[dict, Depends(get_current_user)],
 ) -> Response:
     user_id = user["id"]
+    # DB에서 삭제하기 전에 확보한 사용자 ID를 사용
+    user_image_dir = wardrobe_images.MEDIA_ROOT / str(user_id)
 
     account = (
         db.execute(
@@ -239,6 +243,10 @@ def delete_account(
     )
 
     db.commit()
+
+    if user_image_dir.is_dir():
+        shutil.rmtree(user_image_dir)
+
     request.session.clear()
 
     return Response(status_code=204)
