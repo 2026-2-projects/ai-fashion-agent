@@ -217,3 +217,14 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 .DS_Store
+
+# Generated mixed-dataset outputs
+/data/processed/**/*.jsonl
+/data/processed/mixed_pilot/
+/data/synthetic/**/*_sft.jsonl
+/data/synthetic/**/*_validation.json
+/data/synthetic/pilot/synthetic_pilot_jobs.jsonl
+/backend/.env
+
+# Local VS Code settings
+/backend/.vscode/
