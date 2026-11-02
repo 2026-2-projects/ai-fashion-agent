@@ -12,3 +12,5 @@ DATABASE_URL = os.getenv(
 )
 SESSION_SECRET_KEY = os.getenv("SESSION_SECRET_KEY")
 SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true"
+KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY")
+KMA_SERVICE_KEY = os.getenv("KMA_SERVICE_KEY")

@@ -1,6 +1,6 @@
 # AI Fashion Agent Backend
 
-Qwen3-4B 기반 개인화 패션 추천 서비스의 FastAPI 백엔드입니다. WBS 4.1 범위에서는 PostgreSQL 연결, 회원 인증, 프로필·패션 취향 관리, 회원 탈퇴와 자동 테스트까지 구현했습니다.
+Qwen3-4B 기반 개인화 패션 추천 서비스의 FastAPI 백엔드입니다. PostgreSQL 기반 회원·프로필·옷장 기능과 WBS 4.3 Location·Weather Tool을 포함합니다.
 
 이 문서는 로컬 개발과 팀원 인계를 위한 기준입니다. 아래 검증 결과는 명시된 로컬 환경에서 확인한 값이며, 배포 환경의 성능·가용성·보안을 보장한다는 뜻은 아닙니다.
 
@@ -33,6 +33,7 @@ PostgreSQL 15
 - **SessionMiddleware / itsdangerous**: 로그인 상태를 `fashion_session` 쿠키에 서명해 보관합니다. 서명은 위·변조를 탐지하지만 내용을 암호화하지는 않습니다. `itsdangerous`는 이 서명 처리에 필요한 의존성입니다.
 - **CSRF**: 로그인 시 난수 토큰을 만들고, 상태를 변경하는 요청의 `X-CSRF-Token` 헤더와 세션 값을 상수 시간 비교로 검증합니다. 다른 사이트가 사용자의 쿠키를 이용해 변경 요청을 보내는 공격을 줄입니다.
 - **python-dotenv**: Git에 올리지 않는 `backend/.env`의 환경변수를 애플리케이션 시작 시 읽습니다.
+- **httpx**: Kakao Local API와 기상청 단기예보 API를 호출합니다. 자동 테스트에서는 `MockTransport`로 외부 네트워크를 대체합니다.
 - **pytest / TestClient**: 실제 API 요청과 유사한 방식으로 상태 코드·응답·쿠키를 자동 검증합니다.
 - **savepoint**: DB 테스트가 기존 데이터를 남기지 않도록 바깥 트랜잭션 안에 테스트용 `Session`을 savepoint 방식으로 참여시키고 마지막에 롤백합니다.
 - **PostgreSQL FK `ON DELETE CASCADE`**: `users` 행을 삭제하면 FK로 연결된 6개 테이블의 해당 사용자 행도 DB가 함께 삭제합니다.
@@ -55,6 +56,7 @@ PostgreSQL 15
 | 패션 취향 조회 | `GET /preferences/me` | 200 | 401 로그인 필요 |
 | 패션 취향 수정 | `PATCH /preferences/me` | 200 | 403 CSRF 실패, 422 입력 검증 |
 | 회원 탈퇴 | `DELETE /auth/account` | 204 | 401 유효하지 않은 세션 사용자, 403 비밀번호·CSRF 실패 |
+| 장소별 단기예보 | `GET /weather` | 200 | 401 로그인 필요, 404 장소 없음, 409 장소 모호, 422 날짜·예보 범위, 502 외부 API, 503 설정 누락 |
 
 로그인 응답의 `csrf_token`은 로그아웃, 프로필·취향 수정, 회원 탈퇴 요청에서 `X-CSRF-Token` 헤더로 전달합니다. 세션 쿠키의 유효시간은 2시간이며 `SameSite=Lax`가 적용됩니다.
 
@@ -80,7 +82,14 @@ backend/
 │   │   └── v1/
 │   │       ├── health.py        # 상태 확인
 │   │       ├── auth.py          # 회원가입·로그인·로그아웃·탈퇴
-│   │       └── settings.py      # 프로필·패션 취향 조회·수정
+│   │       ├── settings.py      # 프로필·패션 취향 조회·수정
+│   │       └── weather.py       # Location·Weather HTTP 라우트
+│   ├── agent/tools/
+│   │   └── weather.py           # get_weather(place, date, time) Tool
+│   ├── services/
+│   │   ├── location.py          # Kakao 장소 검색·동명 장소 판별
+│   │   ├── weather.py           # 격자 변환·기상청 조회·정규화
+│   │   └── errors.py            # 외부 API 키를 노출하지 않는 도메인 오류
 │   └── core/
 │       ├── config.py            # .env 로딩과 설정값
 │       └── database.py          # Engine, Session, get_db
@@ -88,7 +97,11 @@ backend/
 │   ├── test_health.py
 │   ├── test_signup.py
 │   ├── test_auth_session.py
-│   └── test_settings.py
+│   ├── test_settings.py
+│   ├── test_location_service.py
+│   ├── test_weather_service.py
+│   ├── test_weather_tool.py
+│   └── test_weather_api.py
 ├── pyproject.toml               # pytest·Ruff 설정
 ├── requirements.txt             # 실행 의존성
 └── requirements-dev.txt         # 테스트·정적 검사 의존성
@@ -158,6 +171,12 @@ SESSION_SECRET_KEY=여기에_최소_32자_이상의_새_난수_입력
 
 # localhost의 HTTP 개발 서버에서만 false
 SESSION_COOKIE_SECURE=false
+
+# Kakao Developers 앱의 REST API 키
+KAKAO_REST_API_KEY=로컬에서_발급받은_키
+
+# 공공데이터포털 기상청 단기예보 조회서비스의 일반 인증키
+KMA_SERVICE_KEY=로컬에서_발급받은_키
 ```
 
 DB 사용자와 비밀번호를 명시해야 하는 환경은 다음 형태를 사용합니다. 실제 값은 문서나 Git에 남기지 않습니다.
@@ -170,6 +189,8 @@ DATABASE_URL=postgresql+psycopg://DB_USER:DB_PASSWORD@localhost:5432/ai_fashion_
 - HTTP 로컬 개발에서는 `SESSION_COOKIE_SECURE=false`가 필요합니다.
 - HTTPS 환경에서는 `SESSION_COOKIE_SECURE=true`를 사용해야 합니다.
 - 비밀키를 바꾸면 기존 세션 쿠키는 더 이상 유효하지 않습니다.
+- `KAKAO_REST_API_KEY`, `KMA_SERVICE_KEY`가 없으면 서버 시작은 가능하지만 날씨 조회는 503을 반환합니다.
+- 실제 키는 `.env`에만 저장하고 응답, 로그, README, 테스트 fixture에 넣지 않습니다.
 
 ## 5. 서버 실행과 Swagger 확인
 
@@ -191,7 +212,8 @@ Swagger에서 인증 기능을 확인하는 순서는 다음과 같습니다.
 3. `GET /api/v1/auth/me`로 로그인 상태를 확인합니다.
 4. PATCH·로그아웃·탈퇴 요청에서는 `X-CSRF-Token` 입력란에 토큰을 넣습니다.
 5. `PATCH /api/v1/profile/me`와 `PATCH /api/v1/preferences/me`로 값을 저장한 뒤 GET으로 재조회합니다.
-6. 탈퇴 검증은 삭제해도 되는 테스트 계정에서만 수행합니다. `DELETE /api/v1/auth/account`에 현재 비밀번호와 CSRF 토큰을 전달하면 204가 반환되고, 이후 `/auth/me`는 401을 반환해야 합니다.
+6. `GET /api/v1/weather?place=전주대학교&date=YYYY-MM-DD&time=HH:MM`으로 단기예보를 조회합니다. 날짜는 오늘부터 글피 범위의 미래 시각을 사용합니다.
+7. 탈퇴 검증은 삭제해도 되는 테스트 계정에서만 수행합니다. `DELETE /api/v1/auth/account`에 현재 비밀번호와 CSRF 토큰을 전달하면 204가 반환되고, 이후 `/auth/me`는 401을 반환해야 합니다.
 
 ## 6. 실제 확인 결과
 
@@ -323,3 +345,58 @@ psql -d ai_fashion_agent -c '\dt'
 
 검증 결과는 로컬 개발 환경 기준입니다.
 Agent의 실제 모델 연동과 전체 서비스 통합 검증은 후속 단계에서 진행합니다.
+
+## WBS 4.3 — Location·Weather Tool
+
+### 처리 흐름
+
+```text
+get_weather(place, date, time)
+  → Kakao 키워드 장소 검색
+  → 위도·경도를 기상청 nx·ny 격자로 변환
+  → 안전 지연 25분을 반영한 최신 단기예보 발표시각 선택
+  → 요청 날짜에서 가장 가까운 시간별 예보 선택
+  → Agent용 6개 필드로 정규화
+```
+
+Tool과 `GET /api/v1/weather`는 다음 필드를 반환합니다.
+
+```json
+{
+  "temperature_c": 7,
+  "precipitation_probability": 0,
+  "precipitation_type": "none",
+  "wind_mps": 0.2,
+  "humidity_percent": 80,
+  "sky": "clear"
+}
+```
+
+- 날짜는 `YYYY-MM-DD`, 시간은 `HH:MM` 형식이며 Asia/Seoul 기준입니다.
+- 분 단위 시각은 요청 날짜 안에서 가장 가까운 기상청 시간별 예보를 사용합니다.
+- 과거 1시간보다 이전 또는 오늘 기준 글피 이후의 시각은 조회하지 않습니다.
+- 검색어와 정확히 일치하는 장소가 하나면 선택합니다. 동명 장소가 여러 개이거나 정확히 일치하지 않는 후보가 여러 개면 409와 이름·주소 후보를 반환하며 임의로 고르지 않습니다.
+- 정확한 좌표, Kakao 장소 ID, API 키는 Agent Tool 응답에 포함하지 않습니다.
+- 기상청 API 실패 시 날씨를 추측하거나 생성하지 않고 오류를 반환합니다.
+
+### 검증 범위
+
+자동 테스트는 실제 외부 API를 호출하지 않습니다. Kakao·기상청 응답을 mock하여 다음을 검증합니다.
+
+- 전주대학교 좌표 `(35.814114..., 127.089881...)`가 기상청 격자 `nx=62`, `ny=89`로 변환됨
+- Kakao 인증 헤더와 장소 응답 파싱
+- 동명 장소, 검색 결과 없음, 잘못된 날짜·시간, 과거·예보 범위 밖 요청 차단
+- 기상청 발표시각, 동일 날짜의 최근접 예보, 코드·수치 정규화
+- FastAPI 200/409/502 응답 매핑
+- 오류 메시지에 API 키가 포함되지 않음
+
+2026-11-02 현재 검증 결과는 다음과 같습니다.
+
+- Location·Weather 범위 테스트: `16 passed, 1 warning`
+- PostgreSQL을 포함한 전체 백엔드 테스트: `28 passed, 1 warning`
+- Ruff 검사: `All checks passed`
+- 이번에 변경한 Python 파일의 Ruff format 검사: `11 files already formatted`
+
+경고 1건은 기존 `TestClient`와 `httpx` 조합의 향후 변경을 알리는 `StarletteDeprecationWarning`이며 테스트 실패는 아닙니다.
+
+2026-11-02 사용자가 로컬에서 별도로 확인한 관측값은 Kakao 장소 검색 200, 전주대학교 위·경도 조회, `nx=62`·`ny=89` 변환, 기상청 단기예보 200 및 정상 데이터 응답입니다. 이는 해당 시점의 키·외부 서비스 상태 확인이며 자동 테스트나 운영 가용성 보장은 아닙니다.
