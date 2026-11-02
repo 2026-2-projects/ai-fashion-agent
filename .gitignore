@@ -228,3 +228,9 @@ __marimo__/
 
 # Local VS Code settings
 /backend/.vscode/
+
+# Generated synthetic candidate datasets
+/data/synthetic/**/*_candidates.jsonl
+
+# Generated synthetic candidate datasets
+/data/synthetic/**/*_candidates.jsonl
