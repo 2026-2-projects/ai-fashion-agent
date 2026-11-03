@@ -1,6 +1,6 @@
 # AI Fashion Agent Backend
 
-Qwen3-4B 기반 개인화 패션 추천 서비스의 FastAPI 백엔드입니다. PostgreSQL 기반 회원·프로필·옷장 기능과 WBS 4.3 Location·Weather Tool을 포함합니다.
+Qwen3-4B 기반 개인화 패션 추천 서비스의 FastAPI 백엔드입니다. PostgreSQL 기반 회원·프로필·옷장 기능, WBS 4.3 Location·Weather Tool, WBS 4.4 Google Calendar 읽기 전용 연동을 포함합니다.
 
 이 문서는 로컬 개발과 팀원 인계를 위한 기준입니다. 아래 검증 결과는 명시된 로컬 환경에서 확인한 값이며, 배포 환경의 성능·가용성·보안을 보장한다는 뜻은 아닙니다.
 
@@ -34,6 +34,8 @@ PostgreSQL 15
 - **CSRF**: 로그인 시 난수 토큰을 만들고, 상태를 변경하는 요청의 `X-CSRF-Token` 헤더와 세션 값을 상수 시간 비교로 검증합니다. 다른 사이트가 사용자의 쿠키를 이용해 변경 요청을 보내는 공격을 줄입니다.
 - **python-dotenv**: Git에 올리지 않는 `backend/.env`의 환경변수를 애플리케이션 시작 시 읽습니다.
 - **httpx**: Kakao Local API와 기상청 단기예보 API를 호출합니다. 자동 테스트에서는 `MockTransport`로 외부 네트워크를 대체합니다.
+- **Google OAuth 2.0 Authorization Code Flow**: 서비스 로그인 사용자와 Google Calendar 권한을 연결합니다. 웹 서버가 인증 코드를 Access/Refresh Token으로 교환하며, 브라우저에는 토큰을 전달하지 않습니다.
+- **Fernet 암호화**: Google Access/Refresh Token을 평문이 아닌 인증 암호문으로 DB에 저장합니다. 암호화 키는 세션 키와 분리해 `.env`에서만 관리합니다.
 - **pytest / TestClient**: 실제 API 요청과 유사한 방식으로 상태 코드·응답·쿠키를 자동 검증합니다.
 - **savepoint**: DB 테스트가 기존 데이터를 남기지 않도록 바깥 트랜잭션 안에 테스트용 `Session`을 savepoint 방식으로 참여시키고 마지막에 롤백합니다.
 - **PostgreSQL FK `ON DELETE CASCADE`**: `users` 행을 삭제하면 FK로 연결된 6개 테이블의 해당 사용자 행도 DB가 함께 삭제합니다.
@@ -57,6 +59,11 @@ PostgreSQL 15
 | 패션 취향 수정 | `PATCH /preferences/me` | 200 | 403 CSRF 실패, 422 입력 검증 |
 | 회원 탈퇴 | `DELETE /auth/account` | 204 | 401 유효하지 않은 세션 사용자, 403 비밀번호·CSRF 실패 |
 | 장소별 단기예보 | `GET /weather` | 200 | 401 로그인 필요, 404 장소 없음, 409 장소 모호, 422 날짜·예보 범위, 502 외부 API, 503 설정 누락 |
+| Calendar OAuth 시작 | `POST /calendar/oauth/start` | 200 | 401 로그인 필요, 403 CSRF 실패, 503 설정 누락 |
+| Calendar OAuth 콜백 | `GET /calendar/oauth/callback` | 200 | 400 거부·코드·state 오류, 502 Google 인증 오류 |
+| Calendar 연결 상태 | `GET /calendar/connection` | 200 | 401 로그인 필요 |
+| 날짜별 일정 | `GET /calendar/events?date=YYYY-MM-DD` | 200 | 409 미연결·재인증 필요, 429 호출 한도, 502 Google API 오류 |
+| Calendar 연결 해제 | `DELETE /calendar/connection` | 204 | 403 CSRF 실패, 502 Google 권한 철회 미확인 |
 
 로그인 응답의 `csrf_token`은 로그아웃, 프로필·취향 수정, 회원 탈퇴 요청에서 `X-CSRF-Token` 헤더로 전달합니다. 세션 쿠키의 유효시간은 2시간이며 `SameSite=Lax`가 적용됩니다.
 
@@ -83,12 +90,15 @@ backend/
 │   │       ├── health.py        # 상태 확인
 │   │       ├── auth.py          # 회원가입·로그인·로그아웃·탈퇴
 │   │       ├── settings.py      # 프로필·패션 취향 조회·수정
-│   │       └── weather.py       # Location·Weather HTTP 라우트
+│   │       ├── weather.py       # Location·Weather HTTP 라우트
+│   │       └── calendar.py      # Google OAuth·일정 조회·연결 해제 API
 │   ├── agent/tools/
-│   │   └── weather.py           # get_weather(place, date, time) Tool
+│   │   ├── weather.py           # get_weather(place, date, time) Tool
+│   │   └── calendar.py          # get_calendar_events(db, user_id, date) Tool
 │   ├── services/
 │   │   ├── location.py          # Kakao 장소 검색·동명 장소 판별
 │   │   ├── weather.py           # 격자 변환·기상청 조회·정규화
+│   │   ├── google_calendar.py   # OAuth·암호화 저장·갱신·Events API
 │   │   └── errors.py            # 외부 API 키를 노출하지 않는 도메인 오류
 │   └── core/
 │       ├── config.py            # .env 로딩과 설정값
@@ -101,7 +111,9 @@ backend/
 │   ├── test_location_service.py
 │   ├── test_weather_service.py
 │   ├── test_weather_tool.py
-│   └── test_weather_api.py
+│   ├── test_weather_api.py
+│   ├── test_google_calendar_service.py
+│   └── test_calendar_api.py
 ├── pyproject.toml               # pytest·Ruff 설정
 ├── requirements.txt             # 실행 의존성
 └── requirements-dev.txt         # 테스트·정적 검사 의존성
@@ -177,6 +189,20 @@ KAKAO_REST_API_KEY=로컬에서_발급받은_키
 
 # 공공데이터포털 기상청 단기예보 조회서비스의 일반 인증키
 KMA_SERVICE_KEY=로컬에서_발급받은_키
+
+# Google Cloud의 웹 OAuth 클라이언트 값
+GOOGLE_CLIENT_ID=발급받은_클라이언트_ID
+GOOGLE_CLIENT_SECRET=발급받은_클라이언트_보안_비밀번호
+GOOGLE_REDIRECT_URI=http://localhost:8000/api/v1/calendar/oauth/callback
+
+# Google Token 암호화 전용 키. SESSION_SECRET_KEY와 같은 값을 쓰지 않습니다.
+GOOGLE_TOKEN_ENCRYPTION_KEY=Fernet_키
+```
+
+Fernet 키는 의존성을 설치한 뒤 다음 명령으로 한 번 생성합니다. 출력값을 `backend/.env`에만 넣고 팀 공용 문서나 Git에 복사하지 않습니다.
+
+```bash
+.venv/bin/python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
 ```
 
 DB 사용자와 비밀번호를 명시해야 하는 환경은 다음 형태를 사용합니다. 실제 값은 문서나 Git에 남기지 않습니다.
@@ -191,19 +217,21 @@ DATABASE_URL=postgresql+psycopg://DB_USER:DB_PASSWORD@localhost:5432/ai_fashion_
 - 비밀키를 바꾸면 기존 세션 쿠키는 더 이상 유효하지 않습니다.
 - `KAKAO_REST_API_KEY`, `KMA_SERVICE_KEY`가 없으면 서버 시작은 가능하지만 날씨 조회는 503을 반환합니다.
 - 실제 키는 `.env`에만 저장하고 응답, 로그, README, 테스트 fixture에 넣지 않습니다.
+- Google에서 다운로드한 OAuth JSON은 실행에 필요하지 않습니다. `client_id`와 `client_secret`만 `.env`로 옮긴 뒤 JSON은 저장소 밖의 안전한 위치에 보관합니다. 저장소는 `backend/client_secret*.json`, `credentials*.json`, `token*.json`, `.secrets/`를 추가로 무시합니다.
+- `GOOGLE_TOKEN_ENCRYPTION_KEY`를 잃어버리거나 바꾸면 기존 토큰 암호문을 복호화할 수 없습니다. 키를 교체하려면 사용자가 Calendar를 다시 연결해야 합니다.
 
 ## 5. 서버 실행과 Swagger 확인
 
 ```bash
 cd backend
 source .venv/bin/activate
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --no-access-log
 ```
 
-- API 루트: <http://127.0.0.1:8000/>
-- Health Check: <http://127.0.0.1:8000/api/v1/health>
-- Swagger UI: <http://127.0.0.1:8000/docs>
-- ReDoc: <http://127.0.0.1:8000/redoc>
+- API 루트: <http://localhost:8000/>
+- Health Check: <http://localhost:8000/api/v1/health>
+- Swagger UI: <http://localhost:8000/docs>
+- ReDoc: <http://localhost:8000/redoc>
 
 Swagger에서 인증 기능을 확인하는 순서는 다음과 같습니다.
 
@@ -214,6 +242,9 @@ Swagger에서 인증 기능을 확인하는 순서는 다음과 같습니다.
 5. `PATCH /api/v1/profile/me`와 `PATCH /api/v1/preferences/me`로 값을 저장한 뒤 GET으로 재조회합니다.
 6. `GET /api/v1/weather?place=전주대학교&date=YYYY-MM-DD&time=HH:MM`으로 단기예보를 조회합니다. 날짜는 오늘부터 글피 범위의 미래 시각을 사용합니다.
 7. 탈퇴 검증은 삭제해도 되는 테스트 계정에서만 수행합니다. `DELETE /api/v1/auth/account`에 현재 비밀번호와 CSRF 토큰을 전달하면 204가 반환되고, 이후 `/auth/me`는 401을 반환해야 합니다.
+
+Calendar OAuth는 리디렉션 URI가 `localhost`로 등록되어 있으므로 Swagger와 API도 반드시 `http://localhost:8000`으로 엽니다. `127.0.0.1`에서 시작하면 호스트가 달라 세션 쿠키가 콜백에 전달되지 않고 state 검증이 실패할 수 있습니다.
+OAuth 콜백 URL에는 일회용 인증 코드가 포함됩니다. 로컬 서버는 `--no-access-log`로 실행하고, 운영 환경에서도 해당 쿼리 문자열이 접속 로그에 남지 않도록 설정해야 합니다.
 
 ## 6. 실제 확인 결과
 
@@ -400,3 +431,53 @@ Tool과 `GET /api/v1/weather`는 다음 필드를 반환합니다.
 경고 1건은 기존 `TestClient`와 `httpx` 조합의 향후 변경을 알리는 `StarletteDeprecationWarning`이며 테스트 실패는 아닙니다.
 
 2026-11-02 사용자가 로컬에서 별도로 확인한 관측값은 Kakao 장소 검색 200, 전주대학교 위·경도 조회, `nx=62`·`ny=89` 변환, 기상청 단기예보 200 및 정상 데이터 응답입니다. 이는 해당 시점의 키·외부 서비스 상태 확인이며 자동 테스트나 운영 가용성 보장은 아닙니다.
+
+## WBS 4.4 — Google Calendar OAuth·일정 조회
+
+### 처리 흐름
+
+```text
+서비스 로그인 + X-CSRF-Token
+  → POST /calendar/oauth/start
+  → 일회용 state를 서명된 세션에 사용자 ID·시작시각과 함께 저장
+  → Google 계정 선택·동의 화면
+  → GET /calendar/oauth/callback
+  → state·사용자·10분 만료 검증 후 인증 코드를 Token으로 교환
+  → Access/Refresh Token을 Fernet 암호문으로 사용자별 DB 1행에 저장
+  → get_calendar_events(db, user_id, date)
+  → 만료 임박 Token 자동 갱신 후 primary Calendar 일정 조회
+```
+
+- 요청 범위는 `https://www.googleapis.com/auth/calendar.events.readonly` 하나입니다. 일정 생성·수정·삭제 권한은 요청하지 않습니다.
+- `prompt=consent select_account`를 사용해 매 연결마다 사용자가 Google 계정을 직접 고르고 동의하도록 합니다.
+- OAuth `state`는 일회용이며 서비스 로그인 사용자와 묶고 10분 뒤 만료합니다. 콜백 성공·실패와 관계없이 한 번 확인한 state는 재사용할 수 없습니다.
+- Access/Refresh Token은 API 응답·로그·세션 쿠키에 넣지 않습니다. DB의 `access_token_encrypted`, `refresh_token_encrypted`에는 별도 Fernet 키로 만든 암호문만 저장합니다.
+- 서비스 계정 간 연결은 `google_calendar_connections.user_id UNIQUE`와 모든 조회의 `WHERE user_id = :user_id`로 격리합니다.
+- 최소 범위를 유지하기 위해 Google 이메일/OpenID 범위를 추가하지 않았습니다. 따라서 `google_account_email`은 `NULL`이며, 이 단계의 계정 분리는 Google 이메일 수집이 아니라 서비스 사용자별 Token 격리를 뜻합니다.
+- Access Token이 만료 임박했거나 Google API가 401을 반환하면 Refresh Token으로 한 번 갱신하고 DB의 새 암호문·만료시각을 저장한 뒤 재시도합니다. `invalid_grant` 또는 권한 취소는 일정을 추측하지 않고 재연결 필요 오류로 반환합니다.
+- 연결 해제는 Google 토큰 철회를 먼저 시도한 뒤 로컬 암호문을 삭제합니다. Google에 연결할 수 없더라도 로컬 Token은 삭제하며, 이 경우 502로 Google 계정 보안 설정에서 권한을 확인하도록 알립니다.
+- 일정은 한국 시간 기준 하루를 조회하고 반복 일정을 개별 인스턴스로 펼칩니다. 제목·시작·종료·종일 여부·장소만 반환하며 참석자, 설명, 화상회의 링크는 요청하지 않습니다.
+
+### Swagger에서 연결 확인
+
+1. `http://localhost:8000/docs`에서 회원가입·로그인하고 `csrf_token`을 복사합니다.
+2. `POST /api/v1/calendar/oauth/start`의 `X-CSRF-Token`에 값을 넣어 실행합니다.
+3. 응답의 `authorization_url`을 같은 브라우저에서 엽니다. 테스트 사용자로 등록한 Google 계정을 선택하고 일정 읽기 권한에 동의합니다.
+4. Google이 `http://localhost:8000/api/v1/calendar/oauth/callback`으로 돌아오면 `connected: true`를 확인합니다.
+5. `GET /api/v1/calendar/connection`으로 현재 서비스 사용자의 연결 상태를 확인합니다.
+6. `GET /api/v1/calendar/events?date=2026-11-03`처럼 날짜를 넣어 해당 날짜의 일정을 읽습니다.
+7. 연결 해제는 `DELETE /api/v1/calendar/connection`에 현재 `X-CSRF-Token`을 넣어 실행합니다.
+
+OAuth JSON, Client Secret, 실제 Token, `GOOGLE_TOKEN_ENCRYPTION_KEY`는 화면 캡처·채팅·이슈·커밋에 넣지 않습니다. 테스트는 실제 Google 계정을 호출하지 않고 `httpx.MockTransport`를 사용합니다.
+
+### 자동 검증 범위
+
+- 정확한 읽기 전용 범위, offline access, 계정 선택, state 전달
+- 잘못되거나 재사용된 state, 사용자 동의 거부, 미연결 상태
+- 인증 코드 교환, 만료 Token 갱신, 401 후 한 번만 갱신·재시도
+- Token 평문이 DB에 남지 않는지와 서비스 사용자 간 연결 격리
+- 날짜 범위·반복 일정 페이지네이션·취소 일정 제외·최소 응답 필드
+- 401/403/429/5xx·잘못된 응답 형식·네트워크 오류의 안전한 매핑
+- 연결 해제와 Google 철회 실패 시에도 로컬 암호문 삭제
+
+2026-11-03 현재 Calendar 범위 자동 테스트는 `19 passed, 1 warning`, PostgreSQL을 포함한 전체 백엔드 테스트는 `47 passed, 1 warning`입니다. Ruff 검사와 이번 변경 파일의 Ruff format 검사도 통과했습니다. 실제 Google 동의 화면과 실제 일정 조회는 사용자의 로컬 테스트 계정으로 별도 확인해야 하며, 자동 테스트 통과가 Google Cloud 설정이나 외부 서비스 가용성을 보장하지는 않습니다.

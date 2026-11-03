@@ -226,6 +226,12 @@ __marimo__/
 /data/synthetic/pilot/synthetic_pilot_jobs.jsonl
 /backend/.env
 
+# Google OAuth credentials and local tokens
+/backend/.secrets/
+/backend/client_secret*.json
+/backend/credentials*.json
+/backend/token*.json
+
 # Local VS Code settings
 /backend/.vscode/
 
