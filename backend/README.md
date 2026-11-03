@@ -1,6 +1,6 @@
 # AI Fashion Agent Backend
 
-Qwen3-4B 기반 개인화 패션 추천 서비스의 FastAPI 백엔드입니다. PostgreSQL 기반 회원·프로필·옷장 기능, WBS 4.3 Location·Weather Tool, WBS 4.4 Google Calendar 읽기 전용 연동을 포함합니다.
+Qwen3-4B 기반 개인화 패션 추천 서비스의 FastAPI 백엔드입니다. PostgreSQL 기반 회원·프로필·옷장 기능, WBS 4.3 Location·Weather Tool, WBS 4.4 Google Calendar 읽기 전용 연동, WBS 4.5 모델 비의존 Mock Agent Core를 포함합니다.
 
 이 문서는 로컬 개발과 팀원 인계를 위한 기준입니다. 아래 검증 결과는 명시된 로컬 환경에서 확인한 값이며, 배포 환경의 성능·가용성·보안을 보장한다는 뜻은 아닙니다.
 
@@ -64,8 +64,9 @@ PostgreSQL 15
 | Calendar 연결 상태 | `GET /calendar/connection` | 200 | 401 로그인 필요 |
 | 날짜별 일정 | `GET /calendar/events?date=YYYY-MM-DD` | 200 | 409 미연결·재인증 필요, 429 호출 한도, 502 Google API 오류 |
 | Calendar 연결 해제 | `DELETE /calendar/connection` | 204 | 403 CSRF 실패, 502 Google 권한 철회 미확인 |
+| Agent 5 LOOK 추천 | `POST /agent/recommend` | 200 | 401 로그인, 403 CSRF, 409 Tool 연결·장소 모호, 422 Tool 인자, 502 외부 API·Tool 계획, 503 설정 누락 |
 
-로그인 응답의 `csrf_token`은 로그아웃, 프로필·취향 수정, 회원 탈퇴 요청에서 `X-CSRF-Token` 헤더로 전달합니다. 세션 쿠키의 유효시간은 2시간이며 `SameSite=Lax`가 적용됩니다.
+로그인 응답의 `csrf_token`은 로그아웃, 프로필·취향 수정, 회원 탈퇴, Agent 추천 요청에서 `X-CSRF-Token` 헤더로 전달합니다. 세션 쿠키의 유효시간은 2시간이며 `SameSite=Lax`가 적용됩니다.
 
 회원 탈퇴는 비밀번호와 CSRF 토큰을 다시 검증한 뒤 `users` 행을 삭제하고 세션을 비웁니다. 현재 로컬 스키마에서 아래 6개 FK는 모두 `ON DELETE CASCADE`로 확인했습니다.
 
@@ -91,10 +92,18 @@ backend/
 │   │       ├── auth.py          # 회원가입·로그인·로그아웃·탈퇴
 │   │       ├── settings.py      # 프로필·패션 취향 조회·수정
 │   │       ├── weather.py       # Location·Weather HTTP 라우트
-│   │       └── calendar.py      # Google OAuth·일정 조회·연결 해제 API
-│   ├── agent/tools/
-│   │   ├── weather.py           # get_weather(place, date, time) Tool
-│   │   └── calendar.py          # get_calendar_events(db, user_id, date) Tool
+│   │       ├── calendar.py      # Google OAuth·일정 조회·연결 해제 API
+│   │       └── agent.py         # 인증된 5 LOOK 추천 API와 오류 매핑
+│   ├── agent/
+│   │   ├── contracts.py         # Tool 계획·고정 5 LOOK JSON 계약
+│   │   ├── inference.py         # 교체 가능한 추론 인터페이스와 Mock 구현
+│   │   ├── tool_registry.py     # Tool 허용 목록·인자 검증·실제 호출
+│   │   ├── service.py           # Plan → Tool → Generate 오케스트레이션
+│   │   └── tools/
+│   │       ├── user_context.py  # get_user_context(db, user_id) Tool
+│   │       ├── wardrobe.py      # get_wardrobe(db, user_id) Tool
+│   │       ├── weather.py       # get_weather(place, date, time) Tool
+│   │       └── calendar.py      # get_calendar_events(db, user_id, date) Tool
 │   ├── services/
 │   │   ├── location.py          # Kakao 장소 검색·동명 장소 판별
 │   │   ├── weather.py           # 격자 변환·기상청 조회·정규화
@@ -113,7 +122,10 @@ backend/
 │   ├── test_weather_tool.py
 │   ├── test_weather_api.py
 │   ├── test_google_calendar_service.py
-│   └── test_calendar_api.py
+│   ├── test_calendar_api.py
+│   ├── test_user_context_tool.py
+│   ├── test_agent_core.py
+│   └── test_agent_api.py
 ├── pyproject.toml               # pytest·Ruff 설정
 ├── requirements.txt             # 실행 의존성
 └── requirements-dev.txt         # 테스트·정적 검사 의존성
@@ -481,3 +493,102 @@ OAuth JSON, Client Secret, 실제 Token, `GOOGLE_TOKEN_ENCRYPTION_KEY`는 화면
 - 연결 해제와 Google 철회 실패 시에도 로컬 암호문 삭제
 
 2026-11-03 현재 Calendar 범위 자동 테스트는 `19 passed, 1 warning`, PostgreSQL을 포함한 전체 백엔드 테스트는 `47 passed, 1 warning`입니다. Ruff 검사와 이번 변경 파일의 Ruff format 검사도 통과했습니다. 실제 Google 동의 화면과 실제 일정 조회는 사용자의 로컬 테스트 계정으로 별도 확인해야 하며, 자동 테스트 통과가 Google Cloud 설정이나 외부 서비스 가용성을 보장하지는 않습니다.
+
+## WBS 4.5 — Agent Core·Tool Calling
+
+### 현재 구현 범위
+
+```text
+POST /api/v1/agent/recommend
+  → 쿠키 세션 사용자 + X-CSRF-Token 검증
+  → MockInferenceEngine.plan()
+  → 허용된 Tool 이름·중복·인자 전체 선검증
+  → 필요한 실제 Tool만 순서대로 실행
+  → MockInferenceEngine.generate()
+  → 정확히 5개 LOOK과 고정 역할·옷장 ID 검증
+  → 검증된 옷장 항목에만 Backend가 사진 URL 연결
+  → AgentRecommendationResponse JSON
+```
+
+Router가 허용하는 Tool은 다음 4개뿐입니다.
+
+| Tool | 공개 인자 | Backend가 주입하는 값 |
+|---|---|---|
+| `get_user_context()` | 없음 | `db`, 인증된 `user_id` |
+| `get_wardrobe()` | 없음 | `db`, 인증된 `user_id` |
+| `get_weather()` | `place`, `date`, `time` | 없음 |
+| `get_calendar_events()` | `date` | `db`, 인증된 `user_id` |
+
+- 통합 5 LOOK 추천은 `get_user_context()`와 `get_wardrobe()`를 기본 호출합니다.
+- 날씨·일정은 요청에 해당 의도가 있을 때만 호출합니다.
+- 사용자가 “날씨를 다시 조회하지 말라”고 명시하면 날씨 Tool을 호출하지 않습니다.
+- Tool 계획은 전부 검증한 뒤 실행하므로 뒤쪽 호출의 인자가 잘못된 경우 앞쪽 Tool도 실행하지 않습니다.
+- 현재 Mock Router는 날짜·시간을 구조화 필드 또는 `YYYY-MM-DD`, `HH:MM` 문자열에서만 읽습니다. “내일”, “저녁” 같은 상대 표현 해석과 Calendar 결과 장소를 이용한 후속 Weather 호출은 최종 모델/날짜 해석기 연동 단계에서 보강해야 합니다.
+
+요청 예시는 다음과 같습니다.
+
+```json
+{
+  "message": "내 옷으로 내일 서울역 날씨에 맞는 출근 코디를 추천해줘",
+  "place": "서울역",
+  "date": "2026-11-04",
+  "time": "08:30"
+}
+```
+
+응답에는 `action: "generate_five_looks"`와 고정 순서의 LOOK 5개가 포함됩니다. 학습 데이터의 `look_id / role / status / style / items / reason` 구조를 따릅니다.
+
+1. `preference_best`: 사용자 취향 최적
+2. `preference_alternative`: 취향 범위의 다른 조합
+3. `exploration`: 새로운 스타일 탐색
+4. `wardrobe_best`: 실제 보유 의류의 최적 조합
+5. `wardrobe_alternative`: 실제 보유 의류의 다른 조합
+
+`available` LOOK에는 `top`, `bottom`, `shoes` 아이템이 각각 하나씩 필요합니다. 1~3번 아이템의 `item_id`는 `null`이며, 4~5번은 실제 사용자 옷장의 ID만 허용합니다. Mock을 포함한 모델 출력에는 사진 URL을 넣지 않습니다. Backend가 옷장 `item_id`와 `slot`을 확인한 뒤 등록된 사진 URL만 최종 응답에 붙이며, 모델이 직접 만든 URL은 거부합니다. 완성 코디를 만들 수 없거나 두 번째 조합이 없으면 `status: "unavailable"`, `style: null`, `items: []`와 이유를 반환합니다. “내 옷만” 요청에서는 일반 추천 1~3번도 사용 불가로 표시합니다. 별도의 피드백·저장 기능은 4.6 범위입니다.
+
+### 최종 Qwen3 모델 교체 지점
+
+`InferenceEngine`은 `plan(request)`와 `generate(request, tool_results)`를 정의합니다. 현재 FastAPI 의존성 `get_agent_service()`가 `MockInferenceEngine`을 주입합니다. 진호의 학습 모델이 준비되면 모델 호출·응답 파싱을 담당하는 구현을 만들고 이 주입 지점에서 연결합니다. Tool Registry, 인증, 실제 Tool과 5 LOOK 응답 계약은 그대로 사용합니다.
+
+학습 데이터 가이드의 `generate_five_looks` 계약을 서비스 API에도 적용했습니다. WBS의 기존 3 LOOK 문구보다 확정된 5 LOOK 기준을 우선합니다.
+
+### 4.5 남은 작업과 인계 순서
+
+2026-11-03 기준 Mock Agent를 통한 Router·Tool Calling, 실제 4개 Tool 연결, 고정 5 LOOK JSON, Backend 사진 URL 연결과 자동 테스트까지 확인했습니다. 아래 자동 검증 결과는 **학습 모델의 실제 추론 결과를 검증한 것이 아닙니다.** 모델 통합 전에는 4.5를 완료로 표시하지 않습니다.
+
+**학습 완료 전 준비할 일**
+
+1. 진호와 모델 인계 형식을 맞춥니다. 실제 기반 모델·학습 산출물 버전, 토크나이저와 채팅 템플릿, 모델 로딩 또는 추론 서버 방식, 실행 환경을 확인합니다. 특히 모델이 요청을 받아 Tool 계획을 먼저 만들고, Tool 결과를 받은 뒤 최종 추천을 생성할 수 있는지 확인합니다. 체크포인트나 접속 정보의 실제 값은 README에 적지 않습니다.
+2. [Agent 계약 파일](app/agent/contracts.py)을 공통 계약으로 전달합니다. `plan()`은 허용된 4개 Tool의 이름과 공개 인자만 담은 `AgentPlan`을, `generate()`는 `AgentDraft`를 반환해야 합니다. `db`와 인증된 `user_id`는 Backend가 주입하므로 모델 출력에 넣지 않습니다. 최종 응답은 `generate_five_looks`와 고정 순서의 5 LOOK을 사용합니다.
+3. 실모델 테스트용 사례와 예상 결과를 준비합니다. 기본 추천, 날씨만 필요한 요청, 일정만 필요한 요청, 날씨 조회 거부, “내 옷만”, 옷장 완성 조합 0·1·2개, 잘못된 Tool 이름·인자, 잘못된 JSON·옷장 ID를 포함합니다. 기존 Mock 테스트와 별도로 모델 응답을 흉내 낸 fixture를 이용해 계약·오류 처리를 검증할 수 있습니다.
+4. 현재 작업 브랜치의 변경 사항을 팀 기준에 따라 리뷰·커밋·병합하고, WBS와 화면 담당자에게 **3 LOOK이 아닌 5 LOOK** 계약을 전달합니다. 이 전달 작업은 모델 학습 완료를 기다릴 필요가 없습니다.
+
+**학습 모델을 받은 뒤 해야 할 일**
+
+1. 모델 어댑터에서 프롬프트·Tool 정의를 전달하고 모델 응답을 `AgentPlan`과 `AgentDraft`로 파싱·검증합니다. `get_agent_service()`의 Mock 주입을 이 어댑터로 바꿉니다. 현재 흐름은 `plan → Tool 실행 → generate` 한 번씩이므로, 모델이 중간 Tool 결과를 보고 추가 Tool을 선택하는 방식이라면 서비스 흐름과 테스트도 확장해야 합니다.
+2. 상대 날짜·시간 표현을 실제 날짜·시각으로 해석해 Tool 인자에 넣을 방법을 정하고 검증합니다. 일정에서 얻은 장소로 날씨를 다시 조회하는 흐름은 현재 한 번의 Tool 계획으로 처리하지 못하므로, 필요하면 WBS 6.5 통합 작업과 맞춰 구현합니다.
+3. 실제 모델로 로그인·옷장·Tool 호출·5 LOOK 응답을 끝까지 시험합니다. 요청별 Tool 선택, 인자, 5개 역할 순서, 일반 LOOK의 `item_id: null`, 실제 옷장 ID·사진 연결과 서로 다른 4·5번 조합, 만들 수 없는 LOOK의 `unavailable`을 확인합니다. 외부 API는 먼저 mock으로 재현하고, 실제 계정·API를 쓰는 확인은 별도로 진행합니다.
+4. 모델 응답 지연·실패, 잘못된 JSON·Tool 호출, 외부 Tool 오류의 처리 방식과 추론 시간·메모리 사용량을 확인합니다. 테스트한 모델 버전, 입력 사례, 호출 Tool, 결과, 실패 사례를 비밀키·OAuth Token 없이 인계 기록에 남깁니다.
+
+**4.5 완료 기준:** 실제 학습 모델이 Backend에 연결되고, 필요한 Tool만 안전하게 호출하며, 위 정상·예외 사례에서 계약에 맞는 5 LOOK 또는 명확한 오류를 반환해야 합니다. Mock 테스트만 통과하거나 모델 파일만 전달받은 상태는 완료 근거가 아닙니다. 피드백·저장 기능은 WBS 4.6 범위입니다.
+
+현재 Mock 단계는 위 4절의 로컬 환경과 PostgreSQL을 준비한 뒤 `backend` 디렉터리에서 재검증할 수 있습니다. 모델 어댑터를 추가하면 같은 명령으로 기존 기능의 회귀 여부를 확인하고, 실제 모델 통합 테스트를 별도로 실행합니다.
+
+```bash
+.venv/bin/ruff check app tests
+.venv/bin/python -m pytest -q
+```
+
+### 자동 검증 결과
+
+2026-11-03 현재 확인 결과입니다.
+
+- 전체 백엔드 테스트: `68 passed, 1 warning`
+- Ruff: `All checks passed!`
+- 기존 47개 테스트와 Agent Core·Tool·API 신규 21개 테스트를 함께 실행
+- 등록 사진 업로드 → 옷장 Tool → Agent 응답의 사진 URL 연결을 PostgreSQL 통합 테스트로 확인
+- PostgreSQL 통합 테스트는 트랜잭션 롤백으로 테스트 사용자·옷장 데이터를 남기지 않음
+- 네 Tool 어댑터는 외부 네트워크 대신 mock 함수로 전달 인자와 호출 순서를 검증
+- Weather·Calendar 자체 외부 API 동작은 기존 `httpx.MockTransport` 테스트가 담당
+
+경고 1건은 기존 `TestClient`와 `httpx` 조합의 `StarletteDeprecationWarning`입니다. 실제 Qwen3 추론 품질·속도·메모리, 실제 Kakao·기상청·Google API 가용성, 상대 날짜 해석은 이 자동 테스트 결과에 포함되지 않습니다.

@@ -14,7 +14,7 @@
 ### 1.2 프로젝트 최종 정의
 본 프로젝트는 **Qwen3-4B를 기반으로 패션 도메인에 특화된 SLM(소형 언어 모델)을 QLoRA(4비트 양자화 기반 저자원 파인튜닝 기법) 방식으로 파인튜닝**하고, 사용자의 자연어 요청을 분석하여 **프로필·패션 취향·보유 의류·목적지 날씨·Google Calendar 일정·이전 피드백 중 필요한 정보를 Agent(에이전트)가 선택적으로 조회하고 활용하는 Fashion AI Agent(패션 AI 에이전트)**를 개발하는 것을 목표로 한다.
 
-최종적으로 **Figma를 활용해 UI/UX(사용자 인터페이스/사용자 경험)를 설계**하고, 해당 Agent를 **FastAPI Backend(백엔드) + PostgreSQL + JavaScript/HTML/CSS 기반 반응형 웹**과 통합하여 사용자에게 **개인 맞춤형 3가지 LOOK**을 제공한다.
+최종적으로 **Figma를 활용해 UI/UX(사용자 인터페이스/사용자 경험)를 설계**하고, 해당 Agent를 **FastAPI Backend(백엔드) + PostgreSQL + JavaScript/HTML/CSS 기반 반응형 웹**과 통합하여 사용자에게 **개인 맞춤형 5가지 LOOK**을 제공한다.
 
 ### 1.3 프로젝트 핵심 방향
 - 오픈소스 SLM(소형 언어 모델)을 직접 선정한다.
@@ -54,7 +54,7 @@ DB(데이터베이스) / Kakao Local / 기상청 / Google Calendar(캘린더)
   ↓
 패션 추론
   ↓
-고정 JSON 구조의 3 LOOK 생성
+고정 JSON 구조의 5 LOOK 생성
   ↓
 Wardrobe Validator / JSON Validator
   ↓
@@ -135,7 +135,7 @@ Fashion Agent
 | Tool Calling(도구 호출) | 실제로 Tool을 사용하는 과정 | 필요한 Tool과 Argument를 결정하고 호출 |
 | Context(모델 참고정보) | 모델에게 주는 참고자료 묶음 | 사용자 요청, Tool 결과, 계절·TPO 등의 정보를 정리 |
 | Validator(검증 로직) | 결과 검사 로직 | 옷장 준수 여부와 JSON 형식을 검증 |
-| JSON(구조화 데이터 형식) | 프로그램이 읽기 쉬운 데이터 형식 | 최종 3 LOOK 결과를 고정된 구조로 전달 |
+| JSON(구조화 데이터 형식) | 프로그램이 읽기 쉬운 데이터 형식 | 최종 5 LOOK 결과를 고정된 구조로 전달 |
 
 ---
 
@@ -264,7 +264,7 @@ Fashion SLM
 
 1. **패션 추천 능력 학습**
    - 계절·날씨·TPO·스타일·색상·핏·사용자 취향을 고려한 코디 추천
-   - LOOK 1·2는 취향 최적, LOOK 3은 새로운 스타일로 구성
+   - LOOK 1·2는 취향 중심, LOOK 3은 새로운 스타일, LOOK 4·5는 실제 옷장 조합으로 구성
    - 추천 이유를 프로젝트가 원하는 형식으로 생성
 
 2. **Tool Calling 능력 학습**
@@ -323,7 +323,7 @@ Tool Result
   ↓
 Qwen3-4B
   ↓
-최종 3 LOOK JSON
+최종 5 LOOK JSON
 ```
 
 Router 역할:
@@ -367,7 +367,7 @@ Router 역할:
    ↓
 8. Fashion SLM에 Context 전달
    ↓
-9. 3 LOOK 생성
+9. 5 LOOK 생성
    ↓
 10. 고정 JSON 형식으로 출력
    ↓
@@ -586,11 +586,15 @@ Weather API(날씨 API) 실패:
 
 사용자는 Google Calendar에서 일정을 직접 관리하고, 서비스는 읽어서 추천에 활용한다.
 
-### 12.6 상황 기반 3종 코디 추천
+### 12.6 상황 기반 5 LOOK 코디 추천
 
 - LOOK 1: 사용자 취향 최적
 - LOOK 2: 사용자 취향 최적 + 다른 조합
 - LOOK 3: 새로운 스타일
+- LOOK 4: 보유 의류 중 최적 조합
+- LOOK 5: 보유 의류의 다른 조합
+
+옷장 구성이나 사용자 제약으로 만들 수 없는 LOOK은 이유를 포함해 `unavailable`로 반환한다.
 
 분석 요소:
 - 날짜
@@ -678,13 +682,13 @@ DISLIKE    → 부정
 
 ---
 
-## 16. 3 LOOK(코디안) JSON
+## 16. 5 LOOK(코디안) JSON
 
 Agent 최종 출력은 JSON으로 고정한다.
 
-여기서 **고정 JSON 출력**이란 Tool의 결과 자체를 의미하는 것이 아니라, 최종적으로 Fashion SLM/Fashion Agent가 생성한 **3 LOOK(코디안) 추천 결과를 Frontend가 처리하기 쉬운 일정한 JSON 구조로 받는 것**을 의미한다.
+여기서 **고정 JSON 출력**이란 Tool의 결과 자체를 의미하는 것이 아니라, 최종적으로 Fashion SLM/Fashion Agent가 생성한 **5 LOOK(코디안) 추천 결과를 Frontend가 처리하기 쉬운 일정한 JSON 구조로 받는 것**을 의미한다.
 
-Tool 내부 결과도 필요에 따라 JSON 형태로 주고받을 수 있지만, 본 프로젝트에서 말하는 **고정 JSON Output(고정 JSON 출력)의 핵심은 최종 3 LOOK 결과 형식**이다.
+Tool 내부 결과도 필요에 따라 JSON 형태로 주고받을 수 있지만, 본 프로젝트에서 말하는 **고정 JSON Output(고정 JSON 출력)의 핵심은 최종 5 LOOK 결과 형식**이다.
 
 ```text
 Tool Result
@@ -693,7 +697,7 @@ Context 구성
   ↓
 Fashion SLM
   ↓
-3 LOOK 생성
+5 LOOK 생성
   ↓
 고정 JSON 형식으로 출력
   ↓
@@ -705,30 +709,32 @@ Frontend(프론트엔드)
 예:
 ```json
 {
-  "look": 1,
-  "concept": "미니멀 캐주얼",
-  "top": {
-    "type": "체크 셔츠",
-    "color": "하늘색",
-    "fit": "오버핏",
-    "detail": "얇은 면 소재"
-  },
-  "bottom": {
-    "type": "데님 팬츠",
-    "color": "연청",
-    "fit": "와이드핏"
-  },
-  "shoes": {
-    "type": "로우탑 스니커즈",
-    "color": "화이트"
-  },
-  "outer": "얇은 네이비 코튼 블루종",
-  "accessory": "실버 메탈 시계",
-  "reason": "..."
+  "type": "fashion_recommendation",
+  "action": "generate_five_looks",
+  "context_summary": "프로필·취향과 실제 옷장을 확인했습니다.",
+  "called_tools": ["get_user_context", "get_wardrobe"],
+  "looks": [
+    {
+      "look_id": 1,
+      "role": "preference_best",
+      "status": "available",
+      "style": "미니멀 캐주얼",
+      "items": [
+        {"slot": "top", "name": "하늘색 체크 셔츠", "item_id": null},
+        {"slot": "bottom", "name": "연청 데님 팬츠", "item_id": null},
+        {"slot": "shoes", "name": "화이트 스니커즈", "item_id": null}
+      ],
+      "reason": "선호 스타일과 색을 반영했습니다."
+    },
+    {"look_id": 2, "role": "preference_alternative", "status": "available", "style": "캐주얼", "items": [{"slot": "top", "name": "아이보리 셔츠", "item_id": null}, {"slot": "bottom", "name": "차콜 슬랙스", "item_id": null}, {"slot": "shoes", "name": "블랙 로퍼", "item_id": null}], "reason": "선호 범위 안에서 다른 조합을 제안했습니다."},
+    {"look_id": 3, "role": "exploration", "status": "available", "style": "새로운 스타일 탐색", "items": [{"slot": "top", "name": "네이비 니트 베스트", "item_id": null}, {"slot": "bottom", "name": "베이지 와이드 팬츠", "item_id": null}, {"slot": "shoes", "name": "브라운 로퍼", "item_id": null}], "reason": "새로운 실루엣을 제안했습니다."},
+    {"look_id": 4, "role": "wardrobe_best", "status": "unavailable", "style": null, "items": [], "reason": "등록된 상의·하의·신발이 부족합니다."},
+    {"look_id": 5, "role": "wardrobe_alternative", "status": "unavailable", "style": null, "items": [], "reason": "서로 다른 두 번째 옷장 조합이 없습니다."}
+  ]
 }
 ```
 
-내 옷 추천에서는 실제 `item_id`를 포함하도록 한다.
+LOOK 1~3의 `item_id`는 `null`이고, LOOK 4~5가 `available`이면 실제 사용자 옷장의 `item_id`만 사용한다. 만들 수 없는 슬롯은 `unavailable`로 유지한다.
 
 ---
 
@@ -867,7 +873,7 @@ AI에 직접 전달하지 않는 정보:
 - 색상
 - 핏
 - 장소·시간·분위기
-- 3 LOOK 구성
+- 5 LOOK 구성
 - 추천 이유
 
 예:
@@ -880,6 +886,8 @@ AI에 직접 전달하지 않는 정보:
 LOOK 1 ...
 LOOK 2 ...
 LOOK 3 ...
+LOOK 4 ...
+LOOK 5 ...
 추천 이유 ...
 ```
 
@@ -941,7 +949,7 @@ Gold Data는 팀원이 직접 작성하고 검토하는 **고품질 기준 정�
 Fashion Recommendation Data와 Tool Calling Data 모두 Gold Data로 작성할 수 있다.
 
 예:
-- 특정 계절·날씨·TPO·취향에 적합한 3 LOOK 모범답안
+- 특정 계절·날씨·TPO·취향에 적합한 5 LOOK 모범답안
 - 특정 사용자 요청에서 호출해야 할 Tool과 Argument의 모범답안
 
 ### Synthetic Data(합성 데이터)
@@ -1249,10 +1257,12 @@ Kakao Local
 - 실제 날씨
 - 이전 Feedback
 
-### 3 LOOK
+### 5 LOOK
 - LOOK 1: 취향 최적
 - LOOK 2: 취향 최적 대안
 - LOOK 3: 새로운 스타일
+- LOOK 4: 보유 의류 최적 조합
+- LOOK 5: 보유 의류 대안 조합
 
 ### Validation(검증)
 - Wardrobe Validator
@@ -1379,6 +1389,8 @@ Recommendation(추천)
 → LOOK 1 취향 최적
 → LOOK 2 취향 최적 대안
 → LOOK 3 새로운 스타일
+→ LOOK 4 보유 의류 최적 조합
+→ LOOK 5 보유 의류 대안 조합
 
 일반 추천
 → 상세 텍스트 중심
@@ -1401,4 +1413,4 @@ Evaluation(평가)
 
 ## 36. 교수님께 한 문장으로 설명
 
-> 저희 프로젝트는 Qwen3-4B를 패션 데이터로 QLoRA 파인튜닝한 Fashion SLM(패션 특화 소형 언어 모델)을 기반으로 Router(라우터) + Tool Calling(도구 호출) 구조의 AI Agent를 직접 구현하고, 사용자의 요청에 따라 프로필·취향, 실제 옷장, 목적지의 기상청 날씨, Google Calendar 일정 중 필요한 정보를 선택적으로 조회하여 취향 최적 코디 2개와 새로운 스타일 코디 1개를 추천하며, Wardrobe Validator(옷장 데이터 검증 로직)와 JSON Validator(JSON 형식 검증 로직)로 결과를 검증하고 Base Model(기본 모델) → Base Model + Agent(기본 모델 + 에이전트) → Fine-Tuned Fashion Agent(파인튜닝된 패션 에이전트)의 3단계 성능평가를 통해 기술적 효과를 검증하는 반응형 웹 서비스입니다.
+> 저희 프로젝트는 Qwen3-4B를 패션 데이터로 QLoRA 파인튜닝한 Fashion SLM(패션 특화 소형 언어 모델)을 기반으로 Router(라우터) + Tool Calling(도구 호출) 구조의 AI Agent를 직접 구현하고, 사용자의 요청에 따라 프로필·취향, 실제 옷장, 목적지의 기상청 날씨, Google Calendar 일정 중 필요한 정보를 선택적으로 조회하여 일반 추천 3자리와 실제 옷장 추천 2자리의 5 LOOK을 제공하며, 만들 수 없는 슬롯은 이유와 함께 사용 불가로 표시하고, Wardrobe Validator(옷장 데이터 검증 로직)와 JSON Validator(JSON 형식 검증 로직)로 결과를 검증하고 Base Model(기본 모델) → Base Model + Agent(기본 모델 + 에이전트) → Fine-Tuned Fashion Agent(파인튜닝된 패션 에이전트)의 3단계 성능평가를 통해 기술적 효과를 검증하는 반응형 웹 서비스입니다.

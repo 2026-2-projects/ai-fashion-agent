@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from app.api.v1.agent import router as agent_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.calendar import router as calendar_router
 from app.api.v1.health import router as health_router
@@ -15,3 +16,4 @@ api_router.include_router(settings_router)
 api_router.include_router(wardrobe_router)
 api_router.include_router(weather_router)
 api_router.include_router(calendar_router)
+api_router.include_router(agent_router)
