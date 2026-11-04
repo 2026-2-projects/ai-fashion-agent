@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.agent.personalization import PreferenceTag, sanitize_preferences
 from app.api.v1.auth import get_current_user, require_csrf
 from app.core.database import get_db
 
@@ -27,9 +28,9 @@ class ProfileResponse(ProfileUpdate):
 
 
 class PreferencesUpdate(BaseModel):
-    preferred_styles: list[str] = Field(default_factory=list)
-    preferred_colors: list[str] = Field(default_factory=list)
-    disliked_colors: list[str] = Field(default_factory=list)
+    preferred_styles: list[PreferenceTag] = Field(default_factory=list)
+    preferred_colors: list[PreferenceTag] = Field(default_factory=list)
+    disliked_colors: list[PreferenceTag] = Field(default_factory=list)
     preferred_fit: str | None = Field(default=None, max_length=50)
 
 
@@ -61,7 +62,8 @@ def read_settings(db: Session, table: str, user_id: int) -> dict:
         .first()
     )
 
-    return dict(row) if row else {"user_id": user_id}
+    settings = dict(row) if row else {"user_id": user_id}
+    return sanitize_preferences(settings) if table == "user_preferences" else settings
 
 
 def save_settings(

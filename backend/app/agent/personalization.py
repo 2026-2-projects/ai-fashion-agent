@@ -1,8 +1,14 @@
 """Structured recommendation attributes and deterministic preference ranking."""
 
-from typing import Any
+from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
+
+MAX_PREFERENCE_TAG_LENGTH = 100
+PreferenceTag = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=MAX_PREFERENCE_TAG_LENGTH),
+]
 
 ALIASES = {
     "styles": {"미니멀": "minimal", "캐주얼": "casual", "클래식": "classic", "스트리트": "street"},
@@ -42,16 +48,43 @@ class LookFeatures(BaseModel):
     @field_validator("styles", "fits", "colors")
     @classmethod
     def canonical_tags(cls, values: list[str], info) -> list[str]:
-        if any(not value.strip() or len(value) > 100 for value in values):
+        if any(not value.strip() or len(value) > MAX_PREFERENCE_TAG_LENGTH for value in values):
             raise ValueError("속성은 1~100자의 구조화된 값이어야 합니다.")
         return list(dict.fromkeys(normalize_tag(info.field_name, value) for value in values))
+
+
+def sanitize_preferences(raw: Any) -> dict:
+    """Ignore invalid legacy values without rewriting the stored preferences."""
+    preferences = dict(raw) if isinstance(raw, dict) else {}
+    for field in ("preferred_styles", "preferred_colors", "disliked_colors"):
+        values = preferences.get(field)
+        preferences[field] = (
+            [
+                value.strip()
+                for value in values
+                if isinstance(value, str)
+                and 1 <= len(value.strip()) <= MAX_PREFERENCE_TAG_LENGTH
+            ]
+            if isinstance(values, list)
+            else []
+        )
+    fit = preferences.get("preferred_fit")
+    preferences["preferred_fit"] = (
+        fit.strip() if isinstance(fit, str) and 1 <= len(fit.strip()) <= 50 else None
+    )
+    return preferences
 
 
 def feedback_preferences(context: Any) -> dict:
     """Never overwrite manual settings; use learned scores to rank their choices."""
     if not isinstance(context, dict):
         context = {}
-    preferences = dict(context.get("preference") or {})
+    preferences = sanitize_preferences(context.get("preference"))
+    # Keep the source of each choice before filling missing fields from feedback/defaults.
+    preferences["_manual_preferences"] = {
+        "preferred_colors": list(preferences["preferred_colors"]),
+        "preferred_fit": preferences["preferred_fit"],
+    }
     summary = context.get("feedback_summary") or {}
     weights = summary.get("weights", {})
     preferences["_weights"] = weights
@@ -91,9 +124,13 @@ def wardrobe_rank(item: dict, preferences: dict) -> tuple[int, int]:
     """Manual preference matches take precedence over learned ranking."""
     color = normalize_tag("colors", str(item.get("color") or ""))
     fit = normalize_tag("fits", str(item.get("fit") or ""))
-    preferred = {normalize_tag("colors", value) for value in preferences["preferred_colors"]}
+    explicit = preferences.get("_manual_preferences", preferences)
+    preferred = {
+        normalize_tag("colors", value) for value in explicit.get("preferred_colors", [])
+    }
+    manual_fit = explicit.get("preferred_fit")
     manual = int(color in preferred) + int(
-        fit == normalize_tag("fits", preferences["preferred_fit"])
+        manual_fit is not None and fit == normalize_tag("fits", manual_fit)
     )
     scores = preferences.get("_weights", {})
     learned = scores.get("colors", {}).get(color, 0) + scores.get("fits", {}).get(fit, 0)
