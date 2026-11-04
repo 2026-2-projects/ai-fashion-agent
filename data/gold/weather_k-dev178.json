@@ -1,0 +1,130 @@
+[
+  {
+    "id": "TC-020",
+    "type": "tool_calling",
+    "reference_datetime": "2026-04-15T20:00:00+09:00",
+    "user_request": "내일 오전 10시에 전주 객사 갈 건데 날씨만 보고 코디 추천해줘. 내 취향은 따로 반영 안 해도 돼.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_weather",
+          "arguments": {
+            "place": "전주 객사",
+            "date": "2026-04-16",
+            "time": "10:00"
+          }
+        },
+        "tool_result": {
+          "temperature_c": 18,
+          "precipitation_probability": 80,
+          "precipitation_type": "rain",
+          "wind_mps": 2.5,
+          "humidity_percent": 82,
+          "sky": "cloudy"
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "2026-04-16 10:00 전주 객사, 18°C, 비, 강수확률 80%, 풍속 2.5m/s, 습도 82%. 날씨만 기준으로 일반 LOOK 1~3을 생성한다. 취향·옷장·일정은 조회하지 않는다. 옷장 LOOK 4~5는 미조회로 비활성화한다.",
+      "action": "generate_five_looks"
+    }
+  },
+  {
+    "id": "TC-021",
+    "type": "tool_calling",
+    "reference_datetime": "2026-07-23T08:00:00+09:00",
+    "user_request": "오늘 낮 12시에 서울 홍대에서 친구 만나. 날씨에 맞게 뭐 입을지 골라줘. 그냥 일반 코디면 돼.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_weather",
+          "arguments": {
+            "place": "서울 홍대",
+            "date": "2026-07-23",
+            "time": "12:00"
+          }
+        },
+        "tool_result": {
+          "temperature_c": 30,
+          "precipitation_probability": 70,
+          "precipitation_type": "rain",
+          "wind_mps": 2.0,
+          "humidity_percent": 87,
+          "sky": "cloudy"
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "2026-07-23 12:00 서울 홍대, 30°C, 비, 강수확률 70%, 습도 87%. 친구 만남에 적합한 일반 LOOK 1~3을 생성한다. 취향과 보유 의류를 조회하지 않으며 옷장 LOOK 4~5는 비활성화한다.",
+      "action": "generate_five_looks"
+    }
+  },
+  {
+    "id": "TC-022",
+    "type": "tool_calling",
+    "reference_datetime": "2026-05-13T19:00:00+09:00",
+    "user_request": "이번 주 토요일 오후 2시에 부산 해운대 여행 가는데 그때 날씨 기준으로 코디 추천해줘. 내 옷 말고 일반 추천으로 해줘.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_weather",
+          "arguments": {
+            "place": "부산 해운대",
+            "date": "2026-05-16",
+            "time": "14:00"
+          }
+        },
+        "tool_result": {
+          "temperature_c": 22,
+          "precipitation_probability": 10,
+          "precipitation_type": "none",
+          "wind_mps": 5.2,
+          "humidity_percent": 60,
+          "sky": "clear"
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "2026-05-16 14:00 부산 해운대, 22°C, 맑음, 풍속 5.2m/s. 해변 바람과 여행을 고려한다. 사용자가 내 옷이 아닌 일반 추천을 요청했으므로 일반 LOOK 1~3만 활성화한다. 옷장 LOOK 4~5는 비활성화한다. 목적지와 날짜가 명시되어 일정 조회는 생략한다.",
+      "action": "generate_five_looks"
+    }
+  },
+  {
+    "id": "TC-023",
+    "type": "tool_calling",
+    "reference_datetime": "2026-09-25T17:00:00+09:00",
+    "user_request": "모레 저녁 7시에 제주 협재해수욕장 산책할 건데 그 시간 날씨 보고 코디해줘. 바람도 고려해주고 일반 추천으로 부탁해.",
+    "steps": [
+      {
+        "step": 1,
+        "tool_call": {
+          "name": "get_weather",
+          "arguments": {
+            "place": "제주 협재해수욕장",
+            "date": "2026-09-27",
+            "time": "19:00"
+          }
+        },
+        "tool_result": {
+          "temperature_c": 19,
+          "precipitation_probability": 20,
+          "precipitation_type": "none",
+          "wind_mps": 8.3,
+          "humidity_percent": 65,
+          "sky": "cloudy"
+        }
+      }
+    ],
+    "final_response": {
+      "type": "fashion_recommendation",
+      "context_summary": "2026-09-27 19:00 제주 협재해수욕장, 19°C, 흐림, 풍속 8.3m/s. 저녁 산책과 강한 바람을 고려한 일반 LOOK 1~3을 생성한다. 요청한 일반 추천 범위에 따라 옷장 LOOK 4~5는 비활성화한다.",
+      "action": "generate_five_looks"
+    }
+  }
+]

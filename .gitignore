@@ -216,3 +216,27 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+.DS_Store
+
+# Generated mixed-dataset outputs
+/data/processed/**/*.jsonl
+/data/processed/mixed_pilot/
+/data/synthetic/**/*_sft.jsonl
+/data/synthetic/**/*_validation.json
+/data/synthetic/pilot/synthetic_pilot_jobs.jsonl
+/backend/.env
+
+# Google OAuth credentials and local tokens
+/backend/.secrets/
+/backend/client_secret*.json
+/backend/credentials*.json
+/backend/token*.json
+
+# Local VS Code settings
+/backend/.vscode/
+
+# Generated synthetic candidate datasets
+/data/synthetic/**/*_candidates.jsonl
+
+# Generated synthetic candidate datasets
+/data/synthetic/**/*_candidates.jsonl
