@@ -2,7 +2,7 @@
 
 from app.agent.contracts import (
     AgentRecommendationRequest,
-    AgentRecommendationResponse,
+    AgentRecommendationResult,
     FashionLook,
     normalize_wardrobe_slot,
 )
@@ -23,7 +23,7 @@ class AgentService:
         self,
         request: AgentRecommendationRequest,
         runtime: ToolRuntime,
-    ) -> AgentRecommendationResponse:
+    ) -> AgentRecommendationResult:
         plan = self._inference.plan(request)
         names = {call.name for call in plan.calls}
         if not {"get_user_context", "get_wardrobe"}.issubset(names):
@@ -31,7 +31,7 @@ class AgentService:
         tool_results = self._tools.execute(plan, runtime)
         draft = self._inference.generate(request, tool_results)
         looks = self._validate_wardrobe_looks(draft.looks, tool_results["get_wardrobe"])
-        return AgentRecommendationResponse(
+        return AgentRecommendationResult(
             called_tools=list(tool_results),
             context_summary=draft.context_summary,
             looks=looks,

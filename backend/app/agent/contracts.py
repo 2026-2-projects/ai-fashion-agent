@@ -1,6 +1,7 @@
 """Agent Core의 모델 비의존 입력·출력 계약."""
 
 from typing import Annotated, Any, Literal
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
@@ -133,9 +134,15 @@ class AgentDraft(BaseModel):
         return self
 
 
-class AgentRecommendationResponse(AgentDraft):
-    """학습 데이터와 일치하는 고정 5 LOOK JSON 응답."""
+class AgentRecommendationResult(AgentDraft):
+    """Agent가 생성하고 Backend 검증을 통과한 고정 5 LOOK 결과."""
 
     type: Literal["fashion_recommendation"] = "fashion_recommendation"
     action: Literal["generate_five_looks"] = "generate_five_looks"
     called_tools: list[ToolName]
+
+
+class AgentRecommendationResponse(AgentRecommendationResult):
+    """DB 저장까지 완료된 추천 API 성공 응답."""
+
+    recommendation_id: UUID

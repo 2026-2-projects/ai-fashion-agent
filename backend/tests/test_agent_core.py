@@ -231,6 +231,110 @@ def test_agent_service_returns_five_looks_and_marks_missing_second_wardrobe_look
     assert result.looks[4].items == []
 
 
+def test_mock_prioritizes_positive_feedback_and_excludes_negative_style_candidates():
+    context = {
+        "preference": {
+            "preferred_styles": ["minimal", "casual"],
+            "preferred_colors": ["navy"],
+            "disliked_colors": [],
+            "preferred_fit": "regular",
+        },
+        "feedback_summary": {
+            "positive_styles": ["고프코어", "미니멀 데일리"],
+            "negative_styles": ["minimal"],
+            "style_scores": [
+                {"style": "고프코어", "score": 3},
+                {"style": "미니멀 데일리", "score": 1},
+                {"style": "minimal", "score": -1},
+            ],
+        },
+    }
+    preferences = MockInferenceEngine._preferences(context)
+
+    draft = MockInferenceEngine().generate(
+        AgentRecommendationRequest(message="코디 추천해줘"),
+        {"get_user_context": context, "get_wardrobe": []},
+    )
+
+    assert preferences["preferred_styles"] == ["고프코어", "미니멀 데일리", "casual"]
+    assert [look.style for look in draft.looks[:2]] == ["고프코어", "미니멀 데일리"]
+    assert all(look.style != "minimal" for look in draft.looks if look.style is not None)
+
+
+def test_mock_keeps_existing_style_behavior_without_feedback_summary():
+    context = {
+        "preference": {
+            "preferred_styles": ["minimal", "casual"],
+            "preferred_colors": [],
+            "disliked_colors": [],
+            "preferred_fit": "regular",
+        }
+    }
+
+    draft = MockInferenceEngine().generate(
+        AgentRecommendationRequest(message="코디 추천해줘"),
+        {"get_user_context": context, "get_wardrobe": []},
+    )
+
+    assert [look.style for look in draft.looks[:2]] == [
+        "minimal 데일리",
+        "casual 레이어드",
+    ]
+
+
+def test_mock_excludes_negative_style_after_final_concept_is_built():
+    context = {
+        "preference": {
+            "preferred_styles": ["미니멀", "캐주얼"],
+            "preferred_colors": [],
+            "disliked_colors": [],
+            "preferred_fit": "regular",
+        },
+        "feedback_summary": {
+            "positive_styles": [],
+            "negative_styles": ["미니멀 데일리"],
+            "style_scores": [{"style": "미니멀 데일리", "score": -1}],
+        },
+    }
+
+    draft = MockInferenceEngine().generate(
+        AgentRecommendationRequest(message="코디 추천해줘"),
+        {"get_user_context": context, "get_wardrobe": []},
+    )
+
+    assert draft.looks[0].style == "캐주얼 레이어드"
+    assert "미니멀 데일리" not in [look.style for look in draft.looks]
+
+
+def test_mock_excludes_negative_exact_style_from_available_wardrobe_looks():
+    wardrobe = [
+        {"item_id": 11, "category": "top", "type": "shirt", "color": "white"},
+        {"item_id": 12, "category": "top", "type": "knit", "color": "navy"},
+        {"item_id": 13, "category": "bottom", "type": "slacks", "color": "black"},
+        {"item_id": 14, "category": "shoes", "type": "sneakers", "color": "white"},
+    ]
+    context = {
+        "preference": {},
+        "feedback_summary": {
+            "positive_styles": [],
+            "negative_styles": ["보유 의류 기본 조합"],
+            "style_scores": [{"style": "보유 의류 기본 조합", "score": -1}],
+        },
+    }
+
+    draft = MockInferenceEngine().generate(
+        AgentRecommendationRequest(message="내 옷으로 코디 추천해줘"),
+        {"get_user_context": context, "get_wardrobe": wardrobe},
+    )
+
+    assert [look.status for look in draft.looks[3:]] == ["available", "available"]
+    assert [look.style for look in draft.looks[3:]] == [
+        "보유 의류 추천 조합",
+        "보유 의류 대안 조합",
+    ]
+    assert "보유 의류 기본 조합" not in [look.style for look in draft.looks[3:]]
+
+
 def test_mock_returns_two_distinct_owned_looks_and_respects_wardrobe_only_request():
     wardrobe = [
         {"item_id": 11, "category": "top", "type": "shirt", "color": "white"},

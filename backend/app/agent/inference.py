@@ -94,12 +94,33 @@ class MockInferenceEngine:
     def _contains(message: str, keywords: tuple[str, ...]) -> bool:
         return any(keyword in message for keyword in keywords)
 
-    @staticmethod
-    def _preferences(raw: Any) -> dict[str, Any]:
+    @classmethod
+    def _preferences(cls, raw: Any) -> dict[str, Any]:
         if not isinstance(raw, dict):
             return {}
         preference = raw.get("preference")
-        return preference if isinstance(preference, dict) else {}
+        if not isinstance(preference, dict):
+            preference = {}
+
+        summary = raw.get("feedback_summary")
+        if not isinstance(summary, dict):
+            return preference
+
+        positive_styles = list(dict.fromkeys(cls._text_list(summary.get("positive_styles"))))
+        negative_styles = list(dict.fromkeys(cls._text_list(summary.get("negative_styles"))))
+        negative_set = set(negative_styles)
+        personalized_styles = [style for style in positive_styles if style not in negative_set]
+        manual_styles = [
+            style
+            for style in cls._text_list(preference.get("preferred_styles"))
+            if style not in negative_set and style not in personalized_styles
+        ]
+
+        merged = dict(preference)
+        merged["preferred_styles"] = [*personalized_styles, *manual_styles]
+        merged["_personalized_positive_styles"] = personalized_styles
+        merged["_personalized_negative_styles"] = negative_styles
+        return merged
 
     @staticmethod
     def _wardrobe(raw: Any) -> list[dict[str, Any]]:
@@ -115,18 +136,80 @@ class MockInferenceEngine:
         weather: Any,
         events: Any,
     ) -> list[FashionLook]:
-        styles = self._text_list(preferences.get("preferred_styles")) or ["미니멀", "캐주얼"]
+        negative_styles = set(self._text_list(preferences.get("_personalized_negative_styles")))
+        styles = self._text_list(preferences.get("preferred_styles"))
+        if not styles:
+            styles = [
+                style
+                for style in ("미니멀", "캐주얼", "클래식", "컨템포러리")
+                if style not in negative_styles
+            ][:2]
+        if not styles:
+            styles = ["새로운 스타일"]
+        personalized_styles = self._text_list(preferences.get("_personalized_positive_styles"))
         colors = self._text_list(preferences.get("preferred_colors")) or ["네이비", "아이보리"]
         disliked = set(self._text_list(preferences.get("disliked_colors")))
         colors = [color for color in colors if color not in disliked] or ["네이비", "아이보리"]
         fit = preferences.get("preferred_fit")
         preferred_fit = fit if isinstance(fit, str) and fit.strip() else "레귤러"
 
-        concepts = [
-            f"{styles[0]} 데일리",
-            f"{styles[min(1, len(styles) - 1)]} 레이어드",
-            "새로운 스타일 탐색",
+        manual_styles = [style for style in styles if style not in personalized_styles]
+        concept_candidates = list(personalized_styles)
+        if not personalized_styles:
+            concept_candidates.extend(
+                [
+                    f"{styles[0]} 데일리",
+                    f"{styles[min(1, len(styles) - 1)]} 레이어드",
+                ]
+            )
+        else:
+            for slot in range(len(personalized_styles), 2):
+                if not manual_styles:
+                    break
+                style = manual_styles[min(slot - len(personalized_styles), len(manual_styles) - 1)]
+                suffix = "데일리" if slot == 0 else "레이어드"
+                concept_candidates.append(f"{style} {suffix}")
+
+        fallback_bases = [
+            *manual_styles,
+            "미니멀",
+            "캐주얼",
+            "클래식",
+            "컨템포러리",
         ]
+        concept_candidates.extend(
+            f"{style} {suffix}" for style in fallback_bases for suffix in ("데일리", "레이어드")
+        )
+
+        concepts: list[str] = []
+        for concept in concept_candidates:
+            if concept not in negative_styles and concept not in concepts:
+                concepts.append(concept)
+            if len(concepts) == 2:
+                break
+        fallback_index = 1
+        while len(concepts) < 2:
+            concept = f"개인화 대안 스타일 {fallback_index}"
+            if concept not in negative_styles and concept not in concepts:
+                concepts.append(concept)
+            fallback_index += 1
+
+        exploration_candidates = [
+            "새로운 스타일 탐색",
+            "새로운 실루엣 탐색",
+            "개성 있는 스타일 탐색",
+        ]
+        exploration_index = 1
+        while True:
+            exploration = (
+                exploration_candidates.pop(0)
+                if exploration_candidates
+                else f"새로운 스타일 탐색 {exploration_index}"
+            )
+            exploration_index += 1
+            if exploration not in negative_styles and exploration not in concepts:
+                concepts.append(exploration)
+                break
         roles = ["preference_best", "preference_alternative", "exploration"]
         wardrobe_only = self._contains(request.message.lower(), self.wardrobe_only_keywords)
 
@@ -203,6 +286,7 @@ class MockInferenceEngine:
         self, wardrobe: list[dict[str, Any]], preferences: dict[str, Any]
     ) -> list[FashionLook]:
         disliked = {color.lower() for color in self._text_list(preferences.get("disliked_colors"))}
+        negative_styles = set(self._text_list(preferences.get("_personalized_negative_styles")))
         eligible = [
             item
             for item in wardrobe
@@ -221,17 +305,46 @@ class MockInferenceEngine:
             2,
         )
         looks: list[FashionLook] = []
+        used_styles: set[str] = set()
         for index, combination in enumerate(combinations, start=4):
             items = [
                 self._owned_item(item, slot)
                 for item, slot in zip(combination, ("top", "bottom", "shoes"), strict=True)
             ]
+            style_candidates = (
+                (
+                    "보유 의류 기본 조합",
+                    "보유 의류 추천 조합",
+                    "보유 의류 데일리 조합",
+                )
+                if index == 4
+                else (
+                    "보유 의류 대안 조합",
+                    "보유 의류 색다른 조합",
+                    "보유 의류 레이어드 조합",
+                )
+            )
+            style = next(
+                (
+                    candidate
+                    for candidate in style_candidates
+                    if candidate not in negative_styles and candidate not in used_styles
+                ),
+                None,
+            )
+            fallback_index = 1
+            while style is None:
+                candidate = f"보유 의류 개인화 조합 {index}-{fallback_index}"
+                if candidate not in negative_styles and candidate not in used_styles:
+                    style = candidate
+                fallback_index += 1
+            used_styles.add(style)
             looks.append(
                 FashionLook(
                     look_id=index,
                     role="wardrobe_best" if index == 4 else "wardrobe_alternative",
                     status="available",
-                    style="보유 의류 기본 조합" if index == 4 else "보유 의류 대안 조합",
+                    style=style,
                     items=items,
                     reason="등록된 의류만 사용해 완성 코디를 구성했습니다.",
                 )

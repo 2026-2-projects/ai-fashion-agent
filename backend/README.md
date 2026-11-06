@@ -1,6 +1,6 @@
 # AI Fashion Agent Backend
 
-Qwen3-4B 기반 개인화 패션 추천 서비스의 FastAPI 백엔드입니다. PostgreSQL 기반 회원·프로필·옷장 기능, WBS 4.3 Location·Weather Tool, WBS 4.4 Google Calendar 읽기 전용 연동, WBS 4.5 모델 비의존 Mock Agent Core를 포함합니다.
+Qwen3-4B 기반 개인화 패션 추천 서비스의 FastAPI 백엔드입니다. PostgreSQL 기반 회원·프로필·옷장 기능, WBS 4.3 Location·Weather Tool, WBS 4.4 Google Calendar 읽기 전용 연동, WBS 4.5 모델 비의존 Mock Agent Core, WBS 4.6 LOOK 평가·저장·개인화 집계를 포함합니다.
 
 이 문서는 로컬 개발과 팀원 인계를 위한 기준입니다. 아래 검증 결과는 명시된 로컬 환경에서 확인한 값이며, 배포 환경의 성능·가용성·보안을 보장한다는 뜻은 아닙니다.
 
@@ -65,10 +65,16 @@ PostgreSQL 15
 | 날짜별 일정 | `GET /calendar/events?date=YYYY-MM-DD` | 200 | 409 미연결·재인증 필요, 429 호출 한도, 502 Google API 오류 |
 | Calendar 연결 해제 | `DELETE /calendar/connection` | 204 | 403 CSRF 실패, 502 Google 권한 철회 미확인 |
 | Agent 5 LOOK 추천 | `POST /agent/recommend` | 200 | 401 로그인, 403 CSRF, 409 Tool 연결·장소 모호, 422 Tool 인자, 502 외부 API·Tool 계획, 503 설정 누락 |
+| LOOK 평가 저장·변경 | `PUT /recommendations/{recommendation_id}/looks/{look_id}/feedback` | 200 | 401 로그인, 403 CSRF, 404 추천 없음·타인 소유, 409 `unavailable`, 422 입력 검증 |
+| LOOK 평가 취소 | `DELETE /recommendations/{recommendation_id}/looks/{look_id}/feedback` | 200 | 401 로그인, 403 CSRF, 404 추천 없음·타인 소유, 409 `unavailable`, 422 LOOK 번호 |
+| LOOK 저장 | `PUT /recommendations/{recommendation_id}/looks/{look_id}/saved` | 200 | 401 로그인, 403 CSRF, 404 추천 없음·타인 소유, 409 `unavailable`, 422 LOOK 번호 |
+| LOOK 저장 취소 | `DELETE /recommendations/{recommendation_id}/looks/{look_id}/saved` | 200 | 401 로그인, 403 CSRF, 404 추천 없음·타인 소유, 409 `unavailable`, 422 LOOK 번호 |
+| 추천별 버튼 상태 조회 | `GET /recommendations/{recommendation_id}/interactions` | 200 | 401 로그인, 404 추천 없음·타인 소유 |
+| 저장한 코디 목록 | `GET /saved-outfits` | 200 | 401 로그인 |
 
-로그인 응답의 `csrf_token`은 로그아웃, 프로필·취향 수정, 회원 탈퇴, Agent 추천 요청에서 `X-CSRF-Token` 헤더로 전달합니다. 세션 쿠키의 유효시간은 2시간이며 `SameSite=Lax`가 적용됩니다.
+로그인 응답의 `csrf_token`은 로그아웃, 프로필·취향 수정, 회원 탈퇴, Agent 추천, LOOK 평가·저장·취소 요청에서 `X-CSRF-Token` 헤더로 전달합니다. 상태와 목록을 읽는 GET 요청은 로그인 세션은 필요하지만 CSRF 헤더는 요구하지 않습니다. 세션 쿠키의 유효시간은 2시간이며 `SameSite=Lax`가 적용됩니다.
 
-회원 탈퇴는 비밀번호와 CSRF 토큰을 다시 검증한 뒤 `users` 행을 삭제하고 세션을 비웁니다. 현재 로컬 스키마에서 아래 6개 FK는 모두 `ON DELETE CASCADE`로 확인했습니다.
+회원 탈퇴는 비밀번호와 CSRF 토큰을 다시 검증한 뒤 `users` 행을 삭제하고 세션을 비웁니다. WBS 4.6 마이그레이션은 `recommendation_runs.user_id`를 기존 사용자 종속 관계에 추가합니다.
 
 - `user_profiles.user_id`
 - `user_preferences.user_id`
@@ -76,6 +82,7 @@ PostgreSQL 15
 - `feedback.user_id`
 - `saved_outfits.user_id`
 - `google_calendar_connections.user_id`
+- `recommendation_runs.user_id`
 
 ## 3. 프로젝트 구조
 
@@ -93,7 +100,8 @@ backend/
 │   │       ├── settings.py      # 프로필·패션 취향 조회·수정
 │   │       ├── weather.py       # Location·Weather HTTP 라우트
 │   │       ├── calendar.py      # Google OAuth·일정 조회·연결 해제 API
-│   │       └── agent.py         # 인증된 5 LOOK 추천 API와 오류 매핑
+│   │       ├── agent.py         # 인증된 5 LOOK 추천 API와 오류 매핑
+│   │       └── recommendations.py # LOOK 평가·저장·상태 조회 API
 │   ├── agent/
 │   │   ├── contracts.py         # Tool 계획·고정 5 LOOK JSON 계약
 │   │   ├── inference.py         # 교체 가능한 추론 인터페이스와 Mock 구현
@@ -108,6 +116,7 @@ backend/
 │   │   ├── location.py          # Kakao 장소 검색·동명 장소 판별
 │   │   ├── weather.py           # 격자 변환·기상청 조회·정규화
 │   │   ├── google_calendar.py   # OAuth·암호화 저장·갱신·Events API
+│   │   ├── recommendation_interactions.py # LOOK 평가·저장·개인화 재집계
 │   │   └── errors.py            # 외부 API 키를 노출하지 않는 도메인 오류
 │   └── core/
 │       ├── config.py            # .env 로딩과 설정값
@@ -125,7 +134,12 @@ backend/
 │   ├── test_calendar_api.py
 │   ├── test_user_context_tool.py
 │   ├── test_agent_core.py
-│   └── test_agent_api.py
+│   ├── test_agent_api.py
+│   ├── test_recommendation_history.py
+│   └── test_recommendation_interactions.py
+├── migrations/
+│   ├── 001_feedback_save.sql          # 추천 UUID·LOOK 연결·소유권 제약
+│   └── 002_optional_dislike_reason.sql # 싫어요 사유 선택 입력 허용
 ├── pyproject.toml               # pytest·Ruff 설정
 ├── requirements.txt             # 실행 의존성
 └── requirements-dev.txt         # 테스트·정적 검사 의존성
@@ -151,7 +165,7 @@ pg_isready
 psql -d ai_fashion_agent -c '\dt'
 ```
 
-현재 API가 기대하는 테이블은 다음 7개입니다.
+현재 API가 기대하는 테이블은 다음 8개입니다.
 
 ```text
 users
@@ -161,9 +175,17 @@ wardrobe_items
 feedback
 saved_outfits
 google_calendar_connections
+recommendation_runs
 ```
 
-주의: 현재 저장소에는 DB 마이그레이션이나 초기 DDL 파일이 없습니다. 따라서 위 스키마가 준비된 로컬 DB가 필요합니다. 새 팀원 환경에서는 DB 스키마 담당자에게 같은 스키마를 전달받은 뒤 테이블과 FK를 확인해야 합니다.
+기본 사용자·프로필·옷장 스키마는 기존 DB에 준비되어 있어야 합니다. WBS 4.6 변경은 백업을 확인한 뒤 번호 순서대로 적용합니다. `001` 적용 후 `002`를 누락하면 `dislike`의 `reason`을 생략하는 최종 API 계약과 DB 제약이 어긋납니다.
+
+```bash
+psql -v ON_ERROR_STOP=1 -d ai_fashion_agent -f migrations/001_feedback_save.sql
+psql -v ON_ERROR_STOP=1 -d ai_fashion_agent -f migrations/002_optional_dislike_reason.sql
+```
+
+이 파일은 기존 테이블 전체를 처음부터 만드는 초기 DDL이 아니라 WBS 4.6 증분 마이그레이션입니다. 새 팀원 환경은 기존 기본 스키마를 먼저 전달받은 뒤 두 파일을 적용해야 합니다.
 
 ### 4.2 가상환경과 패키지
 
@@ -592,3 +614,88 @@ Router가 허용하는 Tool은 다음 4개뿐입니다.
 - Weather·Calendar 자체 외부 API 동작은 기존 `httpx.MockTransport` 테스트가 담당
 
 경고 1건은 기존 `TestClient`와 `httpx` 조합의 `StarletteDeprecationWarning`입니다. 실제 Qwen3 추론 품질·속도·메모리, 실제 Kakao·기상청·Google API 가용성, 상대 날짜 해석은 이 자동 테스트 결과에 포함되지 않습니다.
+
+## WBS 4.6 — LOOK 평가·저장·지속 개인화
+
+### 서버 기준과 소유권
+
+`POST /api/v1/agent/recommend`가 반환한 `recommendation_id`와 각 LOOK의 `look_id` 1~5를 후속 요청에 사용합니다. 평가와 저장 본문으로 LOOK 내용을 받지 않고, 서버의 `recommendation_runs.looks` JSONB에 저장된 해당 LOOK만 신뢰합니다. 따라서 클라이언트가 스타일·아이템·옷장 ID를 바꿔 다른 코디를 평가하거나 저장할 수 없습니다.
+
+- 인증된 사용자 본인의 `recommendation_runs` 행만 조회·변경합니다.
+- 없는 추천 UUID와 다른 사용자의 UUID는 모두 404로 응답해 소유 여부를 노출하지 않습니다.
+- `look_id`는 1~5만 허용하며 범위 밖은 422입니다.
+- `status: "unavailable"`인 LOOK은 평가·저장·취소 대상이 아니며 409를 반환합니다.
+- PUT·DELETE는 세션 쿠키와 `X-CSRF-Token`을 모두 검증합니다. GET은 세션 로그인만 검증합니다.
+- 같은 PUT이나 DELETE를 재시도해도 중복 누적되지 않도록 멱등적으로 처리합니다.
+
+### 평가 API
+
+```http
+PUT /api/v1/recommendations/{recommendation_id}/looks/{look_id}/feedback
+X-CSRF-Token: <login response token>
+Content-Type: application/json
+
+{"feedback_type":"like"}
+```
+
+`feedback_type`은 `like` 또는 `dislike`만 허용합니다. 싫어요 사유가 있으면 `reason`에 `color`, `fit`, `not_my_style`, `too_dressed_up`, `too_plain` 중 하나를 선택적으로 보낼 수 있습니다. 좋아요에는 사유를 보낼 수 없습니다.
+
+```json
+{
+  "feedback_type": "dislike",
+  "reason": "not_my_style"
+}
+```
+
+좋아요와 싫어요는 한 LOOK에 동시에 저장되지 않습니다. 현재 활성화된 버튼을 다시 누르면 아래 DELETE로 평가를 취소하고, 반대 버튼을 누르면 그 값으로 PUT해 기존 평가를 교체합니다.
+
+```http
+DELETE /api/v1/recommendations/{recommendation_id}/looks/{look_id}/feedback
+X-CSRF-Token: <login response token>
+```
+
+### 저장 API
+
+```http
+PUT /api/v1/recommendations/{recommendation_id}/looks/{look_id}/saved
+X-CSRF-Token: <login response token>
+```
+
+저장은 평가와 독립입니다. 좋아요·싫어요를 바꾸거나 취소해도 저장 상태는 유지되며, 저장된 LOOK은 서버의 추천 JSON 스냅샷을 `saved_outfits.outfit_data`에 저장합니다. 현재 저장된 버튼을 다시 누르면 아래 DELETE로 저장을 취소하고 해당 DB 행을 삭제합니다.
+
+```http
+DELETE /api/v1/recommendations/{recommendation_id}/looks/{look_id}/saved
+X-CSRF-Token: <login response token>
+```
+
+평가·저장 PUT/DELETE 응답은 `recommendation_id`, `look_id`, `status`, `feedback`, `reason`, `saved`로 해당 LOOK의 현재 서버 상태를 반환합니다. Frontend는 평가와 저장을 별개 상태로 표현해야 합니다.
+
+### 상태·저장 목록 조회
+
+```http
+GET /api/v1/recommendations/{recommendation_id}/interactions
+GET /api/v1/saved-outfits
+```
+
+첫 번째 GET은 해당 추천의 1~5번 LOOK별 `feedback` 값과 `saved` 여부를 반환합니다. Frontend는 새로고침·화면 복귀 시 이 값으로 좋아요·싫어요·저장됨 버튼을 복원합니다. 두 번째 GET은 현재 사용자가 직접 저장한 LOOK만 최신 저장순으로 반환하며, 전체 추천 히스토리를 제공하지는 않습니다.
+
+저장 목록의 각 항목은 `id`, `recommendation_id`, `look_id`, `title`, `outfit_data`, `created_at`을 포함합니다. WBS 4.6 이전 레거시 저장 행은 `recommendation_id`와 `look_id`가 `null`일 수 있으며, `outfit_data`는 저장 당시의 JSON object입니다.
+
+Frontend에서는 다음 상태 전이를 적용합니다.
+
+1. 요청 중에는 해당 LOOK의 평가·저장 버튼을 잠깁니다.
+2. 성공하면 서버 응답의 현재 상태로 버튼을 교체합니다.
+3. 실패하면 요청 전 표시로 되돌리고 오류를 안내합니다.
+4. `unavailable` LOOK의 세 버튼은 활성화하지 않습니다.
+
+### 개인화 점수와 재집계
+
+점수는 좋아요 `+1`, 싫어요 `-1`, 저장 `+2`를 사용합니다. 변경·취소·재시도에서 점수가 중복 누적되지 않도록, 각 mutation에서 현재 사용자의 연결된 평가·저장 행 전체를 다시 계산해 `user_preferences.feedback_summary`를 저장합니다. 해당 행 변경과 요약 갱신은 한 트랜잭션으로 처리하므로 실패 시 둘 다 롤백됩니다. `get_user_context()`는 이 요약을 다음 Agent 추천 Context에 전달합니다.
+
+집계는 서버에 저장된 `available` LOOK의 정확한 `style`만 사용합니다. 현재 LOOK 계약에 색상·핏 속성이 없으므로 이 값을 아이템 이름이나 설명에서 추론해 저장하지 않습니다. 마이그레이션 전에 생성된 `recommendation_id IS NULL`인 기존 `feedback`·`saved_outfits` 행은 삭제하지 않고 보존하되, 서버 추천 LOOK과 연결을 검증할 수 없으므로 이 요약 집계에서는 제외합니다.
+
+### 마이그레이션·검증 주의
+
+`migrations/001_feedback_save.sql`을 먼저 적용한 뒤 `migrations/002_optional_dislike_reason.sql`을 적용합니다. 두 파일은 이 절의 최종 API 계약을 구성하는 순차 마이그레이션이므로 순서를 바꾸거나 중간 파일을 누락하지 않습니다. 로컬 DB에는 적용 전 백업을 유지하고, 이미 적용한 파일을 재실행하지 않습니다.
+
+자동 테스트는 실제 PostgreSQL 스키마를 사용하되 바깥 트랜잭션과 savepoint에 참여시킨 뒤 마지막에 롤백해 테스트 사용자·평가·저장 행을 남기지 않습니다. 2026-11-06 로컬 검증에서 전체 백엔드 테스트는 `85 passed, 1 warning`, Ruff 검사는 `All checks passed`, 변경 파일 포맷 검사와 `git diff --check`도 통과했습니다. 경고 1건은 기존 `TestClient`·`httpx` 조합의 `StarletteDeprecationWarning`입니다.
