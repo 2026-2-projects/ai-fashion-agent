@@ -231,6 +231,7 @@ __marimo__/
 /backend/client_secret*.json
 /backend/credentials*.json
 /backend/token*.json
+/backend/.wardrobe_media/
 
 # Local VS Code settings
 /backend/.vscode/
@@ -240,3 +241,6 @@ __marimo__/
 
 # Generated synthetic candidate datasets
 /data/synthetic/**/*_candidates.jsonl
+
+# Local wardrobe image uploads
+/.wardrobe_media/

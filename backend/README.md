@@ -699,3 +699,34 @@ Frontend에서는 다음 상태 전이를 적용합니다.
 `migrations/001_feedback_save.sql`을 먼저 적용한 뒤 `migrations/002_optional_dislike_reason.sql`을 적용합니다. 두 파일은 이 절의 최종 API 계약을 구성하는 순차 마이그레이션이므로 순서를 바꾸거나 중간 파일을 누락하지 않습니다. 로컬 DB에는 적용 전 백업을 유지하고, 이미 적용한 파일을 재실행하지 않습니다.
 
 자동 테스트는 실제 PostgreSQL 스키마를 사용하되 바깥 트랜잭션과 savepoint에 참여시킨 뒤 마지막에 롤백해 테스트 사용자·평가·저장 행을 남기지 않습니다. 2026-11-06 로컬 검증에서 전체 백엔드 테스트는 `85 passed, 1 warning`, Ruff 검사는 `All checks passed`, 변경 파일 포맷 검사와 `git diff --check`도 통과했습니다. 경고 1건은 기존 `TestClient`·`httpx` 조합의 `StarletteDeprecationWarning`입니다.
+
+## 추천 LOOK 상품 이미지 조회 — SerpApi Google Shopping
+
+Agent 추천 생성과 외부 이미지 검색은 서로 실패를 전파하지 않도록 분리합니다. 추천 API와 `recommendation_runs.looks`, `saved_outfits.outfit_data`에는 외부 상품 이미지 메타데이터를 추가하지 않습니다.
+
+```http
+GET /api/v1/recommendations/{recommendation_id}/looks/{look_id}/images
+```
+
+- 세션 로그인이 필요하지만 읽기 API이므로 CSRF 토큰은 요구하지 않습니다.
+- 현재 사용자 소유 추천만 조회하며, 없는 추천과 다른 사용자 추천은 모두 404입니다.
+- 일반 추천 LOOK 1~3의 `name`과 `slot`만 서버가 검색어로 사용합니다. 사용자 원문이나 임의 클라이언트 검색어를 SerpApi에 전달하지 않습니다.
+- 옷장 LOOK 4~5는 SerpApi를 호출하지 않고 기존 사용자 업로드 사진만 반환합니다. 사진이 없을 때 유사 상품으로 대체하지 않습니다.
+- `unavailable` LOOK은 `resolution_status: "not_applicable"`, `items: []`를 반환합니다.
+- 외부 이미지 일부가 실패해도 HTTP 응답에서 아이템별 상태를 반환하며 추천·평가·저장은 영향을 받지 않습니다.
+- 소유권 확인 직후 DB 연결을 반환하고, LOOK 내 외부 조회는 최대 3개까지 병렬 실행하되 응답 아이템 순서는 유지합니다.
+
+환경 설정은 다음과 같습니다. 실제 키는 `backend/.env`에만 두고 로그, 이슈, 채팅, 화면 캡처에 넣지 않습니다.
+
+```dotenv
+SERPAPI_API_KEY=
+SERPAPI_IMAGE_SEARCH_ENABLED=false
+SERPAPI_TIMEOUT_SECONDS=8
+```
+
+`SERPAPI_IMAGE_SEARCH_ENABLED=true`와 유효한 키가 모두 있어야 외부 호출이 활성화됩니다. 비활성화 상태에서는 아이템별 `provider_disabled`를 반환합니다.
+SerpApi가 요구하는 키는 고정 HTTPS 엔드포인트로 전송하기 직전에만 추가하여 httpx의 요청 URL 로그에 키 값이 남지 않게 합니다. 리디렉션은 따르지 않습니다.
+
+외부 검색 결과는 프로세스 로컬 bounded LRU에 저장합니다. 성공은 24시간, 결과 없음은 10분, 일시적 공급자 오류는 60초 동안 캐시하며 최대 1,000개 키를 유지합니다. 키는 공급자·국가·언어·슬롯·정규화된 의류 이름만 사용하고 API 키나 사용자 정보는 포함하지 않습니다. 동일 키 동시 요청은 하나의 외부 호출로 합칩니다. 이 캐시는 프로세스 재시작 또는 여러 worker 사이에서 공유되지 않으므로, 다중 인스턴스 배포가 확정되면 같은 서비스 경계 뒤에 Redis 같은 공유 캐시를 연결해야 합니다.
+
+Google Shopping 결과의 `serpapi_thumbnail` 또는 `thumbnail` URL을 기술적으로 표시할 수 있다는 사실이 해당 사진의 공개 표시·재배포 권리를 보장하지는 않습니다. 응답은 외부 이미지에 `rights_status: "unverified"`를 명시합니다. 공개 서비스 적용 전에는 SerpApi, Google Shopping 및 원본 제공처 조건을 별도로 확인해야 합니다. 현재 구현은 외부 이미지 파일을 서버에 다운로드하거나 프록시·영구 저장하지 않습니다.

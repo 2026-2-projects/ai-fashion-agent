@@ -42,13 +42,14 @@ def _lock_user(db: Session, user_id: int) -> None:
         raise RecommendationNotFoundError
 
 
-def _load_owned_looks(
+def load_owned_looks(
     db: Session,
     user_id: int,
     recommendation_id: UUID,
     *,
     for_update: bool = False,
 ) -> list[FashionLook]:
+    """현재 사용자 소유의 저장 추천을 읽고 5 LOOK 계약으로 검증한다."""
     lock_clause = " FOR UPDATE" if for_update else ""
     stored_looks = db.execute(
         text(
@@ -84,7 +85,7 @@ def _get_available_look(
     look_id: int,
 ) -> FashionLook:
     _lock_user(db, user_id)
-    looks = _load_owned_looks(
+    looks = load_owned_looks(
         db,
         user_id,
         recommendation_id,
@@ -159,7 +160,7 @@ def get_interactions(
     recommendation_id: UUID,
 ) -> list[dict[str, Any]]:
     """새로고침 뒤 복원할 5개 LOOK의 서버 상태를 반환한다."""
-    looks = _load_owned_looks(db, user_id, recommendation_id)
+    looks = load_owned_looks(db, user_id, recommendation_id)
     feedback_by_look, saved_look_ids = _interaction_rows(
         db,
         user_id,

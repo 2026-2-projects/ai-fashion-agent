@@ -21,3 +21,6 @@ GOOGLE_REDIRECT_URI = os.getenv(
     "http://localhost:8000/api/v1/calendar/oauth/callback",
 )
 GOOGLE_TOKEN_ENCRYPTION_KEY = os.getenv("GOOGLE_TOKEN_ENCRYPTION_KEY")
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
+SERPAPI_IMAGE_SEARCH_ENABLED = os.getenv("SERPAPI_IMAGE_SEARCH_ENABLED", "false").lower() == "true"
+SERPAPI_TIMEOUT_SECONDS = float(os.getenv("SERPAPI_TIMEOUT_SECONDS", "8"))
