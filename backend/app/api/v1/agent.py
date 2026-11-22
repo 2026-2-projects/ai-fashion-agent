@@ -161,3 +161,34 @@ def recommend(
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     except LookupError as exc:
         raise HTTPException(status_code=401, detail="유효하지 않은 사용자입니다.") from exc
+
+
+# CLOMORI_CLARIFICATION_STEP10_V1
+from app.agent.clarification import (
+    ClarificationPolicy,
+    ClarificationRequest,
+    ClarificationResponse,
+    RuleBasedClarificationPolicy,
+)
+
+_clarification_policy = RuleBasedClarificationPolicy()
+
+
+def get_clarification_policy() -> ClarificationPolicy:
+    """Swap this dependency for Qwen3-4B later; keep the HTTP contract stable."""
+    return _clarification_policy
+
+
+@router.post("/clarify", response_model=ClarificationResponse)
+def clarify_before_recommendation(
+    payload: ClarificationRequest,
+    user: CurrentUser,
+    _: CsrfCheck,
+    policy: Annotated[ClarificationPolicy, Depends(get_clarification_policy)],
+) -> ClarificationResponse:
+    """Authenticated, CSRF-guarded, non-mutating recommendation preflight."""
+    # ``user`` forces current-session validation; no chat text or answers are persisted.
+    try:
+        return policy.inspect(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc

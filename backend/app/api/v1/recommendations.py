@@ -6,7 +6,7 @@ from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -36,6 +36,11 @@ FeedbackReason = Literal[
     "not_my_style",
     "too_dressed_up",
     "too_plain",
+    "too_casual",
+    "weather",
+    "occasion",
+    "combination",
+    "other",
 ]
 
 
@@ -44,11 +49,32 @@ class FeedbackUpdate(BaseModel):
 
     feedback_type: Literal["like", "dislike"]
     reason: FeedbackReason | None = None
+    reason_text: str | None = Field(default=None, max_length=300)
+
+    @field_validator("reason_text", mode="before")
+    @classmethod
+    def normalize_reason_text(cls, value: Any) -> str | None:
+        if value is None:
+            return None
+        if not isinstance(value, str):
+            raise ValueError("직접 입력한 사유는 문자열이어야 합니다.")
+        if any(
+            (ord(character) < 32 and character not in "\t\n\r")
+            or 127 <= ord(character) <= 159
+            for character in value
+        ):
+            raise ValueError("직접 입력한 사유에 사용할 수 없는 제어 문자가 포함되어 있습니다.")
+        return value.strip()
 
     @model_validator(mode="after")
     def validate_reason_usage(self) -> "FeedbackUpdate":
         if self.feedback_type == "like" and self.reason is not None:
             raise ValueError("좋아요에는 싫어요 사유를 함께 보낼 수 없습니다.")
+        if self.feedback_type == "dislike" and self.reason == "other":
+            if not self.reason_text:
+                raise ValueError("기타 사유를 1~300자로 입력해 주세요.")
+        elif self.reason_text is not None:
+            raise ValueError("직접 입력한 사유는 기타를 선택했을 때만 보낼 수 있습니다.")
         return self
 
 
@@ -58,6 +84,7 @@ class LookInteractionState(BaseModel):
     status: Literal["available", "unavailable"]
     feedback: Literal["like", "dislike"] | None
     reason: FeedbackReason | None
+    reason_text: str | None
     saved: bool
 
 
@@ -159,6 +186,7 @@ def update_look_feedback(
             look_id,
             payload.feedback_type.upper(),
             payload.reason.upper() if payload.reason else None,
+            payload.reason_text,
         ),
     )
 

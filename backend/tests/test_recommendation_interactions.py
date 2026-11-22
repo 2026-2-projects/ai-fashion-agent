@@ -155,6 +155,7 @@ def test_feedback_put_is_idempotent_replaces_opposite_and_delete_removes_score(
         "status": "available",
         "feedback": "like",
         "reason": None,
+        "reason_text": None,
         "saved": False,
     }
     count = connection.execute(
