@@ -106,7 +106,7 @@ def _interaction_rows(
 ) -> tuple[dict[int, Mapping[str, Any]], set[int]]:
     feedback_rows = db.execute(
         text("""
-            SELECT look_id, feedback_type, reason
+            SELECT look_id, feedback_type, reason, reason_text
             FROM feedback
             WHERE user_id = :user_id
               AND recommendation_id = :recommendation_id
@@ -150,6 +150,7 @@ def _state_for_look(
         "status": look.status,
         "feedback": feedback["feedback_type"].lower() if feedback else None,
         "reason": reason.lower() if isinstance(reason, str) else None,
+        "reason_text": feedback["reason_text"] if feedback else None,
         "saved": look.look_id in saved_look_ids,
     }
 
@@ -203,6 +204,7 @@ def set_feedback(
     look_id: int,
     feedback_type: FeedbackType,
     reason: str | None,
+    reason_text: str | None = None,
 ) -> dict[str, Any]:
     """평가를 한 행으로 설정하고 전체 개인화 점수를 다시 계산한다."""
     look = _get_available_look(
@@ -211,12 +213,19 @@ def set_feedback(
         recommendation_id,
         look_id,
     )
+    # 자유 입력은 별도 필드에만 저장하고 다른 평가로 바뀌면 이전 값을 지운다.
+    reason_text = (
+        reason_text.strip()
+        if feedback_type == "DISLIKE" and reason == "OTHER" and reason_text is not None
+        else None
+    )
     db.execute(
         text("""
             INSERT INTO feedback (
                 user_id,
                 feedback_type,
                 reason,
+                reason_text,
                 style_tags,
                 recommendation_id,
                 look_id
@@ -225,6 +234,7 @@ def set_feedback(
                 :user_id,
                 :feedback_type,
                 :reason,
+                :reason_text,
                 CAST(:style_tags AS TEXT[]),
                 :recommendation_id,
                 :look_id
@@ -234,6 +244,7 @@ def set_feedback(
             DO UPDATE SET
                 feedback_type = EXCLUDED.feedback_type,
                 reason = EXCLUDED.reason,
+                reason_text = EXCLUDED.reason_text,
                 style_tags = EXCLUDED.style_tags,
                 color_tags = '{}'::TEXT[],
                 fit_tags = '{}'::TEXT[]
@@ -242,6 +253,7 @@ def set_feedback(
             "user_id": user_id,
             "feedback_type": feedback_type,
             "reason": reason,
+            "reason_text": reason_text,
             "style_tags": [look.style],
             "recommendation_id": recommendation_id,
             "look_id": look_id,

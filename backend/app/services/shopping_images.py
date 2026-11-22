@@ -271,6 +271,45 @@ def _optional_text(value: object) -> str | None:
     return normalized or None
 
 
+# CLOMORI_IMAGE_RELEVANCE_V2
+# Reject obviously unrelated shopping products BEFORE scoring; do not spend extra searches.
+def _category_matches(name: str, title: str, slot: str) -> bool:
+    if not title:
+        return False
+    n, t = _normalize_text(name), _normalize_text(title)
+    if re.search(r"guitar|music man|stingray|악기|전자기타|피규어|책|가구|키링", t):
+        return False
+    rules: list[tuple[str, str, str]] = []
+    if slot == "top":
+        rules = [
+            (r"후드티|후디|hoodie", r"후드|후디|hood", r"팬츠|바지|신발"),
+            (r"티셔츠|t.?shirt|반팔", r"티셔츠|t.?shirt|tee|반팔", r"팬츠|바지|슬리브리스"),
+            (r"셔츠|남방|shirt", r"셔츠|남방|shirt", r"티셔츠|t.?shirt|슬리브리스|민소매|sleeveless|쇼츠|팬츠|바지"),
+            (r"니트|스웨터|knit", r"니트|스웨터|knit|sweater", r"팬츠|바지|신발"),
+            (r".", r"셔츠|티셔츠|후드|니트|스웨터|베스트|조끼|블라우스|탑|top|shirt|knit|vest|blouse|sweater|hoodie", r"팬츠|바지|신발|스니커"),
+        ]
+    elif slot == "bottom":
+        rules = [(r".", r"팬츠|바지|슬랙스|데님|청바지|trousers|jeans|pants|jogger|denim", r"스커트|치마|skirt|원피스|dress|쇼츠|shorts|반바지|하프.?팬츠|bermuda|jorts")]
+    elif slot == "shoes":
+        rules = [
+            (r"로퍼|loafer", r"로퍼|loafer|드라이빙.?슈즈", r"운동화|스니커|sneaker|부츠|boots"),
+            (r".", r"신발|슈즈|운동화|스니커|sneaker|shoes|nike|adidas|converse|로퍼|loafer|부츠|boots", r"바지|팬츠|셔츠|코트|자켓"),
+        ]
+    elif slot == "outer":
+        rules = [(r"코트|coat", r"코트|coat", r"팬츠|바지|셔츠|신발|스니커") ,
+                 (r".", r"자켓|재킷|점퍼|블루종|패딩|바람막이|코트|jacket|coat|outer|jumper", r"팬츠|바지|셔츠|신발|기타")]
+    elif slot == "accessory":
+        rules = [(r".", r"가방|모자|캡|벨트|스카프|목걸이|귀걸이|bag|cap|hat|belt|scarf|necklace|ring", r"팬츠|바지|코트|셔츠")]
+    for required, accepted, rejected in rules:
+        if re.search(required, n):
+            if re.search(rejected, t) or not re.search(accepted, t):
+                return False
+            # A requested full-length/wide trouser should not become shorts or slim trousers.
+            if slot == "bottom" and re.search(r"와이드|wide", n) and re.search(r"슬림|스키니|skinny|slim.fit", t):
+                return False
+            return True
+    return False
+
 def _select_candidate(
     raw_results: list[object],
     name: str,
@@ -287,6 +326,8 @@ def _select_candidate(
             continue
 
         title = _optional_text(raw.get("title"))
+        if not _category_matches(name, title or "", slot):
+            continue
         normalized_title = _normalize_text(title)
         title_tokens = set(TOKEN_PATTERN.findall(normalized_title))
         token_score = len(query_tokens & title_tokens)
