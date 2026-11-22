@@ -1,0 +1,60 @@
+/* CLOMORI optional one-question-at-a-time recommendation clarification. */
+.cm-clarify-panel {
+  margin-top: 18px;
+  padding: 18px 16px;
+  border: 1px solid #cdd8cc;
+  border-left: 3px solid #526d5d;
+  background: #f3f6f1;
+  border-radius: 8px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.cm-clarify-panel[hidden] { display: none !important; }
+.cm-clarify-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: #526d5d; margin: 0 0 12px; }
+.cm-clarify-title { color: #1f2925; font-size: 17px; line-height: 1.5; font-weight: 700; margin: 0 0 8px; }
+.cm-clarify-hint { color: #606c64; font-size: 12px; line-height: 1.6; margin: 0 0 12px; }
+.cm-clarify-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.cm-clarify-choice { padding: 7px 9px; border: 1px solid #d8dcd5; background: white; color: #24493e; border-radius: 20px; font-size: 12px; cursor: pointer; }
+.cm-clarify-input { width: 100%; box-sizing: border-box; min-width: 0; padding: 11px 12px; border: 1px solid #aebfb2; border-radius: 6px; background: #fff; font-size: 14px; color: #1f2925; }
+.cm-clarify-input:focus-visible, .cm-clarify-choice:focus-visible, .cm-clarify-actions button:focus-visible { outline: 2px solid #526d5d; outline-offset: 2px; }
+.cm-clarify-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
+.cm-clarify-actions button { font-size: 12px; font-weight: 600; border-radius: 6px; min-height: 40px; cursor: pointer; border: 1px solid #cdd8cc; color: #24493e; background: #fff; }
+.cm-clarify-actions .cm-clarify-send { background: #24493e; border-color: #24493e; color: #fff; }
+.cm-clarify-actions .cm-clarify-cancel { grid-column: 1/-1; background: transparent; min-height: 32px; color: #606c64; border: 0; }
+.cm-clarify-feedback { margin: 10px 0 0; font-size: 12px; line-height: 1.5; color: #526d5d; }
+.cm-clarify-feedback:empty { display: none; }
+.cm-clarify-feedback.is-error { color: #b84c42; }
+@media(max-width: 600px) {
+ .cm-clarify-panel { padding: 14px; margin-top: 14px; }
+ .cm-clarify-title { font-size: 16px; }
+ .cm-clarify-actions { grid-template-columns: 1fr; }
+ .cm-clarify-actions .cm-clarify-cancel { grid-column: auto; }
+}
+
+/* Step 11: make conflict choices visually explicit without extra text fields. */
+.cm-clarify-suggestions[role="group"] { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+.cm-clarify-suggestions[role="group"] .cm-clarify-choice { text-align: center; border-radius: 7px; white-space: normal; overflow-wrap: anywhere; min-height: 42px; }
+/* Step 12: selected answer is a *secondary* highlighted choice, never the
+   same dark fill as the primary "답변 보내기" action. */
+.cm-clarify-choice { box-sizing: border-box; transition: background-color .12s ease, border-color .12s ease; }
+.cm-clarify-choice[aria-pressed="true"] {
+  background: #e2ede6;
+  border: 2px solid #24493e;
+  color: #183f33;
+  font-weight: 700;
+}
+.cm-clarify-choice[aria-pressed="true"]::before { content: "✓"; font-weight: 800; color: #24493e; margin-right: 5px; }
+.cm-clarify-choice[aria-pressed="false"]:hover { background: #f4f7f3; border-color: #879e8d; }
+.cm-clarify-actions .cm-clarify-send {
+  background: #24493e;
+  border-color: #24493e;
+  color: #fff;
+  font-weight: 700;
+  min-height: 44px;
+}
+.cm-clarify-actions .cm-clarify-send:hover { background: #19372c; }
+.cm-clarify-actions .cm-clarify-skip { background: #fff; color: #24493e; border-color: #bacbbd; }
+@media (prefers-reduced-motion: reduce) {
+  .cm-clarify-choice { transition: none; }
+}
+@media(max-width:420px) { .cm-clarify-suggestions[role="group"] { grid-template-columns: 1fr; } }

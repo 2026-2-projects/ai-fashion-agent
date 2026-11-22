@@ -1,0 +1,155 @@
+/* AI Fashion Agent · Visual identity v1
+ * Visual-only layer. Loaded last; existing API, routing and interaction states remain unchanged.
+ * Current design is a reviewable candidate, not a claim of the final design approval.
+ */
+:root {
+  --afa-bg: #faf9f6;
+  --afa-surface: #ffffff;
+  --afa-text: #1f2521;
+  --afa-muted: #6a716c;
+  --afa-border: #e1e4de;
+  --afa-accent: #526a54;
+  --afa-accent-soft: #e9eee7;
+  --afa-focus: #456b94;
+  --afa-danger: #a52323;
+  --afa-radius: 10px;
+  --afa-radius-card: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--afa-bg); }
+body { background: var(--afa-bg); color: var(--afa-text); font-family: "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; }
+.page { background: var(--afa-bg); }
+button, input, select, textarea { font-family: inherit; }
+button, input, select, textarea, a { transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline-color: var(--afa-focus); }
+
+/* One consistent editorial navigation system, without changing existing anchors. */
+.site-header { padding: 21px clamp(20px, 4.8vw, 76px); background: var(--afa-surface); border-bottom: 1px solid var(--afa-border); }
+.site-header .logo {
+  display: inline-flex; align-items: center; gap: 11px;
+  color: var(--afa-text); font-size: clamp(17px, 1.55vw, 21px); font-weight: 700;
+  line-height: 1.4; letter-spacing: -.028em; text-transform: uppercase;
+}
+.site-header .logo::before {
+  content: ""; flex: 0 0 auto; display: inline-block; width: 36px; height: 36px;
+  background: url("../assets/afa-mark.svg") center / contain no-repeat;
+}
+.site-header .header-link { color: var(--afa-muted); font-size: 14px; font-weight: 500; }
+.site-header .header-link:hover { color: var(--afa-text); }
+.site-header .header-link[aria-current="page"] { color: var(--afa-accent); text-underline-offset: 7px; }
+.header-nav { gap: 8px 26px; }
+
+/* Main action hierarchy. Existing danger action styles deliberately remain red. */
+.button { border-radius: 8px; font-weight: 600; }
+.button:not(.secondary-button):not(.data-delete-button):not(.danger-button) {
+  background: var(--afa-text); color: #fff; border: 1px solid var(--afa-text);
+}
+.button:not(.secondary-button):not(.data-delete-button):not(.danger-button):hover:not(:disabled) { background: #35463b; border-color: #35463b; }
+.button.secondary-button { background: var(--afa-surface); border: 1px solid var(--afa-border); color: var(--afa-text); }
+.button.secondary-button:hover:not(:disabled) { background: #f0f3ee; border-color: #ccd4ca; }
+.button.data-delete-button { border: 1px solid var(--afa-danger); color: var(--afa-danger); background: var(--afa-surface); }
+.button.data-delete-button:hover:not(:disabled) { background: #fff3f2; }
+
+/* Editorial landing. The second column is a CSS panel, not a downloaded image. */
+#home .hero {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .95fr);
+  grid-template-rows: max-content max-content max-content; column-gap: clamp(36px, 5vw, 100px);
+  align-content: center; align-items: start; justify-items: start;
+  min-height: min(850px, calc(100svh - 80px)); padding: 70px clamp(24px, 8vw, 150px) 90px; text-align: left;
+}
+#home .hero h1 { grid-column: 1; grid-row: 1; max-width: 700px; font-size: clamp(42px, 4.4vw, 70px); line-height: 1.19; font-weight: 700; letter-spacing: -.055em; margin: 0 0 28px; }
+#home .hero p { grid-column: 1; grid-row: 2; max-width: 530px; margin: 0 0 34px; color: var(--afa-muted); font-size: clamp(15px, 1.3vw, 17px); line-height: 1.9; }
+#home .hero .button { grid-column: 1; grid-row: 3; min-width: 230px; min-height: 52px; }
+#home .hero::after {
+  content: "STYLE / EVERY DAY\A\A 나의 하루,\A 나의 스타일.";
+  white-space: pre-wrap; display: flex; grid-column: 2; grid-row: 1 / span 3;
+  align-self: center; align-items: flex-start; width: 100%; min-height: 490px;
+  padding: clamp(34px, 4vw, 64px); border-radius: var(--afa-radius-card);
+  background: linear-gradient(145deg, #e7ede6, #f1f1e9 70%, #e5e9e1);
+  color: var(--afa-accent); font-size: clamp(20px, 2.2vw, 35px); font-weight: 600; line-height: 1.45;
+}
+
+/* Reading rhythm and form layout. */
+.auth-page h1, .settings-container h1, .data-management-container h1 { font-weight: 700; letter-spacing: -.04em; }
+.page-intro { color: var(--afa-muted); }
+.auth-form input, .settings-form select, .settings-form input:not([type="checkbox"]):not([type="radio"]),
+.recommendation-form textarea, .recommendation-context-field input,
+.data-confirm-field input, .look-feedback-select { border-color: var(--afa-border); border-radius: 8px; background: var(--afa-surface); color: var(--afa-text); }
+.auth-form .password-visibility-toggle { border-radius: 8px; }
+.auth-form input:focus, .settings-form input:focus, .settings-form select:focus, .recommendation-form textarea:focus {
+  border-color: var(--afa-accent); box-shadow: 0 0 0 3px rgba(82, 106, 84, .09);
+}
+.auth-form .button { min-height: 52px; }
+.account-card { max-width: 430px; }
+.account-settings { gap: 12px; }
+.settings-link, .calendar-card, .data-card { background: var(--afa-surface); border-color: var(--afa-border); border-radius: var(--afa-radius-card); }
+.settings-link { padding: 22px; }
+.settings-link:hover { background: #f2f5f0; border-color: #becbbc; }
+.calendar-card h2, .data-card h2 { color: var(--afa-text); }
+
+/* Category tabs and inventory cards. */
+.category-filter { border-color: var(--afa-border); border-radius: 8px; padding-inline: 16px; }
+.category-filter[aria-pressed="true"] { border-color: var(--afa-accent); color: var(--afa-accent); background: var(--afa-accent-soft); }
+.wardrobe-grid { gap: 20px; }
+.wardrobe-card { background: var(--afa-surface); border-color: var(--afa-border); border-radius: var(--afa-radius-card); }
+.wardrobe-card-image { background: #f0f2ee; }
+.wardrobe-card-body { padding: 20px; }
+.wardrobe-card-actions a, .wardrobe-card-actions button { border-radius: 7px; border-color: var(--afa-border); }
+
+/* Five LOOKs: preserve 3/2/1 responsive grid from Step 7. */
+.recommendation-container { max-width: 1300px; }
+.recommendation-results { border-color: var(--afa-border); }
+.recommendation-results > h2 { font-weight: 700; letter-spacing: -.04em; }
+.recommendation-form textarea { border-radius: 10px; background: var(--afa-surface); }
+.recommendation-response, .recommendation-loading, .saved-empty { border-color: var(--afa-border); border-radius: 10px; background: var(--afa-surface); }
+.recommendation-grid { gap: 20px; }
+.look-card { border-radius: var(--afa-radius-card); border-color: var(--afa-border); background: var(--afa-surface); padding: 24px; }
+.look-card[data-status="unavailable"] { background: #f5f5f2; }
+.look-number { color: var(--afa-accent); font-weight: 700; }
+.look-role { border-radius: 999px; border-color: var(--afa-border); color: var(--afa-accent); background: var(--afa-accent-soft); }
+.look-style { font-size: 23px; font-weight: 700; letter-spacing: -.035em; }
+.look-reason, .look-slot, .look-image-meta, .saved-card-meta { color: var(--afa-muted); }
+.look-image-frame { border-radius: 8px; background: #f2f4f0; border-color: var(--afa-border); }
+.look-interactions { border-top-color: var(--afa-border); }
+.look-interaction-button { border-radius: 8px; border-color: var(--afa-border); background: #f8f9f7; }
+.look-interaction-button:hover:not(:disabled) { background: var(--afa-accent-soft); border-color: #c4cfc3; }
+.look-interaction-button[aria-pressed="true"] { border: 1px solid var(--afa-accent); background: var(--afa-accent-soft); box-shadow: inset 0 0 0 1px var(--afa-accent); color: var(--afa-accent); }
+.look-interaction-button[aria-pressed="true"]:hover:not(:disabled) { background: #dae5d8; }
+.look-feedback-select { min-height: 46px; }
+.saved-card-note { border-radius: 8px; background: #f4f5f1; border-color: var(--afa-border); }
+
+/* Status messages retain semantic success/danger color. Success auto-dismiss is owned by Step 9 JS. */
+[data-kind="success"] { color: #2f6946; }
+[data-kind="error"] { color: var(--afa-danger); }
+.data-choice input { accent-color: var(--afa-accent); }
+.data-card .data-delete-button { border-color: var(--afa-danger); color: var(--afa-danger); background: #fff; }
+
+/* Match established Step 7 breakpoints; avoid overriding 2/1-column behavior. */
+@media (min-width: 601px) and (max-width: 1180px) {
+  .recommendation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 960px) {
+  #home .hero { grid-template-columns: minmax(0, 1fr); gap: 0; min-height: 0; padding: 72px 28px 80px; }
+  #home .hero h1, #home .hero p, #home .hero .button { grid-column: 1; }
+  #home .hero::after { grid-column: 1; grid-row: 4; margin-top: 56px; min-height: 240px; font-size: 26px; padding: 34px; }
+  .header-nav { border-top-color: var(--afa-border); }
+  .header-nav .header-link[aria-current="page"] { background: var(--afa-accent-soft); }
+}
+@media (max-width: 600px) {
+  .site-header { padding: 14px 16px; }
+  .site-header .logo { font-size: 18px; }
+  .site-header .logo::before { width: 30px; height: 30px; }
+  #home .hero { padding: 62px 20px 70px; }
+  #home .hero h1 { font-size: clamp(34px, 9vw, 46px); }
+  #home .hero p { font-size: 14px; margin-bottom: 28px; }
+  #home .hero .button { width: 100%; }
+  #home .hero::after { margin-top: 42px; min-height: 190px; font-size: 21px; }
+  .look-card { padding: 18px; }
+  .look-style { font-size: 20px; }
+  .look-feedback-actions { gap: 7px; }
+  .look-interaction-button { min-height: 46px; }
+  .wardrobe-card-body { padding: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  button, input, select, textarea, a { transition: none !important; }
+}

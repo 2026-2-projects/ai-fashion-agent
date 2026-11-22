@@ -1,0 +1,82 @@
+/* CLOMORI V2 mobile navigation refinement (V6).
+ * The bottom navigation owns authenticated mobile routing;
+ * the header remains a brand-only bar on those screens.
+ * A guest can still use the home-page login link, because the bottom bar
+ * is intentionally hidden until authentication succeeds.
+ * No changes to API, routing permissions or application data.
+ */
+@media screen and (max-width: 600px) {
+  body.cm-app .page .site-header,
+  body.cm-app #home .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    height: 66px !important;
+    min-height: 66px !important;
+    padding: 10px 18px !important;
+    gap: 8px;
+  }
+
+  body.cm-app .page .site-header .logo {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: clamp(15px, 4.6vw, 18px);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  body.cm-app .page .site-header .logo img {
+    flex: none;
+    width: 33px;
+    height: 33px;
+  }
+
+  /* Do not duplicate the five navigation items in the header. */
+  body.cm-app .page .site-header .header-nav { display: none !important; }
+
+  /* On public home, retain only Login as a route into the application. */
+  body.cm-app #home .site-header .header-nav {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-basis: auto !important;
+    width: auto !important;
+    max-width: none;
+    margin-left: auto;
+    overflow: visible !important;
+    gap: 0;
+    align-items: center;
+  }
+  body.cm-app #home .site-header .header-nav .header-link:not(#header-auth-link) {
+    display: none !important;
+  }
+  body.cm-app #home .site-header .header-nav #header-auth-link[href="#account"] {
+    display: none !important;
+  }
+  body.cm-app #home .site-header .header-nav #header-auth-link[href="#login"]:not([hidden]) {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    min-height: 36px;
+    padding: 6px 12px;
+    color: var(--cm-forest);
+    border: 1px solid var(--cm-line);
+    border-radius: 18px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* Safe-area spacing for fixed bottom navigation (e.g., iPhone home bar). */
+  body.cm-app:has(.cm-mobile-nav:not([hidden])) {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.cm-app .cm-mobile-nav:not([hidden]) {
+    height: calc(70px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+}

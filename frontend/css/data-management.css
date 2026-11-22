@@ -1,0 +1,26 @@
+/* WBS 5.5: Account data controls. Kept separate from existing layout styles. */
+.data-management-container { width: min(100% - 40px, 760px); margin: 30px auto 100px; text-align: left; }
+.data-management-container h1 { margin: 24px 0 12px; text-align: center; }
+.data-management-container .page-intro { margin: 0 0 30px; text-align: center; }
+.data-card { border: 1px solid #ddd; border-radius: 3px; background: white; padding: 22px; margin: 20px 0; }
+.data-card h2 { font-size: 19px; margin: 0 0 12px; }
+.data-card p { color: #555; font-size: 14px; line-height: 1.8; }
+.data-summary-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 13px; font-size: 14px; }
+.data-summary-grid dt { color: #555; }
+.data-summary-grid dd { margin: 0; font-weight: 600; }
+.data-choice { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid #eee; align-items: flex-start; cursor: pointer; }
+.data-choice input { margin-top: 5px; flex: 0 0 auto; accent-color: #242424; }
+.data-choice strong { display: block; font-size: 14px; margin-bottom: 6px; }
+.data-choice small { display: block; color: #555; font-size: 12px; line-height: 1.7; }
+.data-confirm-field { display: grid; gap: 8px; margin: 16px 0; font-size: 14px; }
+.data-confirm-field input { width: 100%; min-height: 46px; font: inherit; font-size: 16px; padding: 10px 12px; border: 1px solid #bbb; background: white; color: #171717; border-radius: 3px; }
+.data-fieldset { border: none; padding: 0; margin: 0; min-width: 0; }
+.data-fieldset:disabled { opacity: .65; }
+.data-delete-button { width: 100%; background: #fff; border: 1px solid #ad2020; color: #a52323; font-weight: 600; margin-top: 14px; }
+.data-delete-button:hover:not(:disabled) { background: #fff0f0; }
+.data-warning { border-left: 3px solid #a52323; padding: 8px 12px; margin: 18px 0; background: #fff7f7; line-height: 1.7; }
+.data-agree { display: flex; gap: 9px; align-items: start; font-size: 13px; line-height: 1.7; margin: 16px 0; }
+.data-agree input { margin-top: 4px; accent-color: #a52323; }
+.data-card .form-message { margin-top: 12px; font-size: 13px; }
+.data-nav { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+@media (max-width: 600px) { .data-management-container { width: calc(100% - 32px); } .data-card { padding: 16px; } .data-choice { padding: 14px 0; } }

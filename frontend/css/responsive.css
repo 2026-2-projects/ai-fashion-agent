@@ -1,0 +1,137 @@
+/* WBS 5.5 — Responsive enhancement. Loaded AFTER styles.css.
+   No API, session, interaction, or stored data changes. */
+
+/* Universal containment: avoid clipping long item names, URLs and messages. */
+html { -webkit-text-size-adjust: 100%; }
+.page, .settings-container, .site-header, .site-header nav,
+.look-card, .wardrobe-card, .calendar-card, .recommendation-response,
+.recommendation-grid, .wardrobe-grid { min-width: 0; }
+.look-card, .wardrobe-card, .calendar-card,
+.look-image-meta, .wardrobe-card-body, .saved-card-note {
+  overflow-wrap: anywhere;
+}
+img, video, svg { max-width: 100%; }
+
+/* Touch targets: keyboard focus styles remain defined in styles.css. */
+@media (pointer: coarse) {
+  .header-nav .header-link,
+  .recommendation-example, .category-filter,
+  .wardrobe-card-actions button, .wardrobe-card-actions a {
+    min-height: 44px;
+  }
+}
+
+/* Between tablet and desktop widths, three recommendation cards are too narrow. */
+@media (min-width: 851px) and (max-width: 1180px) {
+  .recommendation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Small desktop and tablet navigation: a single accessible, scrollable row. */
+@media (max-width: 960px) {
+  .site-header { gap: 8px 16px; }
+  .header-nav {
+    order: 3;
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 6px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    padding: 5px 0 8px;
+    border-top: 1px solid #e9e9e9;
+  }
+  .header-nav .header-link {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 10px 12px;
+    white-space: nowrap;
+    scroll-snap-align: start;
+    border-radius: 2px;
+  }
+  .header-nav .header-link[aria-current="page"] { background: #f1f1f1; }
+  .recommendation-context-grid { gap: 12px; }
+}
+
+/* Mobile: one column for wardrobes and looks, roomy forms and tap targets. */
+@media (max-width: 600px) {
+  .site-header { padding: 16px; }
+  .site-header .logo { font-size: 20px; line-height: 1.4; }
+  .settings-container {
+    width: calc(100% - 32px);
+    margin: 20px auto 72px;
+  }
+  .settings-container h1 { margin-top: 14px; font-size: clamp(24px, 6.2vw, 30px); }
+  .page-intro { margin-bottom: 28px; }
+  .auth-page { padding-inline: 16px; padding-bottom: 72px; }
+  .auth-form, .account-card { max-width: 100%; }
+  .profile-fields-grid { gap: 18px; }
+  .settings-steps { gap: 10px 20px; }
+  .settings-form .save-button { width: 100%; }
+  .form-footer { justify-content: space-between; }
+  .form-footer > * { max-width: 100%; }
+  .preferences-grid { gap: 20px 14px; }
+  .choice-label { font-size: 14px; }
+
+  .closet-toolbar { align-items: stretch; margin-top: 26px; }
+  .category-filters { gap: 8px; }
+  .category-filter { min-height: 44px; padding: 9px 12px; }
+  .closet-count { width: 100%; }
+  .wardrobe-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .wardrobe-card-image { aspect-ratio: 5 / 4; }
+  .wardrobe-card-body { padding: 16px; }
+  .wardrobe-card-actions a, .wardrobe-card-actions button { min-height: 44px; }
+  .wardrobe-photo-area { width: 100%; }
+  .season-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .recommendation-form textarea { min-height: 144px; padding: 14px; }
+  .recommendation-examples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .recommendation-example {
+    width: 100%; min-height: 44px; padding: 8px 4px;
+    font-size: 13px; line-height: 1.5; white-space: normal;
+  }
+  .recommendation-submit { width: 100%; min-width: 0; }
+  .recommendation-response { padding: 16px; }
+  .recommendation-results { margin-top: 40px; padding-top: 28px; }
+  .recommendation-results > h2 { font-size: 24px; }
+  .recommendation-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .look-card { padding: 16px; }
+  .look-style { font-size: 19px; margin: 12px 0 18px; }
+  .look-reason { margin-top: 18px; }
+  .look-feedback-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .look-interaction-button {
+    flex: initial;
+    width: 100%; min-height: 46px;
+    padding: 10px 5px;
+    font-size: 13px; line-height: 1.4;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .look-image-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .look-image-frame { aspect-ratio: 4 / 5; }
+  .look-image-meta { font-size: 12px; }
+  .saved-toolbar { align-items: stretch; }
+  .saved-toolbar .button { width: 100%; }
+  .saved-empty { padding: 32px 16px; }
+  .connection-note { left: 8px; right: 8px; bottom: 8px; }
+  .connection-note .button { max-width: 100%; white-space: normal; }
+}
+
+/* Very narrow phones: show large controls without button-text collisions. */
+@media (max-width: 380px) {
+  .preferences-grid { grid-template-columns: minmax(0, 1fr); }
+  .field-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .field-row > label { padding: 0; }
+  .recommendation-examples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .recommendation-example:last-child { grid-column: 1 / -1; }
+  .look-feedback-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .look-feedback-actions > :last-child { grid-column: 1 / -1; }
+  .look-image-grid { grid-template-columns: minmax(0, 1fr); }
+  .look-image-frame { max-height: 360px; }
+}

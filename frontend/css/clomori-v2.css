@@ -1,0 +1,357 @@
+/* CLOMORI · V2 editorial UI. Loaded after existing styles.
+ * Layout-only: original API, CSRF, validation, router and destructive flows stay unchanged.
+ */
+:root {
+  --cm-forest:#24493e; --cm-ink:#1f2925; --cm-olive:#526d5d;
+  --cm-cream:#f7f5ef; --cm-white:#fff; --cm-warm:#eeeae0;
+  --cm-sage:#dfe7de; --cm-line:#d8dcd5; --cm-muted:#707a72;
+  --cm-gold:#cba77a; --cm-dark:#172e26; --cm-faint:#f1f2eb;
+  --cm-shadow:0 12px 34px rgba(28,48,38,.055);
+}
+html { background:var(--cm-cream) }
+body.cm-app, body.cm-app .page { background:var(--cm-cream); color:var(--cm-ink) }
+body.cm-app { font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif; }
+body.cm-app button,body.cm-app input,body.cm-app select,body.cm-app textarea { font-family:inherit }
+body.cm-app a:focus-visible, body.cm-app button:focus-visible, body.cm-app input:focus-visible,
+body.cm-app select:focus-visible, body.cm-app textarea:focus-visible {
+  outline-color:var(--cm-forest); outline-offset:2px;
+}
+body.cm-app .button:not(.data-delete-button):not(.danger-button):not(.secondary-button) {
+  border:1px solid var(--cm-forest);background:var(--cm-forest);color:#fff;
+}
+body.cm-app .button:not(.data-delete-button):not(.danger-button):not(.secondary-button):hover:not(:disabled){background:var(--cm-dark);border-color:var(--cm-dark)}
+body.cm-app .button.secondary-button {background:transparent;color:var(--cm-forest);border:1px solid var(--cm-line)}
+body.cm-app .button.secondary-button:hover:not(:disabled) {background:var(--cm-sage)}
+body.cm-app .button {border-radius:5px;min-height:45px;line-height:1.4}
+body.cm-app .button:disabled {opacity:.55}
+body.cm-app .settings-container, body.cm-app .data-management-container {text-align:left}
+body.cm-app .page-intro {color:var(--cm-muted)}
+body.cm-app .settings-container h1 {font-weight:750;letter-spacing:-.055em}
+body.cm-app .form-message[data-kind="success"] {color:#2c7248}
+/* Global navigation: same actual anchors/visibility managed by main.js */
+body.cm-app .site-header {
+  position:relative;display:flex;justify-content:space-between;gap:24px;flex-wrap:nowrap;
+  max-width:none;width:100%;height:88px;min-height:88px;margin:auto;
+  padding:0 max(28px,calc((100vw - 1260px)/2));background:#fff;
+  border-bottom:1px solid var(--cm-line);align-items:center;
+}
+body.cm-app .site-header .logo {display:inline-flex;gap:10px;white-space:nowrap;align-items:center;
+  font-size:23px;letter-spacing:.095em;font-family:"Avenir Next",Inter,system-ui,sans-serif;
+  font-weight:800;line-height:1;color:var(--cm-ink);text-transform:uppercase;overflow:visible}
+body.cm-app .site-header .logo::before {content:none;display:none}
+body.cm-app .site-header .logo img {width:40px;height:40px;object-fit:contain;flex:none}
+body.cm-app .header-nav {display:flex;min-width:0;flex-wrap:nowrap;align-items:center;gap:18px;margin-left:auto}
+body.cm-app .header-link {font-size:13px;min-height:40px;white-space:nowrap;color:var(--cm-muted);padding:8px 5px}
+body.cm-app .header-link[aria-current="page"]{color:var(--cm-forest);font-weight:800;text-decoration:none;border-bottom:2px solid var(--cm-forest)}
+body.cm-app .header-link:last-child:not([hidden]) {padding:9px 14px;background:var(--cm-faint);border-radius:50px;color:var(--cm-ink)}
+body.cm-app .header-link:hover {color:var(--cm-forest)}
+/* Full-width slim brand band on home; only no duplicate CTA appears in footer */
+#home .cm-home-main {display:block;min-height:0;text-align:left;padding:0;margin:0;max-width:none;justify-content:initial;align-items:initial;overflow:hidden}
+#home .cm-home-main::after {content:none;display:none}
+.cm-shell {width:min(100% - 60px,1260px);margin-inline:auto}
+#home {position:relative}
+#home::before {content:"THE STYLE THAT KNOWS YOU";display:block;background:var(--cm-forest);color:#fff;
+  height:28px;line-height:28px;text-align:center;font:800 10px "Avenir Next",system-ui,sans-serif;letter-spacing:.29em}
+#home .site-header {height:82px;min-height:82px}
+.cm-home-grid {display:grid;grid-template-columns: minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(30px,5vw,80px);
+  align-items:center;padding-top:clamp(52px,7vw,92px);padding-bottom:70px}
+.cm-home-copy {min-width:0}
+.cm-eyebrow {display:inline-flex;gap:12px;align-items:center;color:var(--cm-forest);
+  font-size:11px;letter-spacing:.17em;font-weight:800;line-height:1.6}
+.cm-line {display:inline-block;width:24px;height:1px;background:var(--cm-forest)}
+#home .cm-home-copy h1 {font-size:clamp(48px,4.4vw,70px);line-height:1.23;font-weight:800;letter-spacing:-.066em;
+  margin:35px 0 30px;color:var(--cm-ink);max-width:none}
+#home .cm-home-copy h1 em {font-style:normal;color:var(--cm-forest)}
+.cm-gold-rule {width:91px;height:3px;background:var(--cm-gold);margin-bottom:32px}
+#home .cm-home-copy .cm-home-lead {font-size:19px;line-height:1.63;font-weight:750;margin:0 0 23px;color:var(--cm-ink);max-width:none}
+#home .cm-home-copy .cm-home-desc {font-size:14px;line-height:1.9;color:var(--cm-muted);margin:0 0 35px;max-width:none}
+.cm-home-actions {display:flex;flex-wrap:wrap;gap:12px;margin-bottom:46px}
+#home .cm-home-actions .button {display:inline-flex;justify-content:space-between;align-items:center;gap:32px;
+  min-height:54px;min-width:0;width:auto;border-radius:5px;padding:14px 21px;font-size:13px}
+.cm-home-meta {display:flex;flex-wrap:wrap;gap:12px 22px;border-top:1px solid var(--cm-line);padding-top:22px;
+  color:var(--cm-forest);font:800 10px "Avenir Next",system-ui,sans-serif;letter-spacing:.075em}
+.cm-home-visual {position:relative;min-width:0;padding-bottom:50px}
+.cm-photo-stage {height:560px;position:relative;background:var(--cm-sage);overflow:visible}
+.cm-photo-stage::before {content:"";position:absolute;inset:15px;border:1px solid rgba(39,71,55,.17)}
+.cm-editorial-photo {position:absolute;overflow:hidden;background:#fff;border:6px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.cm-editorial-photo img {display:block;width:100%;height:100%;object-fit:cover}
+.cm-photo-main {left:6%;top:7%;width:61%;height:80%;transform:rotate(-2deg)}
+.cm-photo-main img {object-position:center 42%}
+.cm-photo-secondary {right:5%;top:13%;width:41%;height:62%;transform:rotate(3deg)}
+.cm-photo-detail {right:5%;bottom:7%;width:45%;height:26%;transform:rotate(-4deg)}
+.cm-vertical-label {position:absolute;right:6px;top:30%;writing-mode:vertical-rl;color:var(--cm-forest);
+  font:800 9px "Avenir Next",system-ui,sans-serif;letter-spacing:.18em}
+.cm-editorial-caption {position:absolute;bottom:15px;left:-27px;display:grid;gap:12px;min-width:310px;
+  padding:23px 26px;background:var(--cm-dark);color:#fff;box-shadow:0 12px 22px rgba(26,36,29,.15)}
+.cm-editorial-caption span {color:var(--cm-gold);font-size:11px;font-weight:800;letter-spacing:.16em}
+.cm-editorial-caption strong {font-size:24px;letter-spacing:-.04em}
+.cm-editorial-caption small {font-size:10px;font-weight:750;letter-spacing:.09em}
+.cm-home-features {padding:60px 0 70px;border-top:1px solid var(--cm-line)}
+.cm-features-heading {display:flex;justify-content:space-between;gap:10px;margin-bottom:36px;color:var(--cm-forest);
+  font-weight:850;font-size:10px;letter-spacing:.15em}
+.cm-features-heading h2 {font:inherit;margin:0}
+.cm-feature-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+.cm-feature-grid article {display:flex;gap:21px;min-width:0}
+.cm-feature-no {color:var(--cm-forest);font:800 35px "Avenir Next",system-ui,sans-serif;line-height:1}
+.cm-feature-grid h3 {font-size:18px;margin:11px 0 14px;letter-spacing:-.025em}
+.cm-feature-grid p {font-size:13px;line-height:1.8;color:var(--cm-muted);margin:0 0 21px}
+.cm-feature-grid a {font-size:13px;color:var(--cm-forest);font-weight:750;border-bottom:1px solid var(--cm-forest);padding-bottom:5px}
+.cm-dark-band {display:block;width:100%;min-width:100%;max-width:100%;background:var(--cm-dark);padding:40px 0;color:#fff}
+.cm-dark-band .cm-shell {display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.cm-dark-band span {font:800 11px "Avenir Next",system-ui,sans-serif;letter-spacing:.12em;color:var(--cm-gold)}
+.cm-dark-band strong {font-size:20px;font-weight:750}
+.cm-home-footer {display:flex;gap:22px;align-items:center;padding-block:25px 37px;color:var(--cm-forest)}
+.cm-home-footer strong {font:800 19px "Avenir Next",system-ui,sans-serif;letter-spacing:.12em}
+.cm-home-footer span {font-size:10px;letter-spacing:.14em}
+/* Recommendation / real data, no demo LOOKs inserted. */
+body.cm-app #recommendation .recommendation-container {
+  width:min(100% - 60px,1260px);max-width:1260px;display:grid;grid-template-columns:306px minmax(0,1fr);
+  column-gap:30px;row-gap:16px;align-items:start;margin:45px auto 100px;text-align:left;
+}
+#recommendation .recommendation-container > h1 {grid-column:2;grid-row:1;font-size:36px;line-height:1.3;margin:0 0 0}
+#recommendation .recommendation-container > .page-intro {grid-column:2;grid-row:2;margin:0 0 8px;font-size:14px}
+#recommendation .recommendation-form {grid-column:1;grid-row:1 / span 8;position:sticky;top:24px;
+  min-width:0;padding:24px 21px;border:1px solid var(--cm-line);background:#fff;box-shadow:none}
+#recommendation .recommendation-form > .form-fields {display:block}
+#recommendation .recommendation-form .recommendation-label {display:block;font-weight:800;line-height:1.45;font-size:22px;margin:0 0 18px}
+#recommendation .recommendation-form .recommendation-label::before {content:"01  /  TELL US YOUR MOOD";display:block;
+  color:var(--cm-forest);font:800 10px "Avenir Next",system-ui,sans-serif;letter-spacing:.14em;margin-bottom:13px}
+#recommendation .recommendation-form textarea {height:146px;min-height:146px;max-height:350px;background:#f9faf7;border-radius:3px;
+  border-color:var(--cm-line);padding:14px;font-size:14px;line-height:1.65;width:100%;resize:vertical}
+#recommendation .recommendation-examples {display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start;margin-top:12px}
+#recommendation .recommendation-example {padding:7px 10px;font-size:12px;min-height:36px;border-radius:3px;background:var(--cm-faint);
+  border:1px solid var(--cm-line);color:var(--cm-forest)}
+#recommendation .recommendation-example:hover {background:var(--cm-sage)}
+#recommendation .recommendation-options {margin-top:22px;min-width:0;border-top:1px solid var(--cm-line);padding-top:16px}
+#recommendation .recommendation-options summary {font-size:13px;color:var(--cm-forest);font-weight:750;padding:0 0 12px;cursor:pointer}
+#recommendation .recommendation-context-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px 9px;align-items:start}
+#recommendation .recommendation-context-field:first-child {grid-column:1/-1}
+#recommendation .recommendation-context-field label {display:block;font-size:12px;margin-bottom:7px}
+#recommendation .recommendation-context-field input {width:100%;min-width:0;font-size:13px;min-height:42px;border:1px solid var(--cm-line);border-radius:4px;padding:8px 10px}
+#recommendation .recommendation-context-field #recommendation-time {font-variant-numeric:tabular-nums;letter-spacing:.045em}
+#recommendation .cm-time-hint {display:block;font-size:10px;line-height:1.55;color:var(--cm-muted);margin-top:5px}
+#recommendation #recommendation-form-hint {font-size:11px;margin-top:16px}
+#recommendation #recommendation-prompt-hint {font-size:11px}
+#recommendation .recommendation-submit {width:100%;margin:19px 0 0;min-width:0;min-height:52px}
+#recommendation .recommendation-form > .form-message {font-size:12px;text-align:left}
+#recommendation #recommendation-response {grid-column:2;grid-row:3;max-width:100%;width:100%;padding:10px 15px;margin:0;
+  font-size:12px;background:var(--cm-sage);border:0;border-radius:3px}
+#recommendation #recommendation-results {grid-column:2;grid-row:4;margin:0;padding:0;border:0;min-width:0}
+#recommendation #recommendation-results-heading {font-size:31px;line-height:1.35;margin:0 0 10px;letter-spacing:-.04em}
+#recommendation #recommendation-results-heading::before {content:"YOUR PERSONAL EDIT";display:block;color:var(--cm-forest);
+  font:800 10px "Avenir Next",system-ui,sans-serif;letter-spacing:.14em;margin-bottom:9px}
+#recommendation #recommendation-summary {margin:0 0 12px;color:var(--cm-muted);font-size:14px}
+#recommendation .recommendation-image-hint, #recommendation .recommendation-saved-link {font-size:11px;color:var(--cm-muted);margin:8px 0}
+#recommendation .recommendation-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:16px;margin-top:26px}
+#recommendation .recommendation-grid > .look-card {position:relative;display:flex;flex-direction:column;padding:21px;gap:0;
+  border:1px solid var(--cm-line);background:#fff;border-radius:1px;min-width:0}
+#recommendation .look-card .look-card-header {gap:14px;align-items:center}
+#recommendation .look-card .look-number {font-size:12px;letter-spacing:.08em;color:var(--cm-forest)}
+#recommendation .look-card .look-role {font-size:10px;border:0;border-radius:0;background:var(--cm-faint);color:var(--cm-forest);padding:7px 9px}
+#recommendation .look-card .look-style {font-size:20px;margin:17px 0;color:var(--cm-ink)}
+#recommendation .look-card .look-items {gap:7px}
+#recommendation .look-card .look-item {display:grid;grid-template-columns:60px minmax(0,1fr);font-size:13px;gap:8px}
+#recommendation .look-card .look-slot {font-size:10px;font-weight:800;color:var(--cm-forest)}
+#recommendation .look-card .look-reason {font-size:12px;margin:17px 0 2px;color:var(--cm-muted);line-height:1.65}
+#recommendation .look-card .look-actions {margin-top:14px;padding-top:14px;border-top:1px solid var(--cm-line);gap:8px}
+#recommendation .look-card .look-actions .button {width:100%;font-size:13px}
+#recommendation .look-card .look-interactions {margin-top:13px;padding-top:12px;gap:8px}
+#recommendation .look-interaction-button {border-radius:3px;min-height:40px;font-size:12px;flex-basis:80px;background:var(--cm-faint);padding:7px 9px}
+#recommendation .look-interaction-button[aria-pressed=true] {background:var(--cm-sage);border-color:var(--cm-forest);color:var(--cm-forest)}
+#recommendation .look-feedback-select {font-size:13px}
+#recommendation .look-image-grid {grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+/* Visual previews are filled from validated recommendation data and local wardrobe images only. */
+#recommendation .cm-look-visual {position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);
+  overflow:hidden;min-height:184px;height:184px;background:var(--cm-sage);margin:0 0 18px;gap:2px}
+#recommendation .cm-look-visual img {width:100%;height:100%;object-fit:contain;background:#eff0eb;min-width:0}
+#recommendation .cm-visual-caption {position:absolute;bottom:8px;left:8px;z-index:1;
+  background:rgba(250,250,247,.94);color:var(--cm-forest);padding:5px 8px;font-size:10px;font-weight:800}
+#recommendation .cm-abstract-visual {position:relative;width:100%;height:100%;background:linear-gradient(135deg,#e7e7db 0%,#f2f1e7 100%);overflow:hidden}
+#recommendation .cm-shape-top {position:absolute;top:14%;left:34%;width:32%;height:42%;background:#4b655b;clip-path:polygon(20% 0,80% 0,100% 28%,87% 43%,87% 100%,13% 100%,13% 43%,0 28%)}
+#recommendation .cm-shape-bottom {position:absolute;top:52%;left:36%;width:28%;height:55%;background:#53616a;clip-path:polygon(0 0,100% 0,100% 100%,56% 100%,50% 26%,44% 100%,0 100%)}
+#recommendation .look-card[data-role="preference_alternative"] .cm-shape-top {background:#e7e0d1}
+#recommendation .look-card[data-role="exploration"] .cm-shape-top {background:#315749}
+#recommendation .look-card.cm-featured {grid-column:1/-1;order:-1;display:grid;grid-template-columns:44% minmax(0,1fr);
+  grid-auto-rows:min-content;column-gap:24px;align-content:start;min-height:390px;padding:16px}
+#recommendation .look-card.cm-featured > :not(.cm-look-visual) {grid-column:2;min-width:0}
+#recommendation .look-card.cm-featured .cm-look-visual {grid-column:1;grid-row:1 / span 14;height:100%;min-height:355px;margin:0;
+  align-self:stretch;grid-auto-columns:minmax(0,1fr)}
+#recommendation .look-card.cm-featured .look-style {font-size:26px;margin:16px 0}
+#recommendation .look-card.cm-featured .look-reason {margin-top:15px}
+#recommendation .look-card.cm-featured .look-actions {margin-top:17px}
+#recommendation .look-card[data-status="unavailable"] {background:#f2f2ed}
+#recommendation .cm-recommendation-blank {grid-column:2;grid-row:4;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;min-height:540px;padding:30px;text-align:center;
+  background:var(--cm-sage);border:1px solid var(--cm-line)}
+#recommendation .recommendation-container:has(#recommendation-results:not([hidden])) .cm-recommendation-blank {display:none}
+#recommendation .cm-recommendation-blank h2 {font-size:29px;margin:14px 0}
+#recommendation .cm-recommendation-blank p {white-space:pre-line;color:var(--cm-muted);font-size:14px;line-height:1.8}
+.cm-blank-illustration {width:220px;height:220px;margin-bottom:28px;position:relative;display:flex;justify-content:center;align-items:center;gap:8px}
+.cm-blank-illustration span {background:var(--cm-olive);width:50px;height:160px;transform:rotate(-8deg);border-radius:4px;opacity:.7}
+.cm-blank-illustration span:nth-child(2) {height:195px;transform:rotate(7deg);background:var(--cm-forest)}
+.cm-blank-illustration span:nth-child(3) {height:130px;transform:rotate(15deg);background:var(--cm-warm)}
+/* Wardrobe: large images and clear category hierarchy. */
+body.cm-app #closet .closet-container {max-width:1260px;width:min(100% - 60px,1260px);margin:58px auto 110px;text-align:left}
+#closet .closet-container > h1 {font-size:clamp(38px,4vw,56px);margin:12px 0 15px}
+#closet .closet-container > h1::before {content:"YOUR PIECES, YOUR STORY";display:block;color:var(--cm-forest);font-size:11px;letter-spacing:.15em;margin-bottom:16px}
+#closet .closet-container > .page-intro {font-size:16px;margin-bottom:26px}
+#closet .closet-container > a.button {min-width:195px;min-height:50px;padding:12px 25px}
+#closet .closet-toolbar {display:flex;align-items:center;justify-content:space-between;gap:16px;margin:30px 0 0;padding-bottom:17px;border-bottom:1px solid var(--cm-line)}
+#closet .category-filters {display:flex;flex-wrap:wrap;gap:8px}
+#closet .category-filter {border:1px solid var(--cm-line);border-radius:50px;background:white;font-size:13px;min-height:40px;padding:9px 18px}
+#closet .category-filter[aria-pressed="true"] {background:var(--cm-forest);color:white;border-color:var(--cm-forest)}
+#closet .closet-count {font-size:14px;color:var(--cm-muted)}
+#closet .wardrobe-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:24px}
+#closet .wardrobe-card {background:#fff;border:1px solid var(--cm-line);border-radius:2px;min-width:0;box-shadow:none}
+#closet .wardrobe-card-image {aspect-ratio:4/4.2;background:var(--cm-sage);padding:10px}
+#closet .wardrobe-card-image img {object-fit:contain;background:#eceee8}
+#closet .wardrobe-card-body {padding:21px}
+#closet .wardrobe-card-title {font-size:20px;font-weight:750;color:var(--cm-ink)}
+#closet .wardrobe-card-meta {font-size:13px;color:var(--cm-muted)}
+#closet .wardrobe-card-actions {border-top:1px solid var(--cm-line);padding-top:16px}
+#closet .wardrobe-card-actions a, #closet .wardrobe-card-actions button {border-radius:3px}
+/* Saved, profile, data and account reuse existing secure forms and current API. */
+body.cm-app #saved .saved-container {width:min(100% - 60px,1260px);max-width:1260px;text-align:left;padding-top:22px}
+#saved .saved-container > h1 {font-size:46px;margin-bottom:15px}
+#saved .saved-container > h1::before {content:"YOUR STYLE ARCHIVE";display:block;color:var(--cm-forest);font-size:11px;letter-spacing:.16em;margin-bottom:18px}
+#saved .recommendation-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+#saved .look-card {background:#fff;border-radius:3px;padding:24px}
+#saved .look-style {color:var(--cm-forest)}
+#saved .look-image-frame {background:var(--cm-faint)}
+body.cm-app #account {text-align:center;padding-top:43px}
+body.cm-app #account h1 {font-size:48px;margin:12px 0 19px}
+body.cm-app #account h1::before {content:"YOUR PERSONAL SPACE";display:block;color:var(--cm-forest);letter-spacing:.17em;font:800 11px "Avenir Next",system-ui,sans-serif;margin-bottom:20px}
+body.cm-app #account .account-card {max-width:1080px;width:min(100% - 40px,1080px)}
+#account .account-card > p:first-child {font-size:16px;color:var(--cm-muted)}
+#account .account-email {font-size:20px;margin-bottom:38px}
+#account .account-settings {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:28px}
+#account .settings-link {background:#fff;border:1px solid var(--cm-line);border-radius:4px;text-align:left;padding:28px;min-height:135px;transition:transform .2s,box-shadow .2s}
+#account .settings-link:hover {transform:translateY(-2px);box-shadow:var(--cm-shadow);background:white}
+#account .settings-link strong {font-size:19px}
+#account .settings-link span {font-size:13px;color:var(--cm-muted)}
+#account .calendar-card {padding:28px;text-align:left;border-radius:4px}
+#account #logout-button {max-width:430px;margin:0 auto}
+body.cm-app .auth-page {padding:80px 20px 120px}
+body.cm-app .auth-page h1 {font-size:35px;letter-spacing:-.055em}
+body.cm-app .auth-form {width:min(100%,440px)}
+body.cm-app .auth-form input {border-color:var(--cm-line);border-radius:4px;background:#fff;min-height:54px}
+body.cm-app .auth-form label {color:var(--cm-ink);font-weight:700}
+body.cm-app .auth-form .button {margin-top:20px;min-height:52px}
+body.cm-app .auth-page .back-link {color:var(--cm-forest)}
+body.cm-app #profile .profile-container,body.cm-app #preferences .preferences-container,
+body.cm-app #wardrobe .wardrobe-container {padding:25px 0;max-width:1100px}
+body.cm-app .settings-form .save-button {min-width:220px}
+body.cm-app .data-management-container {max-width:1080px}
+body.cm-app .data-card {background:#fff;border-radius:4px}
+body.cm-app .data-delete-button {color:#b02620;border-color:#b02620;background:#fff}
+/* Fixed navigation for phones only. Hidden on public pages by the same router's visibility. */
+.cm-mobile-nav[hidden] {display:none!important}
+.cm-mobile-nav {display:none}
+@media (max-width:1150px) {
+  body.cm-app .site-header {padding:0 28px}
+  body.cm-app #recommendation .recommendation-container {grid-template-columns:270px minmax(0,1fr);gap:20px}
+  #recommendation .recommendation-context-grid {grid-template-columns:1fr}
+  #recommendation .recommendation-context-field:first-child {grid-column:auto}
+  #recommendation .look-card.cm-featured {grid-template-columns:40% minmax(0,1fr)}
+  #recommendation .look-card.cm-featured .cm-look-visual {min-height:340px}
+  .cm-photo-stage {height:470px}
+  .cm-feature-grid {gap:18px}
+}
+@media (max-width:900px) {
+  .cm-home-grid {grid-template-columns:1fr;max-width:730px;padding-bottom:50px}
+  .cm-home-visual {width:100%;max-width:620px;margin:0 auto}
+  .cm-photo-stage {height:525px}
+  #home .cm-home-copy h1 {font-size:clamp(44px,8vw,68px)}
+  #recommendation .recommendation-container {display:block!important;margin-top:38px!important}
+  #recommendation .recommendation-form {position:static;margin:24px 0 25px}
+  #recommendation .cm-recommendation-blank {min-height:360px}
+  #recommendation .recommendation-context-grid {grid-template-columns:repeat(3,minmax(0,1fr))}
+  #recommendation .recommendation-context-field:first-child {grid-column:auto}
+  #closet .wardrobe-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cm-feature-grid {grid-template-columns:1fr;gap:26px}
+  .cm-feature-grid article {gap:26px}
+  body.cm-app .site-header {flex-wrap:wrap;height:auto;min-height:78px;padding:14px 23px}
+  body.cm-app .header-nav {overflow-x:auto;max-width:100%;flex-basis:100%;justify-content:flex-start;scrollbar-width:thin}
+  body.cm-app .header-link:last-child:not([hidden]) {margin-left:auto}
+}
+@media (max-width:600px) {
+  body.cm-app {padding-bottom:0}
+  body.cm-app:has(.cm-mobile-nav:not([hidden])) {padding-bottom:70px}
+  .cm-shell {width:min(100% - 36px,1260px)}
+  #home::before {font-size:9px;letter-spacing:.13em}
+  body.cm-app .site-header {padding:14px 18px;gap:11px}
+  body.cm-app .site-header .logo {font-size:18px;gap:8px}
+  body.cm-app .site-header .logo img {width:33px;height:33px}
+  body.cm-app .header-nav {gap:10px}
+  body.cm-app .header-link {font-size:12px}
+  #home .cm-home-main {width:100%;padding:0}
+  .cm-home-grid {padding-top:35px;gap:8px;padding-bottom:55px}
+  #home .cm-home-copy h1 {font-size:clamp(36px,10vw,50px);margin:25px 0 24px}
+  #home .cm-home-copy .cm-home-lead {font-size:16px}
+  #home .cm-home-copy .cm-home-desc {font-size:13px}
+  .cm-home-actions {flex-direction:column;gap:10px;margin-bottom:34px}
+  #home .cm-home-actions .button {width:100%;min-height:53px}
+  .cm-home-meta {gap:10px;justify-content:space-between;font-size:9px}
+  .cm-home-visual {margin-top:16px;max-width:460px;padding-bottom:36px}
+  .cm-photo-stage {height:430px}
+  .cm-editorial-photo {border-width:4px}
+  .cm-photo-main {width:63%;height:72%;top:8%;left:6%}
+  .cm-photo-secondary {width:39%;height:57%;top:13%;right:3%}
+  .cm-photo-detail {width:46%;height:28%;right:5%;bottom:7%}
+  .cm-editorial-caption {left:0;bottom:0;min-width:0;width:75%;padding:15px 18px;gap:7px}
+  .cm-editorial-caption strong {font-size:16px}
+  .cm-editorial-caption span,.cm-editorial-caption small {font-size:9px}
+  .cm-vertical-label {display:none}
+  .cm-home-features {padding:30px 0 50px}
+  .cm-features-heading span {display:none}
+  .cm-feature-grid article {padding:15px 0;border-bottom:1px solid var(--cm-line)}
+  .cm-feature-no {font-size:29px;min-width:42px}
+  .cm-feature-grid h3 {font-size:17px}
+  .cm-dark-band .cm-shell {flex-direction:column;align-items:start}
+  .cm-dark-band strong {font-size:17px}
+  .cm-home-footer {padding-block:20px;gap:10px;flex-wrap:wrap}
+  body.cm-app #recommendation .recommendation-container,body.cm-app #closet .closet-container,
+  body.cm-app #saved .saved-container {width:min(100% - 32px,1260px)}
+  #recommendation .recommendation-container > h1 {font-size:32px}
+  #recommendation .recommendation-form {padding:22px 16px}
+  #recommendation .recommendation-context-grid {grid-template-columns:1fr 1fr}
+  #recommendation .recommendation-context-field:first-child {grid-column:1/-1}
+  #recommendation .recommendation-grid {grid-template-columns:1fr}
+  #recommendation .look-card.cm-featured {display:flex;flex-direction:column;min-height:0;padding:16px}
+  #recommendation .look-card.cm-featured .cm-look-visual {min-height:235px;height:270px;width:100%;margin-bottom:18px}
+  #recommendation .look-card.cm-featured .look-style {font-size:22px}
+  #recommendation .look-card .look-items {gap:7px}
+  #recommendation .look-card .look-feedback-actions {gap:7px}
+  #recommendation .look-card .look-interaction-button {min-height:44px}
+  #recommendation .cm-recommendation-blank {min-height:345px}
+  #closet .closet-container > h1 {font-size:39px}
+  #closet .closet-toolbar {align-items:flex-start;flex-direction:column}
+  #closet .category-filter {padding:8px 13px;min-height:38px;font-size:12px}
+  #closet .wardrobe-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+  #closet .wardrobe-card-image {aspect-ratio:4/5}
+  #closet .wardrobe-card-body {padding:12px}
+  #closet .wardrobe-card-title {font-size:15px}
+  #closet .wardrobe-card-meta {font-size:12px}
+  #closet .wardrobe-card-actions {gap:6px}
+  #closet .wardrobe-card-actions a,#closet .wardrobe-card-actions button {padding:7px 10px;font-size:11px}
+  #saved .recommendation-grid {grid-template-columns:1fr}
+  #account .account-settings {grid-template-columns:1fr;gap:12px}
+  body.cm-app #account h1 {font-size:35px}
+  #account .settings-link {padding:20px;min-height:100px}
+  .cm-mobile-nav {position:fixed;z-index:50;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,1fr);
+    background:rgba(255,255,255,.97);border-top:1px solid var(--cm-line);height:70px;padding-bottom:env(safe-area-inset-bottom,0)}
+  .cm-mobile-nav a {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    font-size:12px;color:var(--cm-muted)}
+  .cm-mobile-nav a span {font-size:22px;line-height:1;font-family:Georgia,serif}
+  .cm-mobile-nav a small {font-size:10px;font-weight:700}
+  .cm-mobile-nav a[aria-current="page"] {color:var(--cm-forest);font-weight:800}
+}
+@media (max-width:360px) {
+  #recommendation .recommendation-context-grid {grid-template-columns:1fr}
+  #recommendation .recommendation-context-field:first-child {grid-column:auto}
+  #closet .wardrobe-grid {grid-template-columns:1fr}
+  .cm-photo-stage {height:360px}
+}
+@media (prefers-reduced-motion:reduce) {
+  body.cm-app *,body.cm-app *::before,body.cm-app *::after {transition:none!important;animation:none!important}
+}

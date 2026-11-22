@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLOMORI | Your Style, Remembered</title>
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/responsive.css">
+  <link rel="stylesheet" href="./css/data-management.css">
+  <link rel="stylesheet" href="./css/ui-polish.css">
+  <script type="module" src="./js/main.js"></script>
+  <script type="module" src="./js/ui-polish.js"></script>
+  <link rel="stylesheet" href="./css/brand-final.css">
+
+  <meta name="theme-color" content="#24493E">
+  <link rel="icon" type="image/svg+xml" href="./assets/clomori-mark.svg">
+  <link rel="stylesheet" href="./css/clomori-v2.css">
+  <link rel="stylesheet" href="./css/clomori-recommendation-fixes.css">
+  <link rel="stylesheet" href="./css/clomori-image-assist.css">
+  <link rel="stylesheet" href="./css/clomori-image-layout-v5.css">
+  <script type="module" src="./js/clomori-v2.js"></script>
+  <script type="module" src="./js/clomori-logo-reload.js"></script>
+  <link rel="stylesheet" href="./css/clomori-mobile-nav-v6.css">
+  <!-- CLOMORI_CLARIFICATION_STEP10_V1 -->
+  <link rel="stylesheet" href="./css/clomori-clarification.css">
+  <script type="module" src="./js/clarification-ui.js"></script>
+</head>
+<body class="cm-app" data-clomori-v2="true" data-clomori-recommendation-fixes="v3" data-clomori-image-assist="v4" data-clomori-image-layout="v5">
+  <noscript>이 서비스를 이용하려면 브라우저에서 JavaScript를 활성화해 주세요.</noscript>
+
+  <section id="home" class="page">
+    <header class="site-header">
+      <a href="#home" class="logo"><img src="./assets/clomori-mark.svg" alt="" aria-hidden="true"><span>CLOMORI</span></a>
+      <nav class="header-nav" aria-label="주요 메뉴">
+        <a id="header-recommendation-link" href="#recommendation" class="header-link" hidden>코디 추천</a>
+        <a id="header-saved-link" href="#saved" class="header-link" hidden>저장한 코디</a>
+        <a id="header-closet-link" href="#closet" class="header-link" hidden>나만의 옷장</a>
+        <a id="header-auth-link" href="#login" class="header-link">로그인</a>
+      </nav>
+    </header>
+    <main class="hero cm-home-main">
+      <div class="cm-shell cm-home-grid">
+        <div class="cm-home-copy">
+          <div class="cm-eyebrow"><span class="cm-line"></span> THE PERSONAL STYLE EDIT</div>
+          <h1 tabindex="-1">오늘의 옷차림에<br><em>나를 더하다.</em></h1>
+          <div class="cm-gold-rule" aria-hidden="true"></div>
+          <p class="cm-home-lead">내 취향, 옷장, 날씨와 일정까지.<br>오늘의 나를 가장 잘 아는 스타일 제안.</p>
+          <p class="cm-home-desc">복잡한 고민은 덜고, 나다운 선택은 더하고.<br>나의 일상에서 시작하는 다섯 가지 코디를 만나보세요.</p>
+          <div class="cm-home-actions">
+            <a id="start-link" href="#login" class="button cm-primary-link">나에게 맞는 코디 찾기 <span aria-hidden="true">↗</span></a>
+            <a href="#closet" class="button secondary-button cm-secondary-link">내 옷장 둘러보기 <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="cm-home-meta"><span>01. PERSONAL TASTE</span><span>02. OWN WARDROBE</span><span>03. YOUR MOMENT</span></div>
+        </div>
+        <div class="cm-home-visual" aria-label="CLOMORI를 위해 생성한 패션 화보 이미지">
+          <div class="cm-photo-stage">
+            <div class="cm-editorial-photo cm-photo-main"><img src="./assets/hero-editorial-model.jpg" alt="차콜 재킷과 와이드 팬츠를 입은 에디토리얼 모델" loading="eager"></div>
+            <div class="cm-editorial-photo cm-photo-secondary"><img src="./assets/hero-styled-flatlay.jpg" alt="딥그린 니트와 크림 팬츠, 화이트 스니커즈를 조합한 스타일링" loading="eager"></div>
+            <div class="cm-editorial-photo cm-photo-detail"><img src="./assets/hero-knit-detail.jpg" alt="니트 소재와 CLOMORI 라벨의 디테일" loading="eager"></div>
+            <span class="cm-vertical-label">EDIT / 01 — PERSONAL COLLECTION</span>
+          </div>
+          <div class="cm-editorial-caption"><span>01 / YOUR DAILY EDIT</span><strong>매일 조금 더, 나답게.</strong><small>THE CLOSET EDIT · CLOMORI</small></div>
+        </div>
+      </div>
+      <section class="cm-shell cm-home-features" aria-labelledby="cm-features-title">
+        <div class="cm-features-heading"><h2 id="cm-features-title">WHY CLOMORI</h2><span>THREE WAYS, ONE PERSONAL STYLE</span></div>
+        <div class="cm-feature-grid">
+          <article><span class="cm-feature-no">01</span><div><span class="cm-eyebrow">YOUR TASTE</span><h3>취향을 알아보는 스타일</h3><p>좋아하는 색상과 핏을 기억하고,<br>나에게 어울리는 방향을 제안합니다.</p></div></article>
+          <article><span class="cm-feature-no">02</span><div><span class="cm-eyebrow">YOUR CLOSET</span><h3>내 옷으로 완성하는 하루</h3><p>옷장에 등록한 실제 옷 사진으로<br>지금 바로 입을 수 있는 코디를 찾습니다.</p></div></article>
+          <article><span class="cm-feature-no">03</span><div><span class="cm-eyebrow">YOUR MOMENT</span><h3>일정과 날씨까지 함께</h3><p>계획된 장소와 시간에 맞춰<br>더 편안하게 일상을 준비합니다.</p></div></article>
+        </div>
+      </section>
+      <div class="cm-dark-band"><div class="cm-shell"><span>PERSONAL STYLE ISN'T A TREND.</span><strong>자신에게 맞는 스타일이 가장 좋은 스타일.</strong></div></div>
+      <footer class="cm-home-footer cm-shell"><strong>CLOMORI</strong><span>YOUR STYLE, REMEMBERED.</span></footer>
+    </main>
+  </section>
+
+  <section id="login" class="page auth-page" hidden>
+    <a href="#home" class="back-link">← 처음으로</a>
+    <h1 tabindex="-1">로그인</h1>
+    <form id="login-form" class="auth-form">
+      <label for="login-email">이메일</label>
+      <input id="login-email" name="email" type="email" autocomplete="username" required>
+      <label for="login-password">비밀번호</label>
+      <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit" class="button">로그인</button>
+      <p>계정이 없으신가요? <a href="#signup">회원가입</a></p>
+      <p class="form-message" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section id="signup" class="page auth-page" hidden>
+    <a href="#home" class="back-link">← 처음으로</a>
+    <h1 tabindex="-1">회원가입</h1>
+    <form id="signup-form" class="auth-form">
+      <label for="signup-email">이메일</label>
+      <input id="signup-email" name="email" type="email" autocomplete="username" required>
+      <label for="signup-password">비밀번호</label>
+      <input id="signup-password" name="password" type="password" autocomplete="new-password"
+             minlength="12" maxlength="128" aria-describedby="password-hint" required>
+      <small id="password-hint" class="field-hint">12~128자로 입력해 주세요.</small>
+      <label for="signup-confirm">비밀번호 확인</label>
+      <input id="signup-confirm" name="password_confirmation" type="password" autocomplete="new-password"
+             minlength="12" maxlength="128" required>
+      <button type="submit" class="button">회원가입</button>
+      <p>이미 계정이 있으신가요? <a href="#login">로그인</a></p>
+      <p class="form-message" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section id="account" class="page auth-page" hidden>
+    <a href="#home" class="back-link">← 처음으로</a>
+    <h1 tabindex="-1">내 계정</h1>
+    <div class="account-card">
+      <p>반가워요!</p>
+      <p id="account-email" class="account-email"></p>
+      <nav class="account-settings" aria-label="코디 추천과 내 정보">
+        <a href="#recommendation" class="settings-link">
+          <strong>코디 추천</strong>
+          <span>원하는 상황을 적고 나에게 맞는 코디를 확인해요.</span>
+        </a>
+        <a href="#saved" class="settings-link">
+          <strong>저장한 코디</strong>
+          <span>마음에 들어 저장한 코디를 다시 확인해요.</span>
+        </a>
+        <a href="#profile" class="settings-link">
+          <strong>프로필 설정</strong>
+          <span>성별, 연령대, 키와 체형을 입력하거나 수정해요.</span>
+        </a>
+        <a href="#preferences" class="settings-link">
+          <strong>패션 취향 설정</strong>
+          <span>좋아하는 스타일, 색과 핏을 설정해요.</span>
+        </a>
+        <a href="#closet" class="settings-link">
+          <strong>나만의 옷장</strong>
+          <span>가지고 있는 옷과 사진을 등록하고 관리해요.</span>
+        </a>
+        <a href="#data" class="settings-link">
+          <strong>데이터 관리·회원 탈퇴</strong>
+          <span>등록한 데이터 삭제 및 계정 탈퇴를 관리해요.</span>
+        </a>
+      </nav>
+      <section class="calendar-card" aria-labelledby="calendar-heading">
+        <div class="calendar-card-header">
+          <h2 id="calendar-heading">Google Calendar</h2>
+          <span id="calendar-status" class="calendar-status" data-state="unknown" aria-live="polite">연결 상태 확인 전</span>
+        </div>
+        <p id="calendar-description" class="calendar-description">추천에 기본 캘린더의 일정을 활용해요.</p>
+        <p class="calendar-scope-note">일정 조회 권한을 요청해요. 일정은 이 서비스에서 추가하거나 변경하지 않아요.</p>
+        <div class="calendar-actions">
+          <button id="calendar-connect" type="button" class="button" disabled>Google Calendar 연결하기</button>
+          <button id="calendar-disconnect" type="button" class="button secondary-button" hidden disabled>연결 해제</button>
+          <button id="calendar-check" type="button" class="button secondary-button" disabled>연결 상태 확인</button>
+        </div>
+        <div id="calendar-consent" class="calendar-consent" hidden>
+          <a id="calendar-consent-link" class="calendar-consent-link" target="_blank" rel="noopener noreferrer">Google 권한 동의 화면 열기</a>
+          <p>Google 창에서 권한 동의를 마친 뒤 이 화면으로 돌아와 ‘연결 상태 확인’을 눌러 주세요.</p>
+        </div>
+        <button id="calendar-restart" type="button" class="text-button calendar-restart" hidden>연결 다시 시작</button>
+        <p id="calendar-message" class="form-message" role="status" aria-live="polite"></p>
+        <a id="calendar-permissions-link" class="calendar-consent-link" href="https://myaccount.google.com/connections"
+           target="_blank" rel="noopener noreferrer" hidden>Google 계정에서 앱 권한 확인</a>
+      </section>
+      <button id="logout-button" type="button" class="button secondary-button">로그아웃</button>
+      <p id="account-message" class="form-message" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section id="data" class="page settings-page" hidden>
+    <header class="site-header">
+      <a href="#home" class="logo"><img src="./assets/clomori-mark.svg" alt="" aria-hidden="true"><span>CLOMORI</span></a>
+      <nav class="header-nav" aria-label="주요 메뉴">
+        <a href="#home" class="header-link">홈</a>
+        <a href="#recommendation" class="header-link">코디 추천</a>
+        <a href="#saved" class="header-link">저장한 코디</a>
+        <a href="#closet" class="header-link">나만의 옷장</a>
+        <a href="#account" class="header-link">내 계정</a>
+      </nav>
+    </header>
+    <main class="data-management-container">
+      <nav class="data-nav" aria-label="데이터 관리 이동">
+        <a href="#account" class="text-link">← 내 계정으로</a>
+      </nav>
+      <h1 tabindex="-1">내 데이터 관리</h1>
+      <p class="page-intro">계정은 유지하면서 내 정보를 선택적으로 삭제하거나 계정을 탈퇴할 수 있어요.</p>
+      <section class="data-card" aria-labelledby="data-summary-heading">
+        <h2 id="data-summary-heading">보관 중인 데이터</h2>
+        <div id="data-summary" aria-live="polite">불러오는 중…</div>
+        <button id="data-refresh" type="button" class="button secondary-button">건수 다시 확인</button>
+        <p id="data-message" class="form-message" role="status" aria-live="polite"></p>
+      </section>
+      <section class="data-card" aria-labelledby="data-delete-heading">
+        <h2 id="data-delete-heading">선택한 데이터만 삭제</h2>
+        <p>로그인 계정은 유지됩니다. 서버에서 삭제한 정보는 이 화면에서 되돌릴 수 없어요.</p>
+        <form id="data-delete-form" autocomplete="off">
+          <fieldset id="data-delete-fields" class="data-fieldset" disabled>
+            <legend class="visually-hidden">삭제할 데이터 선택</legend>
+            <label class="data-choice"><input type="radio" name="data-scope" value="profile"><span><strong>프로필 삭제</strong><small>성별·연령대·키·체형을 지워요.</small></span></label>
+            <label class="data-choice"><input type="radio" name="data-scope" value="preferences"><span><strong>패션 취향 삭제</strong><small>직접 선택한 스타일·색상·핏과 현재 집계 정보를 지워요. 평가와 저장 코디 원본은 별도로 남아요.</small></span></label>
+            <label class="data-choice"><input type="radio" name="data-scope" value="wardrobe"><span><strong>옷장 전체 삭제</strong><small>등록한 의류와 업로드 사진을 지워요. 과거 추천·저장 코디 안의 이름·참조 정보는 남을 수 있어요.</small></span></label>
+            <label class="data-choice"><input type="radio" name="data-scope" value="feedback"><span><strong>평가 기록 전체 삭제</strong><small>좋아요·싫어요와 사유를 지워요. 저장한 코디는 유지돼요.</small></span></label>
+            <label class="data-choice"><input type="radio" name="data-scope" value="saved"><span><strong>저장한 코디 전체 삭제</strong><small>저장 목록을 비워요. 평가와 추천 실행 기록은 유지돼요.</small></span></label>
+            <label class="data-choice"><input type="radio" name="data-scope" value="history"><span><strong>추천·평가·저장 기록 전체 삭제</strong><small>추천 실행 기록, 평가 사유, 저장한 코디를 함께 지워요. 옷장·프로필·직접 설정한 취향은 유지돼요.</small></span></label>
+            <label class="data-confirm-field" for="data-password">현재 계정 비밀번호
+              <input id="data-password" type="password" autocomplete="current-password" required>
+            </label>
+            <label class="data-confirm-field" for="data-confirm">삭제하려면 ‘삭제’를 입력해 주세요
+              <input id="data-confirm" type="text" spellcheck="false" autocomplete="off" required placeholder="삭제" autocorrect="off" autocapitalize="off">
+            </label>
+            <button type="submit" class="button data-delete-button">선택한 데이터 영구 삭제</button>
+          </fieldset>
+        </form>
+      </section>
+      <section class="data-card" aria-labelledby="delete-account-heading">
+        <h2 id="delete-account-heading">회원 탈퇴</h2>
+        <p class="data-warning">탈퇴하면 계정과 연결된 서비스 데이터를 삭제합니다. 복구할 수 없으므로 별도의 테스트 계정에서 먼저 확인하세요. Google 측 권한을 철회하려면 탈퇴 전에 Calendar 연결을 해제하세요.</p>
+        <form id="delete-account-form" autocomplete="off">
+          <fieldset id="delete-account-fields" class="data-fieldset" disabled>
+            <label class="data-confirm-field" for="delete-account-password">현재 비밀번호
+              <input id="delete-account-password" type="password" autocomplete="current-password" required>
+            </label>
+            <label class="data-confirm-field" for="delete-account-confirm">탈퇴하려면 ‘회원탈퇴’를 입력해 주세요
+              <input id="delete-account-confirm" type="text" spellcheck="false" autocomplete="off" required placeholder="회원탈퇴" autocorrect="off" autocapitalize="off">
+            </label>
+            <label class="data-agree"><input type="checkbox" id="delete-account-agree" required><span>계정이 삭제되면 이 앱에서 복구할 수 없다는 점을 이해했습니다.</span></label>
+            <button type="submit" class="button data-delete-button">회원 탈퇴 및 계정 삭제</button>
+          </fieldset>
+        </form>
+        <p id="delete-account-message" class="form-message" role="status" aria-live="polite"></p>
+      </section>
+      <p class="data-footer-note">Google Calendar 연결 해제는 내 계정에서 별도로 진행해 주세요. 서버 백업 및 외부 서비스의 데이터 보관은 이 기능의 삭제 범위와 다를 수 있어요.</p>
+    </main>
+  </section>
+
+  <section id="profile" class="page settings-page" hidden>
+    <header class="site-header">
+      <a href="#home" class="logo"><img src="./assets/clomori-mark.svg" alt="" aria-hidden="true"><span>CLOMORI</span></a>
+      <nav class="header-nav" aria-label="주요 메뉴">
+        <a href="#home" class="header-link">홈</a>
+        <a href="#recommendation" class="header-link">코디 추천</a>
+        <a href="#saved" class="header-link">저장한 코디</a>
+        <a href="#closet" class="header-link">나만의 옷장</a>
+        <a href="#account" class="header-link">내 계정</a>
+      </nav>
+    </header>
+    <main class="settings-container profile-container">
+      <nav class="settings-steps" aria-label="설정 단계">
+        <a href="#profile" aria-current="step">1. 프로필</a>
+        <a href="#preferences">2. 패션 취향</a>
+      </nav>
+      <h1 tabindex="-1">프로필 설정</h1>
+      <p class="page-intro">추천에 활용할 기본 정보를 입력해 주세요.<br>모든 항목은 선택사항입니다.</p>
+      <form id="profile-form" class="settings-form" novalidate>
+        <fieldset id="profile-fields" class="form-fields" disabled>
+          <legend class="visually-hidden">선택 프로필 정보</legend>
+          <div class="profile-fields-grid">
+            <div class="field-row">
+              <label for="profile-gender">성별</label>
+              <select id="profile-gender" name="gender">
+                <option value="">선택 안 함</option>
+                <option value="female">여</option>
+                <option value="male">남</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label for="profile-age-group">연령대</label>
+              <select id="profile-age-group" name="age_group">
+                <option value="">선택 안 함</option>
+                <option value="10s">10대</option>
+                <option value="20s">20대</option>
+                <option value="30s">30대</option>
+                <option value="40s">40대</option>
+                <option value="50s">50대</option>
+                <option value="60s">60대 이상</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label for="profile-height">키</label>
+              <div>
+                <div class="input-with-unit">
+                  <input id="profile-height" name="height_cm" type="number" inputmode="numeric"
+                         min="1" max="300" step="1" placeholder="선택 입력" aria-describedby="height-hint">
+                  <span aria-hidden="true">cm</span>
+                </div>
+                <p id="height-hint" class="input-hint">1~300cm, 정수로 입력해 주세요.</p>
+              </div>
+            </div>
+            <div class="field-row">
+              <label for="profile-body-type">체형</label>
+              <div>
+                <select id="profile-body-type" name="body_type">
+                  <option value="">선택 안 함</option>
+                  <option value="slim">마른 체형</option>
+                  <option value="average">보통 체형</option>
+                  <option value="muscular">근육형</option>
+                  <option value="chubby">통통한 체형</option>
+                  <option value="__other__">기타</option>
+                </select>
+                <div id="profile-body-other" class="custom-body-field" hidden>
+                  <label for="profile-body-custom">체형 설명</label>
+                  <input id="profile-body-custom" type="text" maxlength="50"
+                         placeholder="체형을 간단히 입력해 주세요" aria-describedby="body-custom-hint" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                  <p id="body-custom-hint" class="input-hint">예: 어깨가 넓고 하체가 마른 편 · 최대 50자</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="button save-button">저장하고 다음</button>
+        </fieldset>
+        <p id="profile-message" class="form-message" role="status" aria-live="polite"></p>
+        <button id="profile-retry" type="button" class="button secondary-button" hidden>다시 불러오기</button>
+        <div class="form-footer">
+          <button id="profile-skip" type="button" class="text-button">저장하지 않고 건너뛰기</button>
+          <a href="#account" class="text-link">내 계정으로</a>
+        </div>
+      </form>
+    </main>
+  </section>
+
+  <section id="preferences" class="page settings-page" hidden>
+    <header class="site-header">
+      <a href="#home" class="logo"><img src="./assets/clomori-mark.svg" alt="" aria-hidden="true"><span>CLOMORI</span></a>
+      <nav class="header-nav" aria-label="주요 메뉴">
+        <a href="#home" class="header-link">홈</a>
+        <a href="#recommendation" class="header-link">코디 추천</a>
+        <a href="#saved" class="header-link">저장한 코디</a>
+        <a href="#closet" class="header-link">나만의 옷장</a>
+        <a href="#account" class="header-link">내 계정</a>
+      </nav>
+    </header>
+    <main class="settings-container preferences-container">
+      <nav class="settings-steps" aria-label="설정 단계">
+        <a href="#profile">1. 프로필</a>
+        <a href="#preferences" aria-current="step">2. 패션 취향</a>
+      </nav>
+      <h1 tabindex="-1">취향 설정</h1>
+      <p class="page-intro">당신의 패션 취향을 알려 주세요.<br>각 항목을 선택해 주세요. 선호하지 않는 색은 ‘없음’을 선택할 수 있어요.</p>
+      <form id="preferences-form" class="settings-form" novalidate>
+        <fieldset id="preferences-fields" class="form-fields" disabled>
+          <legend class="visually-hidden">필수 패션 취향</legend>
+          <div class="preferences-grid">
+            <fieldset class="preference-group" aria-describedby="styles-hint">
+              <legend>선호하는 스타일 <span class="required-label">필수</span></legend>
+              <p id="styles-hint" class="input-hint">하나 이상 선택</p>
+              <div id="preferred-styles-options" class="choices"></div>
+            </fieldset>
+            <fieldset class="preference-group" aria-describedby="colors-hint">
+              <legend>선호하는 색 <span class="required-label">필수</span></legend>
+              <p id="colors-hint" class="input-hint">하나 이상 선택</p>
+              <div id="preferred-colors-options" class="choices"></div>
+            </fieldset>
+            <fieldset class="preference-group" aria-describedby="disliked-hint">
+              <legend>선호하지 않는 색 <span class="required-label">필수</span></legend>
+              <p id="disliked-hint" class="input-hint">여러 개 선택 또는 없음</p>
+              <div id="disliked-colors-options" class="choices"></div>
+            </fieldset>
+            <fieldset class="preference-group" aria-describedby="fit-hint">
+              <legend>선호하는 핏 <span class="required-label">필수</span></legend>
+              <p id="fit-hint" class="input-hint">하나 선택</p>
+              <div id="preferred-fit-options" class="choices"></div>
+            </fieldset>
+          </div>
+          <button type="submit" class="button save-button">설정 완료</button>
+        </fieldset>
+        <p id="preferences-message" class="form-message" role="status" aria-live="polite"></p>
+        <button id="preferences-retry" type="button" class="button secondary-button" hidden>다시 불러오기</button>
+        <div class="form-footer">
+          <button id="preferences-back" type="button" class="text-button">← 프로필 설정</button>
+          <a href="#account" class="text-link">내 계정으로</a>
+        </div>
+      </form>
+    </main>
+  </section>
+
+  <section id="closet" class="page settings-page" hidden>
+    <header class="site-header">
+      <a href="#home" class="logo"><img src="./assets/clomori-mark.svg" alt="" aria-hidden="true"><span>CLOMORI</span></a>
+      <nav class="header-nav" aria-label="주요 메뉴">
+        <a href="#home" class="header-link">홈</a>
+        <a href="#recommendation" class="header-link">코디 추천</a>
+        <a href="#saved" class="header-link">저장한 코디</a>
+        <a href="#closet" class="header-link" aria-current="page">나만의 옷장</a>
+        <a href="#account" class="header-link">내 계정</a>
+      </nav>
+    </header>
+    <main class="settings-container closet-container">
+      <h1 tabindex="-1">나만의 옷장</h1>
+      <p class="page-intro">가지고 있는 옷을 모아 보고, 나에게 맞는 코디에 활용해요.</p>
+      <a href="#wardrobe/new" class="button">옷 추가하기</a>
+      <div class="closet-toolbar">
+        <div id="closet-filters" class="category-filters" role="group" aria-label="의류 분류"></div>
+        <p id="closet-count" class="closet-count"></p>
+      </div>
+      <p id="closet-message" class="form-message" role="status" aria-live="polite"></p>
+      <button id="closet-retry" type="button" class="button secondary-button" hidden>다시 불러오기</button>
+      <div id="closet-empty" class="closet-empty" hidden>
+        <p>아직 등록한 옷이 없어요.</p>
+        <p>‘옷 추가하기’에서 첫 번째 옷을 등록해 보세요.</p>
+      </div>
+      <div id="closet-list" class="wardrobe-grid"></div>
+    </main>
+  </section>
+
+  <section id="wardrobe" class="page settings-page" hidden>
+    <header class="site-header">
+      <a href="#home" class="logo"><img src="./assets/clomori-mark.svg" alt="" aria-hidden="true"><span>CLOMORI</span></a>
+      <nav class="header-nav" aria-label="주요 메뉴">
+        <a href="#home" class="header-link">홈</a>
+        <a href="#recommendation" class="header-link">코디 추천</a>
+        <a href="#saved" class="header-link">저장한 코디</a>
+        <a href="#closet" class="header-link">나만의 옷장</a>
+        <a href="#account" class="header-link">내 계정</a>
+      </nav>
+    </header>
+    <main class="settings-container wardrobe-container">
+      <h1 id="wardrobe-title" tabindex="-1">옷 추가하기</h1>
+      <p class="page-intro">옷의 특징을 입력해 주세요.<br>사진과 계절은 선택사항입니다.</p>
+      <form id="wardrobe-form" class="settings-form" novalidate>
+        <fieldset id="wardrobe-fields" class="form-fields" disabled>
+          <legend class="visually-hidden">옷 정보</legend>
+          <div class="wardrobe-photo-area">
+            <label for="wardrobe-photo">사진 <span class="optional-label">선택</span></label>
+            <div class="wardrobe-photo-stage">
+              <img id="wardrobe-preview" class="wardrobe-preview" alt="등록할 옷 사진" hidden>
+              <p id="wardrobe-photo-placeholder" class="photo-placeholder">사진을 추가하면 여기에 표시돼요.</p>
+            </div>
+            <input id="wardrobe-photo" name="photo" type="file"
+                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                   aria-describedby="wardrobe-photo-hint wardrobe-file-info">
+            <p id="wardrobe-photo-hint" class="input-hint">JPG, PNG, WEBP 사진을 올릴 수 있어요.<br>파일은 5MB 이하, 사진 크기는 1,600만 픽셀 이하여야 해요.</p>
+            <small id="wardrobe-file-info" class="wardrobe-file-info"></small>
+            <div class="wardrobe-photo-actions">
+              <button id="wardrobe-clear-file" type="button" class="text-button" hidden>선택한 파일 취소</button>
+              <button id="wardrobe-delete-photo" type="button" class="text-button wardrobe-delete" hidden>등록된 사진 삭제</button>
+            </div>
+          </div>
+          <div class="wardrobe-fields-grid">
+            <div class="field-row">
+              <label for="wardrobe-category">분류 <span class="required-label">필수</span></label>
+              <select id="wardrobe-category" name="category" required>
+                <option value="">선택해 주세요</option>
+                <option value="top">상의</option>
+                <option value="bottom">하의</option>
+                <option value="outer">아우터</option>
+                <option value="shoes">신발</option>
+                <option value="accessory">액세서리</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label for="wardrobe-type">종류 <span class="required-label">필수</span></label>
+              <input id="wardrobe-type" name="type" type="text" maxlength="100" placeholder="후드티" required autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            </div>
+            <div class="field-row">
+              <label for="wardrobe-color">색상 <span class="required-label">필수</span></label>
+              <div>
+                <input id="wardrobe-color" name="color" type="text" maxlength="50"
+                       list="wardrobe-color-suggestions" placeholder="예: navy" aria-describedby="wardrobe-color-hint" required autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <datalist id="wardrobe-color-suggestions">
+                  <option value="black" label="블랙"></option>
+                  <option value="white" label="화이트"></option>
+                  <option value="navy" label="네이비"></option>
+                  <option value="beige" label="베이지"></option>
+                  <option value="gray" label="그레이"></option>
+                  <option value="red" label="레드"></option>
+                  <option value="brown" label="브라운"></option>
+                  <option value="blue" label="블루"></option>
+                  <option value="green" label="그린"></option>
+                  <option value="pink" label="핑크"></option>
+                  <option value="yellow" label="옐로"></option>
+                  <option value="ivory" label="아이보리"></option>
+                </datalist>
+                <p id="wardrobe-color-hint" class="input-hint">목록에서 고르거나 직접 입력할 수 있어요.</p>
+              </div>
+            </div>
+            <div class="field-row">
+              <label for="wardrobe-fit">핏 <span class="required-label">필수</span></label>
+              <select id="wardrobe-fit" name="fit" required>
+                <option value="">선택해 주세요</option>
+                <option value="slim">슬림 (Slim)</option>
+                <option value="regular">레귤러 (Regular)</option>
+                <option value="wide">와이드 (Wide)</option>
+                <option value="oversized">오버사이즈 (Oversized)</option>
+              </select>
+            </div>
+            <fieldset class="preference-group wardrobe-seasons" aria-describedby="wardrobe-seasons-hint">
+              <legend>계절 <span class="optional-label">선택</span></legend>
+              <p id="wardrobe-seasons-hint" class="input-hint">여러 계절을 선택할 수 있어요. 선택하지 않아도 되며, 최대 4개까지 선택해 주세요.</p>
+              <div id="wardrobe-seasons-options" class="choices season-choices"></div>
+            </fieldset>
+          </div>
+          <button id="wardrobe-save" type="submit" class="button save-button">저장</button>
+        </fieldset>
+        <p id="wardrobe-message" class="form-message" role="status" aria-live="polite"></p>
+        <button id="wardrobe-retry" type="button" class="button secondary-button" hidden>다시 불러오기</button>
+        <div class="form-footer wardrobe-footer">
+          <a id="wardrobe-back" href="#closet" class="text-link">← 옷장으로 돌아가기</a>
+        </div>
+      </form>
+    </main>
+  </section>
+
+  <section id="recommendation" class="page settings-page" hidden>
+    <header class="site-header">
+      <a href="#home" class="logo"><img src="./assets/clomori-mark.svg" alt="" aria-hidden="true"><span>CLOMORI</span></a>
+      <nav class="header-nav" aria-label="주요 메뉴">
+        <a href="#home" class="header-link">홈</a>
+        <a href="#recommendation" class="header-link" aria-current="page">코디 추천</a>
+        <a href="#saved" class="header-link">저장한 코디</a>
+        <a href="#closet" class="header-link">나만의 옷장</a>
+        <a href="#account" class="header-link">내 계정</a>
+      </nav>
+    </header>
+    <main class="settings-container recommendation-container">
+      <h1 tabindex="-1">오늘은 어떻게 입을까요?</h1>
+      <p class="page-intro">원하는 일정, 장소, 분위기를 자유롭게 입력해 주세요.</p>
+      <form id="recommendation-form" class="recommendation-form" autocomplete="off" novalidate>
+        <fieldset id="recommendation-fields" class="form-fields" disabled>
+          <legend class="visually-hidden">코디 추천 요청</legend>
+          <label for="recommendation-prompt" class="recommendation-label">어떤 코디를 원하시나요?</label>
+          <textarea id="recommendation-prompt" name="message" rows="5" maxlength="1000"
+                    placeholder="오늘 입을 데일리 코디를 추천해줘." aria-describedby="recommendation-prompt-hint recommendation-form-hint" required autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+          <p id="recommendation-prompt-hint" class="input-hint">원하는 스타일이나 상황을 1,000자 이내로 적어 주세요.</p>
+          <div class="recommendation-examples" aria-label="추천 요청 예시">
+            <button type="button" class="recommendation-example" data-prompt="내 옷만으로 코디를 추천해줘.">내 옷으로</button>
+            <button type="button" class="recommendation-example" data-context="calendar" data-prompt="선택한 날짜의 일정을 참고해서 코디 추천해줘.">일정 참고</button>
+            <button type="button" class="recommendation-example" data-context="weather" data-prompt="선택한 장소와 날짜, 시간의 날씨를 고려해서 코디 추천해줘.">날씨 고려</button>
+          </div>
+          <details id="recommendation-options" class="recommendation-options" open>
+            <summary>장소·날짜·시간 입력</summary>
+            <div class="recommendation-context-grid">
+              <div class="recommendation-context-field">
+                <label for="recommendation-place">장소 <span class="optional-label">선택</span></label>
+                <input id="recommendation-place" name="clomori-venue-context" type="text" maxlength="100" placeholder="예: 전주" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+              </div>
+              <div class="recommendation-context-field">
+                <label for="recommendation-date">날짜 <span class="optional-label">선택</span></label>
+                <input id="recommendation-date" name="date" type="date" max="9999-12-31">
+              </div>
+              <div class="recommendation-context-field">
+                <label for="recommendation-time">시간 <span class="optional-label">선택</span></label>
+                <input id="recommendation-time" name="time" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="HH:mm" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" aria-describedby="cm-time-hint" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <small id="cm-time-hint" class="cm-time-hint">24시간제 · 01:00 오전 1시 / 13:00 오후 1시</small>
+              </div>
+            </div>
+          </details>
+          <p id="recommendation-form-hint" class="input-hint">날씨를 반영하려면 요청에 날씨를 함께 적고 장소·날짜·시간을 입력해 주세요. Google 일정을 반영하려면 요청에 일정을 적고 날짜를 입력해 주세요.</p>
+          <button id="recommendation-submit" type="submit" class="button recommendation-submit">AI 코디 추천받기</button>
+        </fieldset>
+        <p id="recommendation-loading" class="recommendation-loading" role="status" aria-live="polite" hidden>코디를 추천하고 있어요. 잠시 기다려 주세요.</p>
+        <p id="recommendation-message" class="form-message" role="status" aria-live="polite"></p>
+        <button id="recommendation-retry" type="button" class="button secondary-button" hidden>다시 확인</button>
+      </form>
+      <p id="recommendation-response" class="recommendation-response" hidden></p>
+      <section id="recommendation-results" class="recommendation-results" aria-labelledby="recommendation-results-heading" hidden>
+        <h2 id="recommendation-results-heading" tabindex="-1">추천 코디</h2>
+        <p id="recommendation-summary" class="recommendation-summary"></p>
+        <p class="recommendation-image-hint">궁금한 코디의 ‘이미지 보기’를 누르면 의류 사진을 확인할 수 있어요. 상품 이미지는 실제 추천한 색상·핏과 다를 수 있어요.</p>
+        <p class="recommendation-saved-link">마음에 드는 코디를 저장하면 <a href="#saved" class="text-link">저장한 코디</a>에서 다시 볼 수 있어요.</p>
+        <div id="recommendation-grid" class="recommendation-grid"></div>
+      </section>
+      <aside class="cm-recommendation-blank" aria-label="추천 결과 안내">
+        <div class="cm-blank-illustration" aria-hidden="true"><span></span><span></span><span></span></div>
+        <span class="cm-eyebrow">YOUR PERSONAL EDIT</span>
+        <h2>다섯 가지 LOOK이<br>여기에 펼쳐집니다.</h2>
+        <p>왼쪽에 상황을 입력하고 추천을 받아보세요.
+내 옷장 사진과 취향 기반 추천이 함께 표시됩니다.</p>
+      </aside>
+    </main>
+  </section>
+
+  <section id="saved" class="page settings-page" hidden>
+    <header class="site-header">
+      <a href="#home" class="logo"><img src="./assets/clomori-mark.svg" alt="" aria-hidden="true"><span>CLOMORI</span></a>
+      <nav class="header-nav" aria-label="주요 메뉴">
+        <a href="#home" class="header-link">홈</a>
+        <a href="#recommendation" class="header-link">코디 추천</a>
+        <a href="#saved" class="header-link" aria-current="page">저장한 코디</a>
+        <a href="#closet" class="header-link">나만의 옷장</a>
+        <a href="#account" class="header-link">내 계정</a>
+      </nav>
+    </header>
+    <main class="settings-container recommendation-container saved-container">
+      <h1 tabindex="-1">저장한 코디</h1>
+      <p class="page-intro">마음에 들어 저장한 코디를 모아 보세요.<br>저장한 코디는 새로고침해도 다시 확인할 수 있어요.</p>
+      <div class="saved-toolbar">
+        <p id="saved-count" class="saved-count"></p>
+        <button id="saved-refresh" type="button" class="button secondary-button" disabled>목록 새로고침</button>
+      </div>
+      <p id="saved-loading" class="recommendation-loading" role="status" aria-live="polite" hidden>저장한 코디를 불러오고 있어요.</p>
+      <p id="saved-message" class="form-message" role="status" aria-live="polite"></p>
+      <button id="saved-retry" type="button" class="button secondary-button" hidden>다시 불러오기</button>
+      <div id="saved-empty" class="saved-empty" hidden>
+        <p>아직 저장한 코디가 없어요.</p>
+        <p>추천받은 코디에서 ‘저장’을 눌러 모아 보세요.</p>
+        <a href="#recommendation" class="button">코디 추천받기</a>
+      </div>
+      <div id="saved-grid" class="recommendation-grid saved-grid"></div>
+    </main>
+  </section>
+
+  <aside class="connection-note" aria-label="연결 상태">
+    <p id="global-status" role="status" aria-live="polite"></p>
+    <button id="retry-session" type="button" class="button" hidden>다시 확인</button>
+  </aside>
+  <nav id="cm-mobile-nav" class="cm-mobile-nav" aria-label="모바일 주요 메뉴" hidden>
+    <a href="#home" data-route="home"><span aria-hidden="true">⌂</span><small>홈</small></a>
+    <a href="#recommendation" data-route="recommendation"><span aria-hidden="true">◇</span><small>추천</small></a>
+    <a href="#closet" data-route="closet"><span aria-hidden="true">▦</span><small>옷장</small></a>
+    <a href="#saved" data-route="saved"><span aria-hidden="true">♡</span><small>저장</small></a>
+    <a href="#account" data-route="account"><span aria-hidden="true">◉</span><small>계정</small></a>
+  </nav>
+</body>
+</html>
