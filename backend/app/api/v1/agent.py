@@ -1,6 +1,7 @@
 """WBS 4.5 Agent Core·Tool Calling HTTP 엔드포인트."""
 
 import json
+from functools import lru_cache
 from typing import Annotated
 from uuid import UUID, uuid4
 
@@ -10,12 +11,25 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.agent.clarification import (
+    ClarificationPolicy,
+    ClarificationRequest,
+    ClarificationResponse,
+    RuleBasedClarificationPolicy,
+)
 from app.agent.contracts import (
     AgentRecommendationRequest,
     AgentRecommendationResponse,
     AgentRecommendationResult,
 )
-from app.agent.inference import MockInferenceEngine
+from app.agent.errors import (
+    InferenceConfigurationError,
+    InferenceInputError,
+    InferenceResponseError,
+    InferenceTimeoutError,
+    InferenceUnavailableError,
+)
+from app.agent.factory import create_inference_engine
 from app.agent.service import AgentResultError, AgentService
 from app.agent.tool_registry import (
     AgentRoutingError,
@@ -48,12 +62,14 @@ CurrentUser = Annotated[dict, Depends(get_current_user)]
 Database = Annotated[Session, Depends(get_db)]
 CsrfCheck = Annotated[None, Depends(require_csrf)]
 
-_agent_service = AgentService(MockInferenceEngine(), default_tool_registry())
 
-
+@lru_cache(maxsize=1)
 def get_agent_service() -> AgentService:
-    """추후 Qwen3 InferenceEngine으로 교체할 FastAPI 의존성 경계."""
-    return _agent_service
+    """기본 Mock. 환경변수 변경 후 재시작하면 Qwen으로 전환한다."""
+    try:
+        return AgentService(create_inference_engine(), default_tool_registry())
+    except InferenceConfigurationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from None
 
 
 def save_recommendation(
@@ -118,6 +134,14 @@ def recommend(
             **result.model_dump(),
             recommendation_id=recommendation_id,
         )
+    except InferenceTimeoutError as exc:
+        raise HTTPException(status_code=504, detail=str(exc)) from None
+    except (InferenceConfigurationError, InferenceUnavailableError) as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from None
+    except InferenceResponseError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from None
+    except InferenceInputError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
     except ToolArgumentError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except AgentRoutingError as exc:
@@ -164,18 +188,11 @@ def recommend(
 
 
 # CLOMORI_CLARIFICATION_STEP10_V1
-from app.agent.clarification import (
-    ClarificationPolicy,
-    ClarificationRequest,
-    ClarificationResponse,
-    RuleBasedClarificationPolicy,
-)
-
 _clarification_policy = RuleBasedClarificationPolicy()
 
 
 def get_clarification_policy() -> ClarificationPolicy:
-    """Swap this dependency for Qwen3-4B later; keep the HTTP contract stable."""
+    """Run the rule-based preflight independently of recommendation inference."""
     return _clarification_policy
 
 
