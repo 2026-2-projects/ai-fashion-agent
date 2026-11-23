@@ -244,3 +244,13 @@ __marimo__/
 
 # Local wardrobe image uploads
 /.wardrobe_media/
+
+# Local inference artifacts (keep weights and checkpoints outside Git)
+*.safetensors
+*.gguf
+pytorch_model*.bin
+adapter_model*.bin
+/checkpoints/
+/models/
+/backend/checkpoints/
+/backend/models/

@@ -1,4 +1,4 @@
-"""Mock 구현을 포함한 교체 가능한 Agent 추론 인터페이스."""
+"""공유 규칙 기반 Tool 계획과 교체 가능한 Agent 추론 인터페이스."""
 
 import re
 from collections.abc import Mapping
@@ -18,6 +18,26 @@ from app.agent.contracts import (
 
 DATE_PATTERN = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 TIME_PATTERN = re.compile(r"\b\d{2}:\d{2}\b")
+WARDROBE_ONLY_KEYWORDS = ("내 옷만", "옷장에서만", "보유한 옷만", "가지고 있는 옷만")
+
+
+def wardrobe_only_requested(message: str) -> bool:
+    return any(keyword in message.lower() for keyword in WARDROBE_ONLY_KEYWORDS)
+
+
+def summarize_tool_results(tool_results: Mapping[ToolName, Any]) -> str:
+    parts: list[str] = []
+    if "get_user_context" in tool_results:
+        parts.append("프로필과 패션 취향")
+    wardrobe = tool_results.get("get_wardrobe")
+    if isinstance(wardrobe, list):
+        parts.append(f"옷장 {len(wardrobe)}개 항목")
+    if "get_weather" in tool_results:
+        parts.append("목적지 날씨")
+    events = tool_results.get("get_calendar_events")
+    if isinstance(events, list):
+        parts.append(f"일정 {len(events)}건")
+    return f"{', '.join(parts)}을(를) 반영했습니다."
 
 
 class InferenceEngine(Protocol):
@@ -32,10 +52,9 @@ class InferenceEngine(Protocol):
     ) -> AgentDraft: ...
 
 
-class MockInferenceEngine:
-    """학습 모델 없이 Router와 Tool Calling 흐름을 검증하는 결정적 구현."""
+class RuleBasedToolPlanner:
+    """Mock과 Qwen이 함께 사용하는 기존 Tool 선택 규칙."""
 
-    wardrobe_only_keywords = ("내 옷만", "옷장에서만", "보유한 옷만", "가지고 있는 옷만")
     weather_keywords = ("날씨", "기온", "비", "눈", "더위", "추위", "바람")
     weather_skip_keywords = (
         "날씨 조회하지 마",
@@ -69,6 +88,19 @@ class MockInferenceEngine:
             )
         return AgentPlan(calls=calls)
 
+    @staticmethod
+    def _extract(pattern: re.Pattern[str], value: str) -> str | None:
+        match = pattern.search(value)
+        return match.group(0) if match else None
+
+    @staticmethod
+    def _contains(message: str, keywords: tuple[str, ...]) -> bool:
+        return any(keyword in message for keyword in keywords)
+
+
+class MockInferenceEngine(RuleBasedToolPlanner):
+    """학습 모델 없이 Router와 Tool Calling 흐름을 검증하는 결정적 구현."""
+
     def generate(
         self,
         request: AgentRecommendationRequest,
@@ -81,18 +113,9 @@ class MockInferenceEngine:
 
         looks = self._build_looks(request, preferences, wardrobe, weather, events)
         return AgentDraft(
-            context_summary=self._context_summary(tool_results),
+            context_summary=summarize_tool_results(tool_results),
             looks=looks,
         )
-
-    @staticmethod
-    def _extract(pattern: re.Pattern[str], value: str) -> str | None:
-        match = pattern.search(value)
-        return match.group(0) if match else None
-
-    @staticmethod
-    def _contains(message: str, keywords: tuple[str, ...]) -> bool:
-        return any(keyword in message for keyword in keywords)
 
     @classmethod
     def _preferences(cls, raw: Any) -> dict[str, Any]:
@@ -211,7 +234,7 @@ class MockInferenceEngine:
                 concepts.append(exploration)
                 break
         roles = ["preference_best", "preference_alternative", "exploration"]
-        wardrobe_only = self._contains(request.message.lower(), self.wardrobe_only_keywords)
+        wardrobe_only = wardrobe_only_requested(request.message)
 
         looks: list[FashionLook] = []
         for index in range(3):
@@ -409,18 +432,3 @@ class MockInferenceEngine:
         if isinstance(events, list):
             parts.append(f"일정 {len(events)}건을 확인했습니다.")
         return " ".join(parts)
-
-    @staticmethod
-    def _context_summary(tool_results: Mapping[ToolName, Any]) -> str:
-        parts: list[str] = []
-        if "get_user_context" in tool_results:
-            parts.append("프로필과 패션 취향")
-        wardrobe = tool_results.get("get_wardrobe")
-        if isinstance(wardrobe, list):
-            parts.append(f"옷장 {len(wardrobe)}개 항목")
-        if "get_weather" in tool_results:
-            parts.append("목적지 날씨")
-        events = tool_results.get("get_calendar_events")
-        if isinstance(events, list):
-            parts.append(f"일정 {len(events)}건")
-        return f"{', '.join(parts)}을(를) 반영했습니다."

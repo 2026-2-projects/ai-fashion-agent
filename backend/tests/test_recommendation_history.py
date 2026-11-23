@@ -1,6 +1,7 @@
 import json
 from uuid import UUID, uuid4
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import text
@@ -8,7 +9,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 import app.api.v1.agent as agent_api
-from app.agent.contracts import AgentDraft, AgentRecommendationResponse
+from app.agent import factory
+from app.agent.contracts import AgentDraft, AgentRecommendationRequest, AgentRecommendationResponse
+from app.agent.inference import MockInferenceEngine
+from app.agent.qwen import QwenInferenceEngine
 from app.core.database import engine, get_db
 from app.main import app
 from app.services import wardrobe_images
@@ -212,3 +216,118 @@ def test_invalid_model_response_contract_returns_502_without_persistence(
         ).scalar_one()
         == 0
     )
+
+
+@pytest.fixture
+def use_qwen(monkeypatch):
+    def configure(handler):
+        monkeypatch.setenv("AGENT_INFERENCE_PROVIDER", "qwen")
+        monkeypatch.setenv("QWEN_BASE_URL", "http://127.0.0.1:8001/v1")
+        monkeypatch.setenv("QWEN_MODEL", "trained-model-test")
+        monkeypatch.setattr(
+            factory,
+            "QwenInferenceEngine",
+            lambda settings: QwenInferenceEngine(settings, transport=httpx.MockTransport(handler)),
+        )
+        agent_api.get_agent_service.cache_clear()
+
+    yield configure
+    agent_api.get_agent_service.cache_clear()
+
+
+def test_qwen_uses_auth_csrf_and_the_existing_save_contract(client_and_connection, use_qwen):
+    client, connection = client_and_connection
+    calls = []
+
+    def handler(http_request):
+        calls.append(http_request)
+        request_data = json.loads(json.loads(http_request.content)["messages"][1]["content"])
+        draft = MockInferenceEngine().generate(
+            AgentRecommendationRequest.model_validate(request_data["request"]),
+            {"get_wardrobe": [], "get_user_context": {}},
+        )
+        looks = []
+        for look in draft.looks:
+            value = look.model_dump(exclude={"items": {"__all__": {"image_url"}}}, mode="json")
+            looks.append(value)
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "finish_reason": "stop",
+                        "message": {"role": "assistant", "content": json.dumps({"looks": looks})},
+                    }
+                ]
+            },
+        )
+
+    use_qwen(handler)
+    assert _recommend(client, "missing-session").status_code == 401
+    account = _signup_and_login(client)
+    assert _recommend(client, "invalid-csrf").status_code == 403
+    assert not calls
+
+    response = _recommend(client, str(account["csrf"]))
+    assert response.status_code == 200
+    assert len(calls) == 1
+    result = AgentRecommendationResponse.model_validate(response.json())
+    assert result.called_tools == ["get_user_context", "get_wardrobe"]
+    assert [look.status for look in result.looks[3:]] == ["unavailable", "unavailable"]
+    stored = connection.execute(
+        text("SELECT user_id, looks FROM recommendation_runs WHERE id = :id"),
+        {"id": result.recommendation_id},
+    ).one()
+    assert stored.user_id == account["id"]
+    assert stored.looks == response.json()["looks"]
+
+
+@pytest.mark.parametrize(
+    ("upstream", "status"),
+    [("invalid", 502), ("offline", 503), ("timeout", 504)],
+)
+def test_qwen_failure_does_not_save_a_recommendation(
+    client_and_connection,
+    use_qwen,
+    upstream,
+    status,
+):
+    client, connection = client_and_connection
+    account = _signup_and_login(client)
+
+    def handler(request):
+        if upstream == "timeout":
+            raise httpx.ReadTimeout("private-service-detail", request=request)
+        if upstream == "offline":
+            raise httpx.ConnectError("private-service-detail", request=request)
+        return httpx.Response(200, text="private-service-detail")
+
+    use_qwen(handler)
+    response = _recommend(client, str(account["csrf"]))
+    assert response.status_code == status
+    assert "private-service-detail" not in response.text
+    assert (
+        connection.execute(
+            text("SELECT COUNT(*) FROM recommendation_runs WHERE user_id = :user_id"),
+            {"user_id": account["id"]},
+        ).scalar_one()
+        == 0
+    )
+
+
+def test_clarify_still_works_with_invalid_qwen_settings(
+    client_and_connection, use_qwen, monkeypatch
+):
+    client, _ = client_and_connection
+    account = _signup_and_login(client)
+    use_qwen(lambda _: pytest.fail("Invalid configuration must not contact a model"))
+    monkeypatch.delenv("QWEN_MODEL")
+    assert _recommend(client, str(account["csrf"])).status_code == 503
+
+    response = client.post(
+        "/api/v1/agent/clarify",
+        json={"message": "출근 코디를 추천해줘"},
+        headers={"X-CSRF-Token": str(account["csrf"])},
+    )
+    assert response.status_code == 200
+    assert response.json()["decision"] == "ready"
