@@ -4,10 +4,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import DATABASE_URL
+from app.core.database_url import postgres_url
 
 engine = create_engine(
-    DATABASE_URL,
+    postgres_url(DATABASE_URL, sqlalchemy=True),
     pool_pre_ping=True,
+    hide_parameters=True,
 )
 
 SessionLocal = sessionmaker(

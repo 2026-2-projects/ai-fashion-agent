@@ -149,6 +149,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 env/
@@ -224,14 +226,16 @@ __marimo__/
 /data/synthetic/**/*_sft.jsonl
 /data/synthetic/**/*_validation.json
 /data/synthetic/pilot/synthetic_pilot_jobs.jsonl
-/backend/.env
 
-# Google OAuth credentials and local tokens
-/backend/.secrets/
-/backend/client_secret*.json
-/backend/credentials*.json
-/backend/token*.json
-/backend/.wardrobe_media/
+# Service credentials and local OAuth tokens
+.secrets/
+client_secret*.json
+credentials*.json
+token*.json
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Local VS Code settings
 /backend/.vscode/
@@ -239,18 +243,29 @@ __marimo__/
 # Generated synthetic candidate datasets
 /data/synthetic/**/*_candidates.jsonl
 
-# Generated synthetic candidate datasets
-/data/synthetic/**/*_candidates.jsonl
-
-# Local wardrobe image uploads
-/.wardrobe_media/
+# Local wardrobe uploads, database dumps and backups
+.wardrobe_media/
+wardrobe_media/
+uploads/
+backups/
+CLOMORI-local-backups/
+*.dump
+*.backup
+*_dump.sql
+*.dump.sql
+*.backup.sql
+pg_dump*.sql
+clomori_test.sql
+*.sql.gz
+*.sql.bz2
+*.sql.xz
 
 # Local inference artifacts (keep weights and checkpoints outside Git)
 *.safetensors
 *.gguf
-pytorch_model*.bin
-adapter_model*.bin
-/checkpoints/
-/models/
-/backend/checkpoints/
-/backend/models/
+*.bin
+*.ckpt
+*.pt
+*.pth
+checkpoints/
+models/

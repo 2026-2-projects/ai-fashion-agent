@@ -139,7 +139,9 @@ backend/
 │   └── test_recommendation_interactions.py
 ├── migrations/
 │   ├── 001_feedback_save.sql          # 추천 UUID·LOOK 연결·소유권 제약
-│   └── 002_optional_dislike_reason.sql # 싫어요 사유 선택 입력 허용
+│   ├── 002_optional_dislike_reason.sql # 싫어요 사유 선택 입력 허용
+│   ├── 003_feedback_reason_text.sql    # 기타 사유 입력 검증
+│   └── baseline_003.sql                # 빈 DB용 최종 스키마
 ├── pyproject.toml               # pytest·Ruff 설정
 ├── requirements.txt             # 실행 의존성
 └── requirements-dev.txt         # 테스트·정적 검사 의존성
@@ -178,14 +180,13 @@ google_calendar_connections
 recommendation_runs
 ```
 
-기본 사용자·프로필·옷장 스키마는 기존 DB에 준비되어 있어야 합니다. WBS 4.6 변경은 백업을 확인한 뒤 번호 순서대로 적용합니다. `001` 적용 후 `002`를 누락하면 `dislike`의 `reason`을 생략하는 최종 API 계약과 DB 제약이 어긋납니다.
+새로 만든 빈 DB에는 저장소 루트에서 다음 명령을 **한 번** 실행합니다. 최종 스키마에는 마이그레이션 001~003이 모두 반영되어 있습니다.
 
 ```bash
-psql -v ON_ERROR_STOP=1 -d ai_fashion_agent -f migrations/001_feedback_save.sql
-psql -v ON_ERROR_STOP=1 -d ai_fashion_agent -f migrations/002_optional_dislike_reason.sql
+psql -X -v ON_ERROR_STOP=1 -d ai_fashion_agent -f backend/migrations/baseline_003.sql
 ```
 
-이 파일은 기존 테이블 전체를 처음부터 만드는 초기 DDL이 아니라 WBS 4.6 증분 마이그레이션입니다. 새 팀원 환경은 기존 기본 스키마를 먼저 전달받은 뒤 두 파일을 적용해야 합니다.
+기존 DB의 업그레이드는 [DB 초기화·마이그레이션 절차](migrations/README.md)를 따릅니다. Railway에서 첫 배포를 준비할 때는 [운영 변수·볼륨·배포 순서](../docs/railway-deployment.md)를 확인하세요.
 
 ### 4.2 가상환경과 패키지
 
@@ -696,7 +697,7 @@ Frontend에서는 다음 상태 전이를 적용합니다.
 
 ### 마이그레이션·검증 주의
 
-`migrations/001_feedback_save.sql`을 먼저 적용한 뒤 `migrations/002_optional_dislike_reason.sql`을 적용합니다. 두 파일은 이 절의 최종 API 계약을 구성하는 순차 마이그레이션이므로 순서를 바꾸거나 중간 파일을 누락하지 않습니다. 로컬 DB에는 적용 전 백업을 유지하고, 이미 적용한 파일을 재실행하지 않습니다.
+빈 DB와 운영 중인 DB의 적용 경로는 [DB 초기화·마이그레이션 절차](migrations/README.md)에 있습니다. 적용 완료한 증분을 재실행하면 기존 제약을 다시 만들거나 중복 객체 오류가 발생할 수 있습니다.
 
 자동 테스트는 실제 PostgreSQL 스키마를 사용하되 바깥 트랜잭션과 savepoint에 참여시킨 뒤 마지막에 롤백해 테스트 사용자·평가·저장 행을 남기지 않습니다. 2026-11-06 로컬 검증에서 전체 백엔드 테스트는 `85 passed, 1 warning`, Ruff 검사는 `All checks passed`, 변경 파일 포맷 검사와 `git diff --check`도 통과했습니다. 경고 1건은 기존 `TestClient`·`httpx` 조합의 `StarletteDeprecationWarning`입니다.
 
