@@ -1,0 +1,72 @@
+{
+  "name": "qwen35_fashion_864_five_look_eval100_v2",
+  "created_for": "Qwen3.5-4B LoRA 1-epoch anti-overfitting retraining and 100-case evaluation",
+  "base_manifest": {
+    "name": "qwen35_fashion_864_five_look",
+    "created_for": "Qwen3.5-4B LoRA training and held-out evaluation",
+    "source_branches": {
+      "additional_200": "feature/additional-200-dataset-kwak@45ce1b0",
+      "release_664": "feature/fastapi-postgresql@ca8a35a"
+    },
+    "counts": {
+      "train": {
+        "total": 864,
+        "fashion_recommendation": 540,
+        "tool_calling": 324
+      },
+      "validation": {
+        "total": 8,
+        "fashion_recommendation": 5,
+        "tool_calling": 3
+      },
+      "test": {
+        "total": 8,
+        "fashion_recommendation": 5,
+        "tool_calling": 3
+      }
+    },
+    "output_contract": "5 LOOK",
+    "heldout_policy": "validation.jsonl and test.jsonl are never included in training",
+    "sha256": {
+      "train.jsonl": "a322560342a5a2de4af37e4387ac5714b51159420099318b0ad42badeb5810d0",
+      "validation.jsonl": "8de0b8a14d0ed112f897080add584a2c8f4560ec57d24e64586b885209775fb4",
+      "test.jsonl": "97a4dc659f5748b5364d2cf8fac82a943430f0361234b5f78e2acb71e6c96454"
+    }
+  },
+  "counts": {
+    "train": {
+      "total": 864,
+      "fashion_recommendation": 540,
+      "tool_calling": 324
+    },
+    "validation": {
+      "total": 100,
+      "fashion_recommendation": 60,
+      "tool_calling": 40
+    },
+    "test": {
+      "total": 100,
+      "fashion_recommendation": 60,
+      "tool_calling": 40
+    },
+    "validation_legacy_8": {
+      "total": 8,
+      "fashion_recommendation": 5,
+      "tool_calling": 3
+    },
+    "test_legacy_8": {
+      "total": 8,
+      "fashion_recommendation": 5,
+      "tool_calling": 3
+    }
+  },
+  "output_contract": "5 LOOK (unique slots per look, truthful wardrobe attributes)",
+  "heldout_policy": "validation.jsonl (100), test.jsonl (100), and legacy 8 splits are strictly disjoint from train.jsonl (864)",
+  "sha256": {
+    "train.jsonl": "a322560342a5a2de4af37e4387ac5714b51159420099318b0ad42badeb5810d0",
+    "validation.jsonl": "be339ece4a91a45da30e5cacc3c353e61d522771ab7c8aa6881e3f22e452d8c8",
+    "test.jsonl": "85058a7b4dc6f15ccfdfb83e0b7f379bdb22f6976412109ea13aa86a015291c9",
+    "validation_legacy_8.jsonl": "8de0b8a14d0ed112f897080add584a2c8f4560ec57d24e64586b885209775fb4",
+    "test_legacy_8.jsonl": "97a4dc659f5748b5364d2cf8fac82a943430f0361234b5f78e2acb71e6c96454"
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "legacy_8": {
+    "baseline": {
+      "json_valid": {
+        "passed": 5,
+        "total": 6,
+        "rate": 0.8333
+      },
+      "five_looks": {
+        "passed": 4,
+        "total": 5,
+        "rate": 0.8
+      },
+      "roles_correct": {
+        "passed": 4,
+        "total": 5,
+        "rate": 0.8
+      },
+      "look_ids_correct": {
+        "passed": 2,
+        "total": 5,
+        "rate": 0.4
+      },
+      "no_duplicate_slots": {
+        "passed": 0,
+        "total": 5,
+        "rate": 0.0
+      },
+      "wardrobe_ids_valid": {
+        "passed": 3,
+        "total": 5,
+        "rate": 0.6
+      },
+      "first_action_correct": {
+        "passed": 2,
+        "total": 3,
+        "rate": 0.6667
+      }
+    },
+    "finetuned": {
+      "json_valid": {
+        "passed": 6,
+        "total": 6,
+        "rate": 1.0
+      },
+      "five_looks": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "roles_correct": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "look_ids_correct": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "no_duplicate_slots": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "wardrobe_ids_valid": {
+        "passed": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "first_action_correct": {
+        "passed": 3,
+        "total": 3,
+        "rate": 1.0
+      }
+    }
+  },
+  "new_100": {
+    "baseline": {
+      "json_valid": {
+        "passed": 59,
+        "total": 68,
+        "rate": 0.8676
+      },
+      "five_looks": {
+        "passed": 59,
+        "total": 60,
+        "rate": 0.9833
+      },
+      "roles_correct": {
+        "passed": 59,
+        "total": 60,
+        "rate": 0.9833
+      },
+      "look_ids_correct": {
+        "passed": 14,
+        "total": 60,
+        "rate": 0.2333
+      },
+      "no_duplicate_slots": {
+        "passed": 7,
+        "total": 60,
+        "rate": 0.1167
+      },
+      "wardrobe_ids_valid": {
+        "passed": 41,
+        "total": 60,
+        "rate": 0.6833
+      },
+      "first_action_correct": {
+        "passed": 32,
+        "total": 40,
+        "rate": 0.8
+      }
+    },
+    "finetuned": {
+      "json_valid": {
+        "passed": 68,
+        "total": 68,
+        "rate": 1.0
+      },
+      "five_looks": {
+        "passed": 60,
+        "total": 60,
+        "rate": 1.0
+      },
+      "roles_correct": {
+        "passed": 60,
+        "total": 60,
+        "rate": 1.0
+      },
+      "look_ids_correct": {
+        "passed": 60,
+        "total": 60,
+        "rate": 1.0
+      },
+      "no_duplicate_slots": {
+        "passed": 60,
+        "total": 60,
+        "rate": 1.0
+      },
+      "wardrobe_ids_valid": {
+        "passed": 60,
+        "total": 60,
+        "rate": 1.0
+      },
+      "first_action_correct": {
+        "passed": 40,
+        "total": 40,
+        "rate": 1.0
+      }
+    }
+  }
+}

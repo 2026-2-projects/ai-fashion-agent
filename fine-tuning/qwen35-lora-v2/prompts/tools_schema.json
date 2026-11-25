@@ -1,0 +1,70 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "get_user_context",
+      "description": "등록된 사용자 프로필과 패션 취향을 확인한다.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_wardrobe",
+      "description": "사용자가 등록한 옷장 항목을 가져온다.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_weather",
+      "description": "지정된 장소, 날짜, 시각의 날씨를 확인한다.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "place": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "place",
+          "date",
+          "time"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_calendar_events",
+      "description": "지정 날짜의 연결된 캘린더 일정을 조회한다.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "date"
+        ]
+      }
+    }
+  }
+]
