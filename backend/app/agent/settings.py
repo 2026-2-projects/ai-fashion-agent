@@ -22,9 +22,12 @@ class QwenSettings(BaseModel):
     model: str = Field(min_length=1, max_length=200)
     api_key: SecretStr = Field(default_factory=lambda: SecretStr(""))
     timeout_seconds: float = Field(default=60, ge=1, le=600, allow_inf_nan=False)
-    max_tokens: int = Field(default=4096, ge=256, le=32768)
+    max_tokens: int = Field(default=1600, ge=256, le=32768)
+    temperature: float = Field(default=0.35, ge=0, le=2, allow_inf_nan=False)
+    top_p: float = Field(default=0.9, gt=0, le=1, allow_inf_nan=False)
+    repetition_penalty: float = Field(default=1.08, gt=0, allow_inf_nan=False)
     response_format: Literal["json_schema", "json_object"] = "json_schema"
-    send_chat_template_kwargs: bool = False
+    send_chat_template_kwargs: bool = True
     max_input_chars: int = Field(default=60000, ge=1000, le=500000)
     max_response_bytes: int = Field(default=524288, ge=1024, le=4194304)
 
@@ -75,6 +78,9 @@ def load_qwen_settings(
             "api_key": "QWEN_API_KEY",
             "timeout_seconds": "QWEN_TIMEOUT_SECONDS",
             "max_tokens": "QWEN_MAX_TOKENS",
+            "temperature": "QWEN_TEMPERATURE",
+            "top_p": "QWEN_TOP_P",
+            "repetition_penalty": "QWEN_REPETITION_PENALTY",
             "response_format": "QWEN_RESPONSE_FORMAT",
             "send_chat_template_kwargs": "QWEN_SEND_CHAT_TEMPLATE_KWARGS",
             "max_input_chars": "QWEN_MAX_INPUT_CHARS",

@@ -1,76 +1,111 @@
-# CLOMORI Qwen 추론 연결
+# CLOMORI 학습 모델 연동
 
-FastAPI는 기본적으로 `MockInferenceEngine`을 사용합니다. `qwen`으로 설정하면 추천의 LOOK 생성 단계를 별도의 OpenAI 호환 모델 서버로 보냅니다. 현재 검증 범위는 가짜 HTTP 응답과 기존 API 계약입니다. 실제 학습 모델의 실행 여부, 지연 시간, 추천 품질은 모델 수령 후 확인합니다.
+2026-11-25 기준 배포 후보는 `feature/clomori-deployment-kwak`의 `cb9460a`에 STEP 26-G까지 적용한 미커밋 작업본이다. 최종 검증 결과와 승인 범위는 아래 26-G에 기록한다. Railway는 `AGENT_INFERENCE_PROVIDER=mock`으로 시작한다. 결제 후 사용할 이미지, 모델 다운로드와 서빙 명령은 [Runpod 실행 절차](qwen-runpod.md), DB·볼륨·외부 서비스 변수는 [Railway 배포 절차](railway-deployment.md)에 있다.
 
-## 추천 흐름
+## 26-C. 인계 자료와 계약
 
-1. 프론트는 기존 `/api/v1/agent/clarify`에서 되묻기와 장소·날짜·시간 확인을 마친 뒤 `resolved_request`로 `/api/v1/agent/recommend`를 호출합니다.
-2. 로그인과 CSRF를 확인한 백엔드가 기존 규칙으로 Tool을 선택합니다. 취향·옷장은 항상 조회하고, 날씨·일정은 기존 키워드 및 입력 검증을 따릅니다. Qwen에는 Tool 정의나 실행 권한 없이 조회 결과만 전달합니다.
-3. Qwen은 한 번의 `POST <QWEN_BASE_URL>/chat/completions` 요청에서 LOOK 1~5를 생성합니다. 백엔드는 조회 내역으로 `context_summary`를 만들고, 개수·순서·슬롯·소유 ID·조합을 검증합니다. 소유 확인을 통과한 옷장 사진은 백엔드가 연결합니다.
-4. 검증을 통과한 결과를 저장하고 기존 `recommendation_id`, `type`, `action`, `called_tools`, `context_summary`, `looks`를 반환합니다. 상품 이미지 조회, 피드백, 저장 코디는 기존 API를 사용합니다.
+학습 브랜치 `feature/qwen35-lora-v2`의 `cd6d4ff34206b8eb446dc021c46389a53e0517a6`을 fetch하여 Notebook, 매니페스트, 학습 지표, FR·TC 프롬프트, Tool Schema, Jinja 템플릿, 추론 예제와 원본 평가 출력을 확인했다. 학습 코드는 Colab에서 4,096 토큰, 1 epoch, LoRA rank/alpha 16, dropout 0으로 학습한다. 864건은 FR 540건과 TC 324건이다. 전체 1,080건에는 신규 검증·테스트 각 100건과 레거시 검증·테스트 각 8건이 포함된다. 학습 864행과 레거시 각 8행은 Git 원본 SHA-256이 인계 매니페스트와 일치했다. 신규 검증·테스트 각 100행은 매니페스트와 일치하는 JSONL을 로컬 Git에서 확보하지 못했다. Notebook은 일부 라이브러리를 실행 시점에 업그레이드한다. 원 학습 환경 전체를 재현하는 잠금 파일과 학습 당시의 베이스 커밋은 인계 자료에서 확인되지 않았다. [학습 Notebook·평가 결과·설정](https://github.com/2026-2-projects/ai-fashion-agent/tree/cd6d4ff34206b8eb446dc021c46389a53e0517a6/fine-tuning/qwen35-lora-v2)
 
-## 모델 입력과 출력
+| 계약 | 학습 사례 | 서비스 적용 |
+| --- | --- | --- |
+| FR 입력 | system + user 두 메시지. 기준 시각, 사용자 요청, 한 줄짜리 context JSON | KST 현재 시각과 원문 요청을 같은 순서로 보낸다. 기존 v1은 요청 전체를 JSON으로 감싸고 시스템 본문에 Pydantic Schema도 반복했다. |
+| 프로필·취향 | `profile`, `preference` | 성별·연령대·키·체형과 수동 선호 스타일·색·핏·비선호 색을 허용 목록으로 보낸다. 서비스 확장 `feedback_summary`에는 선호·비선호 스타일 요약만 담는다. |
+| 날씨·일정 | `weather`, `schedule{date,time,place,tpo}` 예제 | 조회한 예보만 보낸다. 구조화된 요청의 장소·날짜·시간만 `schedule`에 넣으며 원문보다 우선한다. `calendar_events`에는 읽어온 일정들을 별도로 보존한다. 일정 목적을 임의로 채우지 않는다. |
+| 옷장 | 정수 `item_id`, 표준 `category`, `item_type`, `color`, `fit`, `seasons` | Tool의 `type/season`을 변환한다. 한글·영문 분류는 서버가 검증하는 5개 슬롯으로 정규화한다. 지원 범위 밖의 분류는 모델 후보에서 제외한다. `wardrobe_examples`로 수동 비선호 색을 제외한 실제 ID 조합을 최대 두 개 보여 준다. 최종 선택에는 사용자의 상황 제약도 적용한다. |
+| 출력 | 최상위 `looks`만 있는 JSON | 정확히 5개. 역할 순서와 ID 1~5를 검증한다. 시스템 본문에는 필요한 계약만 적고 상세 Schema는 API의 `response_format`으로 보낸다. |
+| 아이템·중복 | 일반 추천 ID는 null, 옷장 추천은 소유 ID | available은 style과 top·bottom·shoes 각 하나, outer·accessory 선택. LOOK 4·5는 실조회한 ID와 슬롯이 일치해야 하고 (slot, ID) 집합이 달라야 한다. 사진과 추천 이력 ID는 백엔드가 붙인다. |
+| 구성 불가 | `unavailable`와 이유 | style=null, items=[]와 사유. 옷장 전용 요청에서는 LOOK 1~3도 unavailable. 대안이 없으면 LOOK 5만 unavailable로 둘 수 있다. |
 
-- 시스템 메시지는 [`backend/app/agent/prompts.py`](../backend/app/agent/prompts.py)의 한국어 지시와 JSON Schema입니다. 사용자 메시지는 `prompt_version`, `request`(`message`, `place`, `date`, `time`), 기존 옷장 전용 규칙을 적용한 `wardrobe_only`, `context`를 담은 JSON 문자열입니다. 구조화된 장소·날짜·시간을 우선합니다.
-- `context`의 `profile`, `preference`, `feedback_summary`에는 패션에 쓰는 프로필·수동 취향·선호 및 비선호 스타일 요약을 담습니다. `wardrobe`에는 해당 사용자의 `item_id`, `category`, `item_type`, `color`, `fit`, `seasons`가 들어갑니다. `weather`와 `calendar_events`는 조회했을 때만 들어가며, 일정은 제목·시작·끝·종일 여부·장소만 사용합니다. 계정 ID·이메일·연결 토큰·사진 파일과 경로는 Tool 결과에서 제외합니다. 사용자 문장과 일부 일정 정보는 모델 서버에 전달되므로 실제 데이터에는 팀이 신뢰하는 서버를 사용합니다.
-- 저장소의 [v1.1 데이터셋](../data/releases/qwen3_fashion_664_v1_1/README.md)에서 코디 생성용 415건의 최종 응답은 `{"looks":[...]}`입니다. 모델 출력은 이 형식에 맞췄습니다. 다른 학습 분할이나 대화 템플릿을 썼다면 수령 후 입출력을 대조합니다.
-- LOOK은 `look_id`, `role`, `status`, `style`, `items`, `reason`을 포함합니다. 역할은 1 `preference_best`, 2 `preference_alternative`, 3 `exploration`, 4 `wardrobe_best`, 5 `wardrobe_alternative` 순서입니다. `available`에는 `top`, `bottom`, `shoes`가 각 하나씩 필요하며 `outer`, `accessory`는 선택입니다. `unavailable`은 `style: null`, `items: []`와 사유를 담습니다.
-- 아이템은 `slot`, `name`, `item_id`를 가집니다. LOOK 1~3의 `item_id`는 `null`, LOOK 4~5는 해당 사용자의 옷장 ID인 양의 정수입니다. LOOK 5를 사용할 수 있으면 LOOK 4도 사용할 수 있어야 하고 둘의 의류 조합은 달라야 합니다. 사진 URL은 백엔드가 검증 후 채웁니다.
+FR의 고정 역할은 `preference_best`, `preference_alternative`, `exploration`, `wardrobe_best`, `wardrobe_alternative`다. 각 LOOK은 `look_id`, `role`, `status`, `style`, `items`, `reason`을 사용한다. 명칭·색·핏·날씨에 관한 설명이 의미상 타당한지는 출력 형식 검증 외에 실생성 표본을 읽어 확인한다. API 인증 정보·사용자 ID·옷 사진 파일 및 경로는 모델로 전송하지 않는다. 선택된 캘린더 제목·장소와 사용자가 입력한 원문은 모델 서버에 전달된다. [프롬프트](../backend/app/agent/prompts.py) · [공통 출력 계약](../backend/app/agent/contracts.py) · [옷장 검증](../backend/app/agent/service.py)
 
-어댑터는 `response_format=json_schema`를 기본 사용합니다. 서버가 JSON 객체 모드만 지원하면 `QWEN_RESPONSE_FORMAT=json_object`로 명시적으로 바꿀 수 있습니다. 두 경우 모두 `choices[0].message.content`의 JSON을 기존 `AgentDraft`와 옷장 검사에 통과시켜야 합니다. 잘린 응답, Tool 호출, Markdown으로 감싼 JSON, 계약 위반은 실패로 처리합니다.
+**발표에서는 기존 RuleBasedToolPlanner를 유지한다.** 백엔드가 인증·CSRF, 되묻기, 허용 Tool·인자·소유권을 확인하고 실제 조회를 실행한다. Qwen은 그 결과로 5 LOOK을 한 번 생성한다. 학습 TC 스키마의 네 함수와 날씨·일정 인자는 현재 등록된 Tool과 대응한다. TC를 도입하면 다양한 자연어의 조회 의도를 모델이 판단할 수 있지만, 현재 API의 필수 사용자·옷장 조회와 `direct_answer` 분기, 다중 호출, 누락 인자 되묻기, 가상 Tool 응답 차단, 추가 지연을 새로 검증해야 한다. 이후에는 합성 요청에서 규칙과 모델의 전체 도구 호출 순서·인자를 비교한 뒤 도입 여부를 결정한다. `stop=["</tool_call>"]`은 TC 전용이며 FR에는 보내지 않는다. [팀의 TC·FR 추론 예제](https://github.com/2026-2-projects/ai-fashion-agent/blob/cd6d4ff34206b8eb446dc021c46389a53e0517a6/fine-tuning/qwen35-lora-v2/scripts/inference_example.py)
 
-| API 상태 | 확인할 항목 |
+## 26-D. 데이터에 근거한 초기 추론 설정
+
+| 설정 | 기존 배포 코드 | 이번 후보와 근거 |
+| --- | --- | --- |
+| temperature / top_p / repetition_penalty | 0.7 / 0.8 / 서버 기본값 | **0.35 / 0.9 / 1.08**. Notebook의 FR 평가와 예제에서 공통 사용 |
+| 출력 토큰 | 4,096 | **1,600**. README 예시는 1,400, Notebook·스크립트는 1,600. 신규 FR 60개 원본을 어댑터 토크나이저로 재계산한 범위는 525~1,105토큰, 레거시 5개는 433~1,062토큰. 해시가 일치한 학습 FR 정답 540건도 종료 토큰 포함 최대 1,261이었다. |
+| thinking | 기본적으로 템플릿 옵션 생략 | 기본 `chat_template_kwargs.enable_thinking=false`. 베이스·어댑터·Git의 템플릿 일치 및 닫힌 thinking 접두부 렌더링을 확인했다. |
+| 구조화 출력 | JSON Schema + 응답 검증 | 기본 `json_schema`. `json_object`를 명시적으로 선택할 수 있다. 필수 옷장 슬롯이 물리적으로 하나라도 없으면 요청 Schema에서 LOOK 4·5에 unavailable/null/[]만 허용한다. 개인의 색 선호만으로 이 제한을 걸지 않는다. 두 모드 모두 완결된 단일 JSON, 역할·슬롯·소유권 검증을 통과해야 한다. |
+| 시간 제한 | 모델 읽기 60초, 연결 최대 5초 | 그대로 시작한다. T4 팀 기록에서 신규 FR 생성 중앙값 38.82초, p95 55.33초, 최대 56.06초였고 레거시 최대는 160.49초였다. vLLM의 지연은 결제 후 측정한다. |
+
+서버의 컨텍스트에는 **템플릿을 적용한 입력 + 예약한 출력 토큰**이 들어간다. 예를 들어 4,096에서 출력 1,600을 예약하면 입력 여유는 2,496토큰이다. 앱의 60,000자 제한은 별도의 문자 수 보호 한도다. 큰 옷장·긴 일정은 실측하고, 조용히 항목을 잘라내거나 잘린 JSON을 보정하지 않는다. 고정한 KST 기준 시각·짧은 날씨/일정 1건·취향/피드백과 같은 길이의 한글 옷을 사용한 최종 서비스 입력은 0/5/30/100개에서 각각 **805 / 1,071 / 2,144 / 5,168토큰**이었다. 100개도 메시지 본문은 12,500자였다. 이는 예시이며 옷장 개수별 고정 상한은 아니다. Runpod 시작값 8,192에서는 출력 1,600 예약 후 입력 6,592토큰이며, 학습 범위 4,096을 넘는 표본으로 장문 품질을 따로 확인한다.
+
+출력 길이로 종료된 응답은 JSON이 겉으로 완전해 보여도 502, 앱의 입력 문자 한도 초과는 422다. 서버가 컨텍스트 초과로 요청 자체를 400으로 거부하면 현재 백엔드는 502로 전달한다. 프런트엔드의 추천 요청 전체 한도 90초에는 도구 조회도 포함되므로 모델 timeout만 늘려서는 지연을 해결하기 어렵다.
+
+## 26-E. 검증 결과
+
+| 검증 종류 | 표본·결과 | 해석 |
+| --- | --- | --- |
+| 팀의 학습 GPU 평가 원본 | 신규 100건에서 JSON 68/68, FR의 개수·역할·ID·슬롯 중복·옷장 ID 5개 지표 각각 60/60, TC 첫 행동 40/40 | 합성 평가셋의 각 지표 분모가 다르다. TC는 첫 행동만 채점한다. |
+| 저장된 응답의 서비스 계약 재검증 | 신규 FR **55/60**, 레거시 FR **5/5**. 실패 ID는 TEST100-031, -033, -037, -039, -040. | 원본 전체 문자열은 모두 JSON으로 파싱됐다. 다섯 답변에 style_notes, style_confidence, status_note, look_status_summary 등 허용하지 않는 필드가 있었다. 레거시 5건은 매니페스트 SHA가 일치하는 입력 옷장까지 대조했다. 신규 100건 입력 ZIP은 인계 Git/HF에서 찾지 못해 신규 FR의 사용자별 ID·카테고리는 독립 대조하지 못했다. |
+| 변경 전 백엔드 전체 | 격리 PostgreSQL에서 **248 passed + 97 subtests** | 배포 커밋 cb9460a 기준 |
+| 변경 후 백엔드 전체 | 같은 격리 조건에서 **260 passed + 97 subtests**, 기존 Starlette 경고 1개 | FastAPI 인증·CSRF·저장과 실패 시 이력 미생성을 포함한다. 이 테스트에서 Qwen 서버 응답은 합성이다. |
+| Qwen 어댑터와 서비스 시나리오 | 위 전체 중 **81 passed**. 합성 실모델 검사 명령을 포함해 변경 Python 파일 7개의 Ruff 및 프런트 JavaScript 21개 구문 검사 통과 | 정상 5 LOOK, 오류 JSON·서버 연결·시간 초과·length 종료, 슬롯·소유권·빈 옷장·부족·옷장 전용, 날씨·일정·취향·피드백 전달을 검사했다. |
+
+고정 vLLM 이미지가 채택한 XGrammar 0.2.8에서 기본·부족 옷장 두 Schema를 컴파일했다. 부족 옷장 Schema는 토큰 단위로 정상 응답 2개를 허용했고 잘못된 상태·style·items 6개를 모두 거부했다.
+
+팀 채점기는 응답 안의 JSON 부분을 추출하고 추가 키를 허용한다. 55/60은 기존 출력에 더 엄격한 서비스 계약을 적용한 수치다. 구조화 출력이 적용된 앞으로의 서비스 성공률은 실제 Runpod 표본에서 구한다. [평가 결과 원본과 요약](https://github.com/2026-2-projects/ai-fashion-agent/tree/cd6d4ff34206b8eb446dc021c46389a53e0517a6/fine-tuning/qwen35-lora-v2/results)
+
+### 26-F 시점의 M4 실모델 결과
+
+Apple M4 통합 메모리 16 GB에서 `llama.cpp b12722`의 Metal 백엔드, Unsloth가 배포한 4비트 Q4_K_M 베이스, 인계 어댑터를 공식 도구로 변환한 F16 GGUF(배율 1.0)를 사용했다. 모델 입력은 배포 백엔드가 생성했고, DB·날씨·일정은 합성 Tool 결과를 사용했다. 로컬 서버는 4,096토큰·동시 1개로 실행했다. llama.cpp에는 `repeat_penalty` 기본값 1.08도 적용했다. 베이스·어댑터 원본 파일 해시를 확인했다. Runpod의 원본 체크포인트·직접 LoRA·CUDA vLLM 조합은 별도 시험이다. [로컬 검증용 Q4 아티팩트](https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/tree/e87f176479d0855a907a41277aca2f8ee7a09523) · [llama.cpp 빌드](https://github.com/ggml-org/llama.cpp/releases/tag/b12722)
+
+[합성 실모델 검사 명령](../scripts/quality/smoke_qwen.py)은 기본 5건과 비선호 색을 서로 바꾼 2건을 실행한다. **26-F 결과는 출력 구조 7/7, 서비스 기대값 6/7, 종료 코드 1**이다. 각 시간은 로컬 모델 생성과 백엔드 검증을 포함한다.
+
+| 합성 요청 | 실제 결과 | 소요 시간 |
+| --- | --- | ---: |
+| 발표회, 5℃·비, 두 조합 가능한 옷장 | 5개 모두 available, 옷장 LOOK 2개는 서로 다른 ID 조합 | 25.7초 |
+| 내 옷만, 빈 옷장 | 5개 모두 unavailable | 9.6초 |
+| 내 옷만, 두 조합 가능한 옷장 | 1~3번 unavailable, 4·5번 available | 16.5초 |
+| 일반 추천, 옷장 한 조합 | 1~4번 available, 5번 unavailable | 24.3초 |
+| 일반 추천, 옷장에 신발 없음 | 1~3번 available, 4·5번 unavailable | 20.8초 |
+| 내 옷만, 빨강 비선호 | LOOK 4에서 네이비 상의 ID 771 선택, LOOK 5 unavailable | 12.4초 |
+| 내 옷만, 네이비 비선호 | **실패**. 빨강 상의 ID 772·차콜 하의·검정 로퍼가 가능하지만 4번까지 unavailable. 로퍼가 없다는 사유도 실제 옷장과 불일치 | 9.4초 |
+
+비선호 대조에서는 사용자 문장·옷장·다른 선호를 고정하고 비선호 색만 바꿨다. 안내 추가 전에는 두 사례 모두 LOOK 4를 포기했다. 26-F에서 한 조합이 가능하다는 안내를 추가한 뒤에도 한쪽이 실패했다. 서비스가 실물 후보 ID를 찾는 것과 모델이 그 후보를 사용하는 것은 별개의 검증 항목이다. 임의로 모델 응답을 Mock 코디로 채우지 않는다. 결제 후 원본 FP16 vLLM에서 두 사례를 반복하고 같은 문제가 남으면 실제 보유한 옷을 “없다”고 설명하는 결과를 발표용 개인화 성공 사례로 집계하지 않는다.
+
+신발 부족 요청은 별도 실험에서도 동일한 입력 본문으로 3회 모두 4·5번이 unavailable이었다.
+
+처음에는 같은 하의·신발에 상의만 바꾸는 대안을 모델이 자주 놓쳤고, 신발이 없을 때 완성 코디를 만들어 백엔드가 거부하기도 했다. 실제 ID 조합을 최대 두 개 전달하고, 필수 의류가 빠지면 생성할 수 있는 JSON 상태를 제한한 이유다. 시드를 고정하지 않은 소수의 합성 실험이어서 운영 성공률은 아직 알 수 없다. 같은 요청의 입력 본문까지 고정한 반복 시험에서도 옷장 조합은 맞으면서 조회하지 않은 일정을 이유로 언급한 경우가 있었다. 이유에 적힌 날씨·일정과 실제 추천 색·품목은 값과 직접 대조한다.
+
+## 26-F. 결제 후 실제 연결 확인
+
+1. 배포할 변경을 검토·커밋·푸시한 뒤 Railway에서 해당 SHA의 Mock 배포를 확인한다. 새 전용 DB·옷장 볼륨과 readiness, 합성 계정의 로그인·사진·추천·저장을 확인한다.
+2. [Runpod 실행 절차](qwen-runpod.md)에 따라 모델 서버를 준비한다. 인증 없는 공개 요청의 거부와 인증된 `GET /v1/models`의 학습 별칭을 확인한다. 첫 요청으로 워밍업한 뒤 합성 7건 검사에서 상태·옷장 ID·색 선호와 응답 근거를 확인한다. 실패하면 Railway는 Mock을 유지하고 고정 입력으로 원인을 확인한다.
+3. Railway에 HTTPS 주소·별칭·서버 토큰·생성 설정을 넣고 `AGENT_INFERENCE_PROVIDER=qwen`을 선택한다. 테스트용 합성 계정에 네이비 셔츠, 흰 니트, 검은 슬랙스, 갈색 로퍼를 등록한다. 수동 취향에는 미니멀과 주황색 비선호를 저장한다.
+4. “출근 코디 추천해줘”에서 5 LOOK, 실제 `recommendation_id`, 세 일반 LOOK의 null ID, 서로 다른 두 옷장 조합, 소유 사진을 확인한다. "내 옷만 추천해줘"에서 1~3번 unavailable을 확인한다. 빈 옷장·신발 없는 옷장은 4~5번 모두, 한 조합만 남기면 5번만 unavailable인지 확인한다.
+5. 합성 일정·장소와 조회 가능한 날짜·시각을 넣고 날씨·일정 근거와 실제 아이템의 이름·색을 대조한다. 비선호 색을 이유로 언급만 했는지 실제 추천했는지 구분하고, 피드백 이후 반영 여부를 읽는다. 좋아요·저장·재조회와 쇼핑 이미지도 같은 화면에서 확인한다.
+6. 워밍업 전후 및 반복 요청에서 각 케이스의 전체 초·생성 토큰·종료 이유·검증 성공/시도 횟수를 기록한다. 모델 서버의 사용량에는 입력/출력 토큰이 있다. 실패를 표본에서 빼지 않는다. 사용자 화면 90초, 모델 읽기 60초, Runpod HTTP 프록시 한도를 함께 대조한다. 두 개의 동시 요청도 순차 대기 시간을 확인한다.
+7. 공개 전 별도 검증 환경에서 모델 주소·인증 실패와 타임아웃을 유도해 각각 503/504와 이력 미생성을 확인한다. 형식·스키마 오류는 502다. 수동 복구는 Railway 웹 서비스에서 provider를 mock으로 돌려 재시작하고 해당 시연의 생성기를 Mock으로 표시한다.
+
+## 26-G. 최종 검증과 승인 범위
+
+**확인한 원인.** 수정 전에도 옷장 조회와 비선호 필터는 정확했다. 두 요청에서 달라진 선호는 비선호 색 한 가지였다. 빨강을 제외하면 상의 771, 네이비를 제외하면 상의 772가 남았고, 차콜 슬랙스 773과 검정 로퍼 774는 양쪽에 있었다. 고정된 시각과 시드 731~733에서 빨강 제외는 3/3, 네이비 제외는 1/3 통과했다. 네이비 제외 실패 한 건은 없는 옷을 사유로 들었고, 다른 한 건은 기피 대상인 771을 골랐다. 시드 731에서 상의 두 개의 **배열 순서만** 바꾸자 양쪽의 성공·실패가 뒤집혔다. 모델이 숫자 후보를 실제 품목·색에 연결하는 과정이 목록 순서에 민감하다는 관찰이다.
+
+학습 FR 540행의 정확한 영문 색 표기 기준으로 `red` 비선호는 60행, `navy` 비선호는 0행이었다. 옷장에 `red` 상의가 있던 1행은 빨강을 제외하는 사례였다. 옷장 전용에서 일반 LOOK 셋은 unavailable이고 4번만 available인 정답도 없었다. 이는 모델이 접한 예시의 편중을 보여 준다. 학습 분포, 양자화, 색 단어, 상의 종류 중 어느 하나를 단독 원인으로 분리한 실험은 아니다.
+
+**최종 수정.** 요청이 단순히 내 옷으로 추천해 달라는 표현에 해당하고, 별도 장소·날짜·시간이 없으며 비선호 색을 제외한 예시가 한 조합일 때만, LOOK 4 후보를 `slot/name/item_id`로 묶어 보낸다. 예를 들어 772는 “빨강 셔츠”, 774는 “검정 로퍼”로 모델이 바로 읽을 수 있다. 추가 문구나 구조화된 조건이 있으면 이 개별 후보 안내를 생략하고 기존 옷장·숫자 예시·원문을 사용한다. 단순 요청 여부는 제한된 형태를 보수적으로 인식한다. 모든 한국어 제약을 파싱한다고 가정하지 않는다. 전체 옷장과 모델의 unavailable 선택은 보존한다.
+
+색·슬롯상 후보가 있는데 모델이 LOOK 4를 unavailable로 반환하면 `app.agent.qwen`이 경고 한 줄을 남긴다. 로그에는 사용자나 의류 ID, 원문, 색, 추천 결과가 없다. 소재·복장·필수 품목 등 자연어 제약과 다른 색 표기까지는 후보 계산으로 입증할 수 없다. 따라서 이 이벤트는 표본 점검 신호이며, 서버가 추천을 재생성하거나 상태를 available로 바꾸는 조건으로 쓰지 않는다.
+
+**경계 사례.** 검정 로퍼만 있는 옷장에 “흰 운동화만 신을 수 있어”를 추가했다. 모든 요청에 구체적인 후보 사용을 권한 중간 버전은 흰 운동화 조건을 인지하고도 검정 로퍼를 제시했다. 최종 버전은 시드 731·732 모두 옷장 LOOK 4·5를 unavailable로 반환했다. 두 번 모두 “상의·하의·신발이 없다”고 설명했다. 실제로 부족한 것은 요청한 **흰 운동화**였으므로 사유는 두 번 모두 틀렸다. 두 건 모두 진단 경고가 발생했다.
+
+**검증 환경과 결과.** 동일 M4 16 GB, llama.cpp b12722, Q4_K_M 베이스와 변환된 실제 LoRA를 사용했다. 시드 대조에서는 양쪽에 같은 기준 시각과 시드를 지정했고, 인계 CLI는 배포 설정대로 시드를 지정하지 않았다. 각 회차는 실제 백엔드 검증을 통과한 응답을 기준으로 집계했다.
+
+| 최종 검사 | 결과 |
 | --- | --- |
-| `422` | 기존 요청·Tool 인자 또는 모델로 보낼 컨텍스트의 크기 |
-| `502` | 모델이 반환한 JSON, LOOK 계약, 옷장 검증 또는 서버의 요청 형식 지원 |
-| `503` | 모델 서버 주소, 모델 ID, 인증, 서버 연결 상태 |
-| `504` | 모델 서버 시간 초과 |
+| 시드 미지정 합성 7건, 실제 Qwen 생성 | **7/7**, 종료 0. 요청 순서대로 29.7 / 10.2 / 17.0 / 24.4 / 21.2 / 13.9 / 12.8초 |
+| 고정 시각·시드 731~734, 비선호 색만 변경 | 빨강 기피 **4/4**(상의 771), 네이비 기피 **4/4**(상의 772). 8회 모두 하의 773과 신발 774 일치. 수정 전과 같은 시드 731~733에서는 두 색 합계 4/6에서 6/6으로 개선 |
+| 격리 PostgreSQL 전체 회귀 | **268 passed + 97 subtests**. 26-G 직전은 260 + 97. 기존 Starlette 경고 1개 |
+| Qwen 어댑터·서비스 회귀 | 전체에 포함된 **89 passed**. 합성 HTTP 응답 사용 |
+| 정적 검사 | 변경 Python 7개 Ruff, 프런트 JavaScript 21개 구문 검사 통과 |
 
-실패한 생성 결과는 추천 이력에 저장하지 않습니다. Mock으로 되돌릴 때는 `AGENT_INFERENCE_PROVIDER=mock`으로 백엔드를 재시작합니다.
+색상 대조에서 빨강을 기피한 시드 731은 옷장 ID 세 개를 정확히 선택했지만 네이비·차콜·검정 조합 설명에 “아이보리 색을 우선”했다고 썼다. FP16에서 추천 사유에 언급된 색도 실제 선택한 품목과 대조한다.
 
-## 모델 수령 후 실행
+**배포 설정 대조.** Railway의 최초 provider는 `mock`, readiness는 `/api/v1/health/ready`, 사진 볼륨은 `/app/.wardrobe_media`다. Runpod 문서의 포트 8000, 학습 별칭 `clomori-fashion-v2`, 서버 전용 키와 Railway 클라이언트 키 대응, 응답 Schema, thinking 비활성화, 1,600 출력 토큰·60초 모델 제한이 실행 설정과 일치한다. 12개 `QWEN_*` 이름과 기본값을 비교했고 로컬에서 문서의 접근 경로 및 인증 미들웨어 9개 요청을 확인했다. 클라우드 계정에 이 구성을 적용해 본 결과는 결제 후 기록한다. [Railway 구성](railway-deployment.md) · [Runpod 구성](qwen-runpod.md)
 
-1. 진호에게서 학습 코드와 결과, 정확한 베이스 모델 ID·리비전, 학습에 쓴 tokenizer·chat template, LoRA 어댑터 또는 병합 가중치 링크, 실행 환경과 예시 입출력을 확인합니다. 저장소의 Qwen3.5 실험 문서는 베이스라인 기록이므로 최종 베이스 모델은 인계 자료에서 확인합니다. 가중치와 어댑터는 저장소 밖에 둡니다.
-2. 전달받은 모델을 별도 포트의 로컬 또는 팀 모델 서버에 띄웁니다. 아래 예시는 수령한 모델의 형식을 확인한 뒤 사용합니다.
+**Runpod 전환 기준.** Railway는 Mock으로 먼저 배포한다. Runpod에서 고정한 FP16 베이스·LoRA로 기존 7건을 실행하고 빨강·네이비 대조를 반복한다. 색만 바꿨을 때 LOOK 4의 ID가 771↔772로 바뀌는지, 실제로 없는 품목을 요구했을 때 상태와 사유가 함께 맞는지 확인한다. 이 확인 전까지 Qwen은 배포 후보이며 개인화 품질은 미승인이다. 실제 인증·GPU 기동·최초 요청과 반복 지연도 해당 환경에서 측정한다.
 
-   - **vLLM로 병합 모델 실행**
-
-     ```bash
-     vllm serve "$CLOMORI_MERGED_MODEL_PATH" --served-model-name clomori-ft --host 127.0.0.1 --port 8001
-     ```
-
-   - **vLLM로 LoRA 어댑터 실행**. 해당 베이스 모델·버전에서 LoRA 및 학습 rank 지원을 확인합니다. 필요하면 학습 rank에 맞게 `--max-lora-rank`를 지정합니다.
-
-     ```bash
-     vllm serve "$CLOMORI_BASE_MODEL_PATH" --host 127.0.0.1 --port 8001 \
-       --enable-lora --lora-modules "clomori-ft=$CLOMORI_ADAPTER_PATH"
-     ```
-
-     구조화 출력과 thinking 설정은 서버 버전·템플릿에 맞춥니다. `enable_thinking` 요청 옵션을 지원하는 vLLM에서는 `QWEN_SEND_CHAT_TEMPLATE_KWARGS=true`로 설정할 수 있습니다. [vLLM LoRA](https://docs.vllm.ai/en/stable/features/lora/) · [vLLM 구조화 출력](https://docs.vllm.ai/en/stable/features/structured_outputs/) · [Qwen 실행 가이드](https://qwen.readthedocs.io/en/stable/deployment/vllm.html#thinking-non-thinking-modes)
-
-   - **Mac의 LM Studio**. 호환되는 병합 GGUF를 받은 경우 `lms import /path/to/clomori-ft.gguf --copy`로 가져와 모델을 로드하고 Developer 화면에서 로컬 서버를 시작합니다. 아래 주소 예시의 포트를 `1234`로 바꾸고 `QWEN_SEND_CHAT_TEMPLATE_KWARGS=false`를 사용합니다. 서버 또는 템플릿에서 thinking을 끄거나 최종 `content`와 분리하도록 설정합니다. [LM Studio 모델 가져오기](https://lmstudio.ai/docs/cli/local-models/import) · [LM Studio 구조화 출력](https://lmstudio.ai/docs/developer/openai-compat/structured-output)
-
-3. 인증 없는 로컬 서버의 경우 `curl --fail http://127.0.0.1:8001/v1/models`로 모델 목록을 확인합니다. LoRA를 사용할 때는 `QWEN_MODEL`에 베이스 모델 ID 대신 목록에 뜨는 **학습된 어댑터 ID**를 지정합니다. 서버 인증을 켰다면 백엔드 쪽 로컬 설정에 `QWEN_API_KEY`를 입력합니다.
-4. `backend` 디렉터리의 Python 환경에서 다음과 같이 백엔드를 시작합니다. 기존 DB·세션 설정은 그대로 사용하고, 모델 설정은 해당 프로세스에만 전달할 수 있습니다. 옵션 기본값은 [`backend/.env.example`](../backend/.env.example)에 있습니다.
-
-   ```bash
-   AGENT_INFERENCE_PROVIDER=qwen \
-     QWEN_BASE_URL=http://127.0.0.1:8001/v1 \
-     QWEN_MODEL=clomori-ft \
-     python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-   ```
-
-5. 별도 터미널에서 FR Worktree의 프론트 개발 서버를 실행하고 [http://localhost:5500](http://localhost:5500)에 접속합니다. 프론트 서버는 위 `8000` 포트의 백엔드에 연결합니다. 로컬 HTTP로 테스트할 때는 백엔드의 `SESSION_COOKIE_SECURE=false` 설정을 확인합니다.
-
-   ```bash
-   python3 "$HOME/Documents/ai-fashion-agent-FR/frontend/dev_server.py" --api-port 8000
-   ```
-
-6. 테스트 계정으로 가상 옷장을 만들고 먼저 `출근 코디 추천해줘`를 보냅니다. 5 LOOK과 `recommendation_id`, 옷장 사진 연결을 확인합니다. 이어 빈 옷장, 내 옷만 사용, 장소 되묻기, 날씨·일정이 필요한 요청, 피드백과 저장을 확인합니다. Qwen 서버를 중단했을 때 오류가 표시되고 새 추천이 저장되지 않는지도 확인합니다.
-7. 화면의 추천 요청 제한은 90초입니다. 기본 모델 읽기 제한은 60초, 연결 제한은 최대 5초이며 외부 Tool 조회 시간은 별도입니다. 실제 장비에서 조회부터 추천 표시까지 걸리는 시간과 JSON 통과율을 측정한 뒤 설정을 조정합니다. `QWEN_MAX_INPUT_CHARS`는 문자 수 보호 한도입니다. 모델의 토큰 한도는 실행 환경에서 별도로 확인합니다.
-
-모델 없이 어댑터를 다시 확인하려면 `backend`에서 다음을 실행합니다. 전체 백엔드 테스트에는 기본 스키마와 마이그레이션이 적용된 별도 PostgreSQL 테스트 DB가 필요합니다.
-
-```bash
-python -m pytest -q tests/test_qwen_inference.py
-```
+변경 파일은 어댑터·기본 설정 (`backend/app/agent/qwen.py`, `settings.py`, `prompts.py`, `backend/.env.example`), 회귀 테스트 (`test_qwen_inference.py`, `test_qwen_service_scenarios.py`, `test_recommendation_history.py`), 결제 후 합성 7건을 실제 엔진으로 재실행하는 `scripts/quality/smoke_qwen.py`, 운영 문서 (`docs/qwen-integration.md`, `docs/qwen-runpod.md`, `docs/railway-deployment.md`, `backend/README.md`)이다.

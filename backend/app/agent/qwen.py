@@ -1,6 +1,7 @@
 """Synchronous, opt-in adapter for a local OpenAI-compatible Qwen server."""
 
 import json
+import logging
 from collections.abc import Mapping
 from typing import Any
 
@@ -19,8 +20,10 @@ from app.agent.inference import (
     summarize_tool_results,
     wardrobe_only_requested,
 )
-from app.agent.prompts import LOOKS_SCHEMA, build_messages
+from app.agent.prompts import looks_schema_for, prepare_qwen_input
 from app.agent.settings import QwenSettings
+
+logger = logging.getLogger(__name__)
 
 
 def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -87,7 +90,7 @@ class QwenInferenceEngine:
         tool_results: Mapping[ToolName, Any],
     ) -> AgentDraft:
         try:
-            messages = build_messages(request, tool_results)
+            messages, has_wardrobe_candidate = prepare_qwen_input(request, tool_results)
         except (TypeError, ValueError, RecursionError):
             raise InferenceInputError("추천에 필요한 정보를 모델에 전송할 수 없습니다.") from None
         if sum(len(message["content"]) for message in messages) > self._settings.max_input_chars:
@@ -98,15 +101,16 @@ class QwenInferenceEngine:
             "stream": False,
             "n": 1,
             "max_tokens": self._settings.max_tokens,
-            "temperature": 0.7,
-            "top_p": 0.8,
+            "temperature": self._settings.temperature,
+            "top_p": self._settings.top_p,
+            "repetition_penalty": self._settings.repetition_penalty,
             "response_format": {"type": self._settings.response_format},
         }
         if self._settings.response_format == "json_schema":
             payload["response_format"]["json_schema"] = {
                 "name": "clomori_five_looks",
                 "strict": True,
-                "schema": LOOKS_SCHEMA,
+                "schema": looks_schema_for(tool_results.get("get_wardrobe", [])),
             }
         if self._settings.send_chat_template_kwargs:
             payload["chat_template_kwargs"] = {"enable_thinking": False}
@@ -127,6 +131,9 @@ class QwenInferenceEngine:
             raise InferenceResponseError(
                 "Qwen 응답이 완전한 5 LOOK JSON 형식과 일치하지 않습니다."
             ) from None
+        if has_wardrobe_candidate and draft.looks[3].status == "unavailable":
+            # Other constraints may legitimately rule out every colour-eligible combination.
+            logger.warning("Qwen LOOK 4 unavailable with a colour-eligible wardrobe candidate")
         return draft
 
     def _request_completion(self, payload: dict[str, Any]) -> bytes:
@@ -166,7 +173,7 @@ class QwenInferenceEngine:
     def _check_status(status_code: int) -> None:
         if status_code in {401, 403, 404}:
             raise InferenceConfigurationError("Qwen 서버의 인증·모델·API 경로를 확인해 주세요.")
-        if status_code in {408, 504}:
+        if status_code in {408, 504, 524}:
             raise InferenceTimeoutError("Qwen 응답 대기 시간이 초과되었습니다.")
         if status_code == 429 or status_code >= 500:
             raise InferenceUnavailableError("Qwen 서버가 현재 요청을 처리할 수 없습니다.")

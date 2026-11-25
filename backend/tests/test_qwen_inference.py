@@ -3,6 +3,7 @@
 import copy
 import json
 import logging
+from datetime import datetime, timedelta
 
 import httpx
 import pytest
@@ -115,7 +116,11 @@ def test_qwen_request_contract_and_backend_image_enrichment(tool_results, draft)
         assert request.headers["Authorization"] == "Bearer local-test-only"
         assert payload["model"] == "clomori-test"
         assert payload["stream"] is False and payload["n"] == 1
-        assert payload["max_tokens"] == 4096
+        assert payload["max_tokens"] == 1600
+        assert payload["temperature"] == 0.35
+        assert payload["top_p"] == 0.9
+        assert payload["repetition_penalty"] == 1.08
+        assert "stop" not in payload
         assert payload["chat_template_kwargs"] == {"enable_thinking": False}
         schema = payload["response_format"]["json_schema"]["schema"]
         assert schema["properties"]["looks"]["minItems"] == 5
@@ -125,7 +130,9 @@ def test_qwen_request_contract_and_backend_image_enrichment(tool_results, draft)
         assert schema["additionalProperties"] is False
         assert "tools" not in payload and "tool_choice" not in payload
         assert [m["role"] for m in payload["messages"]] == ["system", "user"]
-        context = json.loads(payload["messages"][1]["content"])["context"]
+        _, context_json = payload["messages"][1]["content"].rsplit("\ncontext: ", 1)
+        context = json.loads(context_json)
+        assert "schedule" not in context
         assert context["feedback_summary"]["positive_styles"] == ["클래식"]
         assert context["wardrobe"][0] == {
             "category": "top",
@@ -135,7 +142,7 @@ def test_qwen_request_contract_and_backend_image_enrichment(tool_results, draft)
         }
         return httpx.Response(200, json=completion(draft))
 
-    engine = engine_for(handler, api_key="local-test-only", send_chat_template_kwargs=True)
+    engine = engine_for(handler, api_key="local-test-only")
     result = service_for(engine, tool_results).recommend(REQUEST, ToolRuntime(db=None, user_id=1))
     assert len(requests) == 1
     assert result.called_tools == ["get_user_context", "get_wardrobe"]
@@ -144,6 +151,33 @@ def test_qwen_request_contract_and_backend_image_enrichment(tool_results, draft)
     photos = [item.image_url for look in result.looks[3:] for item in look.items]
     assert "/private/photo.jpg" in photos
     assert "recommendation_id" not in result.model_dump()
+
+
+@pytest.mark.parametrize("missing", [True, False], ids=["no-shoes", "all-slots"])
+def test_schema_restricts_only_physically_impossible_wardrobe_looks(tool_results, draft, missing):
+    if missing:
+        tool_results["get_wardrobe"] = tool_results["get_wardrobe"][:2]
+        for look in draft["looks"][3:]:
+            look.update(status="unavailable", style=None, items=[], reason="신발이 없습니다.")
+    else:
+        # A disliked colour alone does not make a physical slot missing.
+        tool_results["get_wardrobe"][2].update(category="신발", color="red")
+
+    def handler(request):
+        schema = json.loads(request.content)["response_format"]["json_schema"]["schema"]
+        look = schema["$defs"]["FashionLook"]
+        if missing:
+            generic, owned = (branch["properties"] for branch in look["anyOf"])
+            assert generic["look_id"]["enum"] == [1, 2, 3]
+            assert owned["look_id"]["enum"] == [4, 5]
+            assert owned["status"] == {"const": "unavailable"}
+            assert owned["items"] == {"const": []}
+            assert owned["style"] == {"type": "null"}
+        else:
+            assert "available" in look["properties"]["status"]["enum"]
+        return httpx.Response(200, json=completion(draft))
+
+    engine_for(handler).generate(REQUEST, tool_results)
 
 
 def test_prompt_projects_only_text_context_and_preserves_resolved_inputs(tool_results, draft):
@@ -164,17 +198,31 @@ def test_prompt_projects_only_text_context_and_preserves_resolved_inputs(tool_re
             "excluded-event-id",
         ):
             assert excluded not in encoded
-        data = json.loads(payload["messages"][1]["content"])
-        assert data["request"] == request.model_dump()
-        assert data["context"]["weather"] == {"temperature_c": 15, "sky": "맑음"}
-        assert data["context"]["calendar_events"][0]["title"] == "회사 회의"
-        assert data["prompt_version"] == "clomori-five-looks-v1"
+        timestamp, user_line, context_line = payload["messages"][1]["content"].splitlines()
+        assert timestamp.startswith("기준 시각: ")
+        base_time = datetime.fromisoformat(timestamp.removeprefix("기준 시각: "))
+        assert base_time.utcoffset() == timedelta(hours=9)
+        assert user_line == f"사용자 요청: {request.message}"
+        context = json.loads(context_line.removeprefix("context: "))
+        assert context["schedule"] == {"place": "서울", "date": "2026-11-23", "time": "09:00"}
+        assert context["weather"] == {"temperature_c": 15, "sky": "맑음"}
+        assert context["calendar_events"][0]["title"] == "회사 회의"
+        assert payload["temperature"] == 0.2
+        assert payload["top_p"] == 0.85
+        assert payload["repetition_penalty"] == 1.05
         assert "chat_template_kwargs" not in payload
         assert "Authorization" not in http_request.headers
         assert payload["response_format"] == {"type": "json_object"}
         return httpx.Response(200, json=completion(draft))
 
-    engine_for(handler, response_format="json_object").generate(request, tool_results)
+    engine_for(
+        handler,
+        response_format="json_object",
+        send_chat_template_kwargs=False,
+        temperature=0.2,
+        top_p=0.85,
+        repetition_penalty=1.05,
+    ).generate(request, tool_results)
 
 
 @pytest.mark.parametrize(
@@ -232,6 +280,7 @@ def test_network_errors_are_safe_without_retry_or_mock_fallback(tool_results, ex
         (500, InferenceUnavailableError),
         (503, InferenceUnavailableError),
         (504, InferenceTimeoutError),
+        (524, InferenceTimeoutError),
         (400, InferenceResponseError),
         (302, InferenceResponseError),
     ],
@@ -414,6 +463,9 @@ def test_factory_qwen_selection_makes_no_network_calls(monkeypatch):
         {"QWEN_TIMEOUT_SECONDS": "0"},
         {"QWEN_MAX_TOKENS": "-1"},
         {"QWEN_RESPONSE_FORMAT": "text"},
+        {"QWEN_TEMPERATURE": "-1"},
+        {"QWEN_TOP_P": "1.01"},
+        {"QWEN_REPETITION_PENALTY": "0"},
         {"QWEN_SEND_CHAT_TEMPLATE_KWARGS": "maybe"},
         {"QWEN_API_KEY": "secret\nheader"},
     ],

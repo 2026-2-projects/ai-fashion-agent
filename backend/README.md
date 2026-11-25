@@ -735,6 +735,6 @@ Google Shopping 결과의 `serpapi_thumbnail` 또는 `thumbnail` URL을 기술�
 
 ## Qwen 추론 연결 준비 (기본값: Mock)
 
-`AGENT_INFERENCE_PROVIDER=mock|qwen`으로 엔진을 선택합니다. 현재 준비된 것은
-OpenAI-compatible HTTP 어댑터와 가짜 응답 테스트이며 실제 학습 모델 연결·품질 검증은 별도입니다.
-[설정, 프롬프트 계약, 모델 수령 후 실행 절차](../docs/qwen-integration.md)를 참고하세요.
+`AGENT_INFERENCE_PROVIDER=mock|qwen`으로 엔진을 선택합니다. 기본값은 `mock`입니다.
+Qwen 모드에서는 백엔드가 Tool을 실행하고 학습된 FR 입력 형식으로 5 LOOK을 요청합니다.
+[모델 계약과 검증 결과](../docs/qwen-integration.md) · [Runpod 서빙 절차](../docs/qwen-runpod.md)

@@ -241,9 +241,10 @@ def test_qwen_uses_auth_csrf_and_the_existing_save_contract(client_and_connectio
 
     def handler(http_request):
         calls.append(http_request)
-        request_data = json.loads(json.loads(http_request.content)["messages"][1]["content"])
+        user_content = json.loads(http_request.content)["messages"][1]["content"]
+        assert "\n사용자 요청: 출근 코디를 추천해줘\ncontext: " in user_content
         draft = MockInferenceEngine().generate(
-            AgentRecommendationRequest.model_validate(request_data["request"]),
+            AgentRecommendationRequest(message="출근 코디를 추천해줘"),
             {"get_wardrobe": [], "get_user_context": {}},
         )
         looks = []
