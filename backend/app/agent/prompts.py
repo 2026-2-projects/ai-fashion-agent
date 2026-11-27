@@ -3,8 +3,8 @@
 import json
 import re
 from collections.abc import Mapping
+from dataclasses import asdict
 from datetime import datetime
-from itertools import islice, product
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -15,6 +15,7 @@ from app.agent.contracts import (
     normalize_wardrobe_slot,
 )
 from app.agent.inference import WARDROBE_ONLY_KEYWORDS, wardrobe_only_requested
+from app.agent.wardrobe_candidates import WardrobeCandidates
 
 KST = ZoneInfo("Asia/Seoul")
 
@@ -56,13 +57,15 @@ LOOKS_SCHEMA = _looks_schema()
 NO_WARDROBE_LOOKS_SCHEMA = _looks_schema(missing_wardrobe_slot=True)
 
 
-def looks_schema_for(wardrobe: list[dict[str, Any]]) -> dict[str, Any]:
+def looks_schema_for(
+    wardrobe: list[dict[str, Any]], *, no_verified_candidate: bool = False
+) -> dict[str, Any]:
     slots = {
         normalize_wardrobe_slot(item.get("category"))
         for item in wardrobe
         if isinstance(item, dict)
     }
-    if {"top", "bottom", "shoes"}.issubset(slots):
+    if not no_verified_candidate and {"top", "bottom", "shoes"}.issubset(slots):
         return LOOKS_SCHEMA
     return NO_WARDROBE_LOOKS_SCHEMA
 
@@ -107,35 +110,11 @@ def _wardrobe_item(raw: dict[str, Any], slot: str) -> dict[str, Any]:
     }
 
 
-def _wardrobe_examples(
-    wardrobe: list[dict[str, Any]], disliked_colors: list[str]
-) -> list[dict[str, int]]:
-    """Give the model up to two feasible ID combinations before occasion-specific styling."""
-    disliked = {color.strip().casefold() for color in disliked_colors if isinstance(color, str)}
-    slots: dict[str, list[int]] = {}
-    for item in wardrobe:
-        item_id = item.get("item_id")
-        if type(item_id) is not int or item_id <= 0:
-            continue
-        if str(item.get("color", "")).strip().casefold() not in disliked:
-            slots.setdefault(item["category"], []).append(item_id)
-
-    required = ("top", "bottom", "shoes")
-    combinations = product(*(slots.get(slot, []) for slot in required))
-    examples = [dict(zip(required, combo, strict=True)) for combo in islice(combinations, 2)]
-    if len(examples) == 1:
-        for optional in ("outer", "accessory"):
-            if slots.get(optional):
-                examples.append({**examples[0], optional: slots[optional][0]})
-                break
-    return examples
-
-
 def prepare_qwen_input(
     request: AgentRecommendationRequest,
     tool_results: Mapping[ToolName, Any],
-) -> tuple[list[dict[str, str]], bool]:
-    """Build allowlisted messages and report whether a colour-eligible outfit exists."""
+) -> tuple[list[dict[str, str]], WardrobeCandidates]:
+    """Project tool facts and share the exact candidate policy with response validation."""
     raw_context = tool_results.get("get_user_context")
     raw_context = raw_context if isinstance(raw_context, dict) else {}
     context: dict[str, Any] = {
@@ -170,9 +149,17 @@ def prepare_qwen_input(
             if isinstance(item, dict) and (slot := normalize_wardrobe_slot(item.get("category")))
         ],
     }
-    context["wardrobe_examples"] = _wardrobe_examples(
-        context["wardrobe"], context["preference"].get("disliked_colors") or []
-    )
+    plan = WardrobeCandidates(request, context["wardrobe"], context["preference"])
+    context["wardrobe_examples"] = plan.examples
+    if plan.constraints.items or plan.constraints.unverified:
+        context["owned_item_constraints"] = [asdict(c) for c in plan.constraints.items]
+        context["wardrobe_guidance"] = (
+            "확인되지 않은 필수 조건이 있어 옷장 코디를 확정할 수 없다."
+            if plan.constraints.unverified else
+            "LOOK 4와 5 모두 등록 ID의 종류와 색이 모든 필수·제외 조건에 맞아야 한다. "
+            "wardrobe_examples는 이 조건과 비선호 색을 적용한 완성 조합이다. "
+            "다른 필수 조건이 없으면 가능한 서로 다른 조합 수만큼 옷장 LOOK을 작성한다."
+        )
     context["wardrobe_only"] = wardrobe_only_requested(request.message)
     if (
         len(context["wardrobe_examples"]) == 1
@@ -237,7 +224,7 @@ def prepare_qwen_input(
             ),
         },
     ]
-    return messages, bool(context["wardrobe_examples"])
+    return messages, plan
 
 
 def build_messages(

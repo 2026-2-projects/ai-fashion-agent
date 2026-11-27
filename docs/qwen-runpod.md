@@ -134,3 +134,40 @@ for name in ("chat_template.jinja", "tokenizer.json", "tokenizer_config.json", "
 ```
 
 병합 모델은 위 서빙 명령의 `"$base"`를 새 출력 경로로, `--served-model-name`을 `clomori-fashion-v2`로 바꾸고 `--enable-lora`, `--max-lora-rank`, `--lora-dtype`, `--lora-modules` 네 옵션을 제거한다. 고정 토크나이저·템플릿·인증·경로 설정은 동일하게 사용한다. 사본이 약 9 GB 추가되고 어댑터별 교체는 새 병합을 거친다. 배포 전 동일 입력의 greedy 생성과 5 LOOK 검증, 응답 지연을 기준으로 PEFT 원본과 비교한다.
+
+## STEP 29-B 독립 작업으로 FP16 응답 수집
+
+이 절은 다음 FP16 검증에 사용한다. STEP 29-B에서 실행한 대상은 로컬 M4와 로컬 연결 중단 시험이다. Runpod에서는 기존 승인을 받은 요금·기동 시간·정지 절차를 먼저 적용한다.
+
+로컬 검증 터미널에는 대상 `RUNPOD_POD_ID`와 관리용 `RUNPOD_API_KEY`를 주입한다. 서빙 인증키 `VLLM_API_KEY`는 Pod 내부에서 사용한다. 로컬의 백엔드 가상환경에서 저장소 루트를 기준으로 실행한다. 아래의 `FP16_FIXTURES`는 STEP 29-A에서 보존한 원본 ZIP의 로컬 경로다.
+
+```bash
+export PYTHONPATH=backend
+export AGENT_INFERENCE_PROVIDER=qwen
+export QWEN_MODEL=clomori-fashion-v2
+export QWEN_BASE_URL="https://${RUNPOD_POD_ID}-8000.proxy.runpod.net/v1"
+
+python scripts/quality/runpod_job_client.py install
+python scripts/quality/evaluate_wardrobe.py --pod-jobs \
+  --archive "$FP16_FIXTURES" --output "$NEW_ATTEMPT_DIR"
+python scripts/quality/score_wardrobe.py "$NEW_ATTEMPT_DIR"
+```
+
+검증기는 고정 36건 입력의 SHA-256을 확인하고 별도 합성 16건을 덧붙인다. 요청마다 UUID를 발급해 호출 전부터 로컬 파일에 기록한다. 합성 도구 입력, 전송한 프롬프트, 모델 원문과 사용량, 최종 반환 품목·상태·사유, 백엔드 교정 사유가 이 파일에 남는다. 모델 원문은 수집됐어도 API 검증에서 거절될 수 있으므로 두 결과를 각각 평가한다.
+
+Pod의 `/workspace/clomori-validation/jobs/<작업 ID>/` 아래에 요청 본문 해시, 실행 상태, 시작·종료 시각과 결과를 저장한다. 승인 응답 직후 관리 연결이 끊겨도 감독 프로세스가 제한 시간 내에 독립 실행한다. 동일 ID와 본문으로 중복 접수하면 기존 작업을 조회한다. 상태 및 결과 조회는 모델을 호출하지 않는다. 서비스 키·관리 키는 결과에 넣지 않는다.
+
+로컬 연결이 끊긴 뒤에는 최초 요청 파일에서 작업 ID를 읽어 아래처럼 **조회만** 한다. `collect`는 조회 당시의 상태와 원본 응답 바이트(base64), 토큰, 종료 사유 또는 오류를 새 파일에 쓴다. 디렉터리가 없으면 `not_found`, 실행 중이면 `running` 또는 `queued`다. 완료 후 같은 ID로 다시 조회할 수 있다. GPU가 정지했다면 다음 승인된 실행까지 조회를 기다린다.
+
+```bash
+python scripts/quality/runpod_job_client.py collect "$JOB_ID" "$NEW_RECEIPT_FILE"
+```
+
+2026-11-27 STEP 29-A의 R11·R14·R30·R35는 원문 미확인 상태로 보존한다. 다음 실서버에서 이 네 건을 다시 평가할 때는 새 출력 경로와 새 시도 ID를 사용한다. R30의 동시 요청 상대인 R31도 같은 회차에서 새로 호출한다.
+
+```bash
+python scripts/quality/evaluate_wardrobe.py --pod-jobs --archive "$FP16_FIXTURES" \
+  --output "$NEW_ATTEMPT_DIR" --only R11 R14 R30 R31 R35
+```
+
+관리 연결의 상태 조회와 모델 응답 시간을 분리하고, 수신하지 못한 응답의 토큰·종료 사유는 미확인으로 남긴다. [Runpod 단일 관리 명령](https://docs.runpod.io/api-reference-v2/pods/run-a-command-in-a-pod)

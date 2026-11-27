@@ -214,16 +214,11 @@ def test_unavailable_with_additional_constraints(monkeypatch, caplog, blocked):
     looks = [_unavailable(index) for index in range(1, 6)]
     result, context = _recommend(monkeypatch, request, wardrobe, looks)
     assert all(look.status == "unavailable" for look in result.looks)
-    has_candidate = blocked == "request"
-    assert bool(context["wardrobe_examples"]) == has_candidate
+    assert context["wardrobe_examples"] == []
     assert "look4_candidate_items" not in context
-    assert "wardrobe_guidance" not in context
-    events = [record.getMessage() for record in caplog.records if record.name == "app.agent.qwen"]
-    assert events == (
-        ["Qwen LOOK 4 unavailable with a colour-eligible wardrobe candidate"]
-        if has_candidate
-        else []
-    )
+    assert context["owned_item_constraints"] == [
+        {"slot": "shoes", "kind": "스니커즈", "color": "흰색", "excluded": False}
+    ]
 
 
 @pytest.mark.parametrize(
@@ -257,4 +252,256 @@ def test_single_candidate_suggestion_scope(monkeypatch, request_data, suggest):
         monkeypatch, AgentRecommendationRequest(**request_data), WARDROBE, looks
     )
     assert ("look4_candidate_items" in context) == suggest
-    assert ("wardrobe_guidance" in context) == suggest
+    assert ("look4_candidate_items" in context and "wardrobe_guidance" in context) == suggest
+
+
+def test_grounded_reasons_preserve_model_choices_and_ignore_unobserved_claims(monkeypatch):
+    monkeypatch.setitem(PREFERENCE, "preferred_colors", ["연보라"])
+    wardrobe = [
+        {**WARDROBE[0], "color": "청록", "type": "가디건"},
+        {**WARDROBE[1], "color": "회색", "type": "치노"},
+        {**WARDROBE[2], "color": "밤색", "type": "더비화"},
+    ]
+    looks = [_available(index) for index in range(1, 5)] + [_unavailable(5)]
+    for look in looks[:4]:
+        for piece, source in zip(look["items"], wardrobe, strict=True):
+            piece["name"] = f"{source['color']} {source['type']}"
+        look["reason"] = (
+            "선호색인 청록에 맞췄습니다. 내일 17℃의 야외 연주회에 어울리며 "
+            "신발이 방수와 미끄럼 방지 기능을 보장합니다."
+        )
+
+    result, context = _recommend(
+        monkeypatch, AgentRecommendationRequest(message="코디를 추천해줘"), wardrobe, looks
+    )
+
+    assert set(result.called_tools) == {"get_user_context", "get_wardrobe"}
+    assert "weather" not in context and "calendar_events" not in context
+    for raw, final in zip(looks, result.looks, strict=True):
+        expected = {key: value for key, value in raw.items() if key != "reason"}
+        assert final.model_dump(exclude={"reason": True, "items": {"__all__": {"image_url"}}}) == (
+            expected
+        )
+        assert all(
+            claim not in final.reason
+            for claim in ("17℃", "연주회", "방수", "미끄럼", "선호색인 청록")
+        )
+    owned_reason = result.looks[3].reason
+    assert all(word in owned_reason for word in ("청록", "가디건", "더비화"))
+    assert "연보라" not in owned_reason
+
+
+def test_unavailable_reason_distinguishes_required_type_from_missing_slot(monkeypatch):
+    request = AgentRecommendationRequest(
+        message="내 옷만 추천해줘. 합성식별표 R29-SYN-07. 보라색 부츠만 신을 수 있어."
+    )
+    looks = [_unavailable(index) for index in range(1, 6)]
+    for look in looks[3:]:
+        look["reason"] = "옷장에 상의·하의·신발이 모두 빠져 있습니다."
+
+    full, _ = _recommend(monkeypatch, request, WARDROBE, looks)
+    missing, _ = _recommend(monkeypatch, request, WARDROBE[:2], looks)
+
+    for full_look, missing_look in zip(full.looks[3:], missing.looks[3:], strict=True):
+        assert full_look.status == missing_look.status == "unavailable"
+        assert full_look.items == missing_look.items == []
+        assert "로퍼" in full_look.reason and "1개" in full_look.reason
+        assert "R29-SYN-07" not in full_look.reason and "R29-SYN-07" not in missing_look.reason
+        assert "신발" in missing_look.reason and "로퍼" not in missing_look.reason
+        assert full_look.reason != missing_look.reason
+
+
+def test_no_second_suggestion_does_not_claim_inventory_has_only_one_combination(monkeypatch):
+    wardrobe = [*WARDROBE, {**WARDROBE[0], "item_id": 76, "type": "블라우스"}]
+    request = AgentRecommendationRequest(message="내 옷만 써서 격식 있는 만찬에 맞춰 추천해줘")
+    looks = [_unavailable(1), _unavailable(2), _unavailable(3), _available(4), _unavailable(5)]
+    looks[4]["reason"] = "실제 옷장에 등록된 상의가 딱 하나뿐이라 추가로 조합할 수 없습니다."
+
+    result, context = _recommend(monkeypatch, request, wardrobe, looks)
+
+    assert len(context["wardrobe_examples"]) == 2
+    assert result.looks[3].status == "available"
+    assert result.looks[4].status == "unavailable" and result.looks[4].items == []
+    assert result.looks[4].reason != looks[4]["reason"]
+    assert "하나뿐" not in result.looks[4].reason and "유일" not in result.looks[4].reason
+
+
+def test_generic_names_alone_do_not_prove_a_different_item(monkeypatch):
+    request = AgentRecommendationRequest(message="코디 추천해줘")
+    looks = [_available(index) for index in range(1, 5)] + [_unavailable(5)]
+    looks[0]["items"][2]["name"] = "검정 로퍼"
+    looks[1]["items"][2]["name"] = "블랙 로퍼"
+    looks[1]["reason"] = "첫 번째 제안과 다른 신발로 교체했습니다."
+
+    result, _ = _recommend(monkeypatch, request, WARDROBE, looks)
+
+    assert result.looks[0].items[2].name == "검정 로퍼"
+    assert result.looks[1].items[2].name == "블랙 로퍼"
+    assert all(word not in result.looks[1].reason for word in ("교체", "바꾼", "다른 신발"))
+
+
+def test_owned_reason_acknowledges_an_explicit_matching_preference(monkeypatch):
+    request = AgentRecommendationRequest(message="내 옷만 추천해줘")
+    looks = [_unavailable(1), _unavailable(2), _unavailable(3), _available(4), _unavailable(5)]
+    selected = {**WARDROBE[0], "color": "청록"}
+    unused = {**selected, "item_id": 77, "color": "호박색"}
+    wardrobe = [selected, *WARDROBE[1:], unused]
+    monkeypatch.setitem(PREFERENCE, "preferred_colors", ["호박색", "청록"])
+
+    result, _ = _recommend(monkeypatch, request, wardrobe, looks)
+
+    reason = result.looks[3].reason
+    assert "청록" in reason and "선호" in reason
+    assert "호박색" not in reason
+    assert [item.item_id for item in result.looks[3].items] == [71, 72, 73]
+
+
+def _piece(slot, iid, color, kind):
+    return {"item_id": iid, "category": slot, "color": color, "type": kind}
+
+
+def _selection(looks):
+    return [dict((p.slot, p.item_id) for p in look.items) for look in looks[3:]]
+
+
+def test_required_registered_identity_applies_to_both_owned_looks(monkeypatch):
+    wardrobe = [*WARDROBE, _piece("신발", 817, "브라운", "부츠")]
+    looks = [_unavailable(i) for i in range(1, 6)]
+    looks[3:] = [_available(4), _available(5)]
+    looks[3]["items"][-1].update(item_id=817, name="갈색 부츠")
+    # A plausible model label must never turn the registered black loafer into a boot.
+    looks[4]["items"][-1]["name"] = "갈색 부츠"
+    result, context = _recommend(
+        monkeypatch,
+        AgentRecommendationRequest(message="갈색 부츠만 신을 수 있어. 내 옷만 써 줘."),
+        wardrobe,
+        looks,
+    )
+    assert context["wardrobe_examples"] == [{"top": 71, "bottom": 72, "shoes": 817}]
+    assert _selection(result.looks) == [{"top": 71, "bottom": 72, "shoes": 817}, {}]
+
+
+def test_required_outfit_is_recovered_with_same_shoes_and_different_bottoms(monkeypatch):
+    wardrobe = [
+        _piece("하의", 934, "회색", "치노"),
+        _piece("신발", 611, "아이보리", "샌들"),
+        *reversed(WARDROBE),
+    ]
+    result, context = _recommend(
+        monkeypatch,
+        AgentRecommendationRequest(message="내 옷만 써 줘. 신발은 반드시 아이보리 샌들이어야 해."),
+        wardrobe,
+        [_unavailable(i) for i in range(1, 6)],
+    )
+    selected = _selection(result.looks)
+    assert {look["shoes"] for look in selected} == {611}
+    assert {look["bottom"] for look in selected} == {72, 934}
+    assert all(example["shoes"] == 611 for example in context["wardrobe_examples"])
+
+
+def test_excluded_top_is_not_a_required_top(monkeypatch):
+    wardrobe = [*WARDROBE, _piece("상의", 814, "흰색", "니트")]
+    result, context = _recommend(
+        monkeypatch,
+        AgentRecommendationRequest(message="내 옷만 써 줘. 셔츠는 제외해 줘."),
+        wardrobe,
+        [_unavailable(i) for i in range(1, 4)] + [_available(4), _unavailable(5)],
+    )
+    assert _selection(result.looks) == [{"top": 814, "bottom": 72, "shoes": 73}, {}]
+    assert all(ex["top"] == 814 for ex in context["wardrobe_examples"])
+
+
+@pytest.mark.parametrize(
+    "message", ["부츠를 선호해.", "부츠가 필수는 아니야.", "부츠만 신을 필요는 없어."]
+)
+def test_preference_or_negated_obligation_allows_other_shoes(monkeypatch, message):
+    result, context = _recommend(
+        monkeypatch,
+        AgentRecommendationRequest(message="내 옷만 써 줘. " + message),
+        WARDROBE,
+        [_unavailable(i) for i in range(1, 4)] + [_available(4), _unavailable(5)],
+    )
+    assert context["wardrobe_examples"] == [{"top": 71, "bottom": 72, "shoes": 73}]
+    assert _selection(result.looks)[0]["shoes"] == 73
+
+
+def test_unverifiable_material_is_not_assumed_to_be_satisfied(monkeypatch):
+    result, _ = _recommend(
+        monkeypatch,
+        AgentRecommendationRequest(message="내 옷만 써 줘. 반드시 방수 로퍼를 신어야 해."),
+        WARDROBE,
+        [_unavailable(i) for i in range(1, 4)] + [_available(4), _unavailable(5)],
+    )
+    assert all(look.status == "unavailable" for look in result.looks[3:])
+    assert all("확인" in look.reason for look in result.looks[3:])
+
+
+def test_required_item_never_masks_foreign_id(monkeypatch):
+    looks = [_unavailable(i) for i in range(1, 4)] + [_available(4), _unavailable(5)]
+    looks[3]["items"][-1]["item_id"] = 99211
+    with pytest.raises(AgentResultError, match="등록되지 않은"):
+        _recommend(
+            monkeypatch,
+            AgentRecommendationRequest(message="내 옷만 써 줘. 로퍼가 필수야."),
+            WARDROBE,
+            looks,
+        )
+
+
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        ("셔츠와 흰 허밍슈즈가 모두 필수야.", [712]),
+        ("흰 허밍슈즈 말고 골라 줘.", [73]),
+        ("흰 허밍슈즈가 필수인 건 아니야.", [73, 712]),
+        ("셔츠가 필수지만 방수 원단도 반드시 필요해.", []),
+    ],
+)
+def test_registered_custom_type_and_negation(monkeypatch, message, expected):
+    wardrobe = [*WARDROBE, _piece("신발", 712, "화이트", "허밍슈즈")]
+    result, _ = _recommend(
+        monkeypatch,
+        AgentRecommendationRequest(message="내 옷만 써 줘. " + message),
+        wardrobe,
+        [_unavailable(i) for i in range(1, 6)],
+    )
+    assert sorted(c["shoes"] for c in _selection(result.looks) if c) == sorted(expected)
+
+
+@pytest.mark.parametrize(
+    ("phrase", "blocked"),
+    [
+        ("흰 운동화가 필수야.", True),
+        ("방수 기능이 필수야.", True),
+        ("검정 로퍼가 필수야.", False),
+    ],
+)
+def test_generation_schema_uses_verified_eligibility(phrase, blocked):
+    request = AgentRecommendationRequest(message="내 옷만 써 줘. " + phrase)
+
+    def reply(sent):
+        schema = json.loads(sent.content)["response_format"]["json_schema"]["schema"]
+        look = schema["$defs"]["FashionLook"]
+        assert ("anyOf" in look) == blocked
+        if blocked:
+            assert look["anyOf"][1]["properties"]["items"] == {"const": []}
+        body = {"looks": [_unavailable(i) for i in range(1, 6)]}
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "finish_reason": "stop",
+                        "message": {"role": "assistant", "content": json.dumps(body)},
+                    }
+                ]
+            },
+        )
+
+    engine = QwenInferenceEngine(
+        QwenSettings(base_url="http://127.0.0.1:8001/v1", model="fixture"),
+        transport=httpx.MockTransport(reply),
+    )
+    engine.generate(
+        request, {"get_user_context": {"preference": PREFERENCE}, "get_wardrobe": WARDROBE}
+    )

@@ -3,11 +3,13 @@
 import json
 import logging
 from collections.abc import Mapping
+from dataclasses import replace
 from typing import Any
 
 import httpx
 
 from app.agent.contracts import AgentDraft, AgentPlan, AgentRecommendationRequest, ToolName
+from app.agent.display_names import ground_display_names, has_performance_claim
 from app.agent.errors import (
     InferenceConfigurationError,
     InferenceInputError,
@@ -21,6 +23,7 @@ from app.agent.inference import (
     wardrobe_only_requested,
 )
 from app.agent.prompts import looks_schema_for, prepare_qwen_input
+from app.agent.reasons import grounded_reasons
 from app.agent.settings import QwenSettings
 
 logger = logging.getLogger(__name__)
@@ -90,7 +93,7 @@ class QwenInferenceEngine:
         tool_results: Mapping[ToolName, Any],
     ) -> AgentDraft:
         try:
-            messages, has_wardrobe_candidate = prepare_qwen_input(request, tool_results)
+            messages, wardrobe = prepare_qwen_input(request, tool_results)
         except (TypeError, ValueError, RecursionError):
             raise InferenceInputError("추천에 필요한 정보를 모델에 전송할 수 없습니다.") from None
         if sum(len(message["content"]) for message in messages) > self._settings.max_input_chars:
@@ -110,7 +113,13 @@ class QwenInferenceEngine:
             payload["response_format"]["json_schema"] = {
                 "name": "clomori_five_looks",
                 "strict": True,
-                "schema": looks_schema_for(tool_results.get("get_wardrobe", [])),
+                "schema": looks_schema_for(
+                    tool_results.get("get_wardrobe", []),
+                    no_verified_candidate=(
+                        not wardrobe.examples
+                        and bool(wardrobe.constraints.items or wardrobe.constraints.unverified)
+                    ),
+                ),
             }
         if self._settings.send_chat_template_kwargs:
             payload["chat_template_kwargs"] = {"enable_thinking": False}
@@ -131,10 +140,23 @@ class QwenInferenceEngine:
             raise InferenceResponseError(
                 "Qwen 응답이 완전한 5 LOOK JSON 형식과 일치하지 않습니다."
             ) from None
-        if has_wardrobe_candidate and draft.looks[3].status == "unavailable":
-            # Other constraints may legitimately rule out every colour-eligible combination.
-            logger.warning("Qwen LOOK 4 unavailable with a colour-eligible wardrobe candidate")
-        return draft
+        performance_conditions = tuple(
+            condition
+            for condition in wardrobe.constraints.items
+            if condition.slot and has_performance_claim(condition.kind, condition.slot)
+        )
+        looks, changes = wardrobe.reconcile(
+            draft.looks,
+            contextual="get_weather" in tool_results or "get_calendar_events" in tool_results,
+            unverified_performance=performance_conditions,
+        )
+        for change in changes:
+            logger.info("Qwen owned outfit corrected", extra={"wardrobe_correction": change})
+        reason_constraints = wardrobe.constraints
+        if performance_conditions and not any(look.status == "available" for look in looks[3:]):
+            reason_constraints = replace(reason_constraints, unverified=True)
+        explained = grounded_reasons(looks, request, tool_results, constraints=reason_constraints)
+        return draft.model_copy(update={"looks": ground_display_names(explained, wardrobe.by_id)})
 
     def _request_completion(self, payload: dict[str, Any]) -> bytes:
         headers = {"Accept": "application/json", "Accept-Encoding": "identity"}

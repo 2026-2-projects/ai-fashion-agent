@@ -50,3 +50,36 @@ python -m app.init_db
 - Railway에서 저장소 Dockerfile을 빌드하면 Mac CPU에 의존하지 않는다. 추후 자체 레지스트리 이미지를 사용할 때에는 `linux/amd64`를 포함해 빌드·확인한다.
 
 공식 문서: [Dockerfile 빌드](https://docs.railway.com/builds/dockerfiles) · [PostgreSQL 연결](https://docs.railway.com/databases/postgresql) · [Pre-deploy](https://docs.railway.com/deployments/pre-deploy-command) · [Health Check](https://docs.railway.com/deployments/healthchecks) · [볼륨](https://docs.railway.com/volumes) · [Google OAuth 콜백](https://developers.google.com/identity/protocols/oauth2/web-server).
+
+## FP16 후처리 후보의 Railway 연결 리허설
+
+기준선은 2026-11-27 A40에서 새로 호출한 52건이다. 보완본의 52건 검사는 그 원문을 사용한 로컬 재생이다. 다음 절차는 별도 승인 후 실제 HTTP 연결을 검증할 때 사용한다.
+
+1. 배포 대상과 소스를 확인한다. 현재 연결된 프로젝트는 `CLOMORI`, 운영 환경은 `production`이다. 우선 대상은 별도 승인된 검증 환경의 **웹 서비스**다. 합성 계정·옷장·검증용 DB와 사진 저장소를 사용한다. 운영 환경을 복제하면 DB 참조, 볼륨, 외부 OAuth 자격 증명이 어디를 가리키는지 먼저 확인한다. 검증 환경이 없거나 리소스 비용이 발생하면 생성 전에 범위와 예산을 확정한다.
+2. 기존 운영 커밋은 `3071725f5131923673de8f9c4b6b973d2735455d`다. 후처리 코드는 로컬 변경이므로 다음 배포 대상은 이 변경을 포함해 검토한 **새 커밋 SHA**다. GitHub 자동 배포 대상 브랜치와 환경을 대조하고 production을 가리키는 브랜치에 작업본을 바로 푸시하지 않는다. 검증 웹에서 저장소 루트 Dockerfile과 같은 SHA를 사용해 먼저 `AGENT_INFERENCE_PROVIDER=mock`으로 배포한다. 초기화된 DB의 Pre-deploy Command는 비워 두고 세션·DB·미디어 변수는 검증 환경에서 확인한다. `GET /api/v1/health/ready`, 로그인, 합성 계정의 Mock 추천이 성공하는지 기록한다.
+3. 승인된 GPU 실행 창 안에서 Pod를 기동하고 현재 URL, 고정 이미지·FP16·LoRA 별칭을 다시 확인한다. 검증 웹의 네트워크에서 `GET /v1/models`에 무인증 요청은 401, 서비스 전용 인증 요청은 200이며 `clomori-fashion-v2`가 있는지 확인한다. 헤더·키·모델 입력·쿠키는 로그에서 제외한다.
+4. 아래 웹 변수들을 한 변경으로 적용해 검증 웹을 재시작하고 배포 ID·소스 SHA를 대조한다. 서비스 객체는 프로세스에서 캐시된다. 준비 상태가 200이어도 모델 연결은 별도로 시험한다. [Railway 변수 적용](https://docs.railway.com/variables)
+
+| 검증 웹 변수 | 적용값 또는 출처 |
+| --- | --- |
+| `AGENT_INFERENCE_PROVIDER` | `qwen` |
+| `QWEN_BASE_URL` | `https://<현재 Pod ID>-8000.proxy.runpod.net/v1` |
+| `QWEN_MODEL` | `clomori-fashion-v2` |
+| `QWEN_API_KEY` | Pod의 `VLLM_API_KEY`와 같은 서비스 전용 비밀값. Railway의 서버 비밀 변수로 입력한다. Runpod 계정 관리 키는 필요하지 않다. |
+| `QWEN_TIMEOUT_SECONDS`, `QWEN_MAX_TOKENS` | `60`, `1600` |
+| `QWEN_TEMPERATURE`, `QWEN_TOP_P`, `QWEN_REPETITION_PENALTY` | `0.35`, `0.9`, `1.08` |
+| `QWEN_RESPONSE_FORMAT`, `QWEN_SEND_CHAT_TEMPLATE_KWARGS` | `json_schema`, `true` |
+| `QWEN_MAX_INPUT_CHARS`, `QWEN_MAX_RESPONSE_BYTES` | `60000`, `524288` |
+
+로그인한 합성 사용자의 세션과 `X-CSRF-Token`으로 웹의 `POST /api/v1/agent/recommend`를 호출한다. 실제 반환의 `recommendation_id`, HTTP 상태·경과 시간, 모델 서버 요청 수를 대응시킨다. 각 시도의 시작과 끝, 오류를 기록한다. 대표 검사는 다음 소수 사례로 제한한다.
+
+| 사례 | 확인할 결과 |
+| --- | --- |
+| 필수 부츠 없음 / 같은 부츠와 서로 다른 상의 2개 | LOOK 4·5에서 대체 신발 금지, 미등록 조건 설명 / 등록 ID를 쓴 서로 다른 두 코디 반환. |
+| 날씨와 일정이 있는 일반·옷장 추천 1건 | 조회 가능한 날짜·장소와 실제 검증용 일정을 준비한다. 조회한 사실·선택 ID·일반 이름·사유를 확인한다. 컨텍스트를 입증할 수 없는데 모델이 적격 후보를 누락하면 추론 오류가 날 수 있다. |
+| 빨강·네이비 비선호 대조 2건 동시 제출 | 서로 다른 합성 사용자·세션에서 응답이 뒤바뀌지 않고 각 비선호색을 제외하는지 확인한다. 단일 생성 슬롯에서 양쪽 모두 기록하고 긴 쪽까지 측정한다. |
+| 기한 만료와 연결 취소 | 검증 웹에만 짧은 `QWEN_TIMEOUT_SECONDS`를 임시 적용한 한 건에서 504·DB 저장 유무·엔진 종료를 확인하고 즉시 60으로 돌린다. 별도 한 건은 HTTP 클라이언트 연결만 끊고 동기 백엔드의 진행 및 저장 여부까지 관찰한다. 서버 읽기 제한과 브라우저의 90초 대기는 서로 다른 구간이다. |
+
+취소 검사는 시험마다 고유 ID를 발급한다. 현재 웹 코드는 상류에 `X-Request-Id`를 전달하지 않는다. 승인된 검증 환경에서 웹의 상류 요청과 vLLM 요청 ID를 연결하고, 엔진에서 같은 ID의 생성 시작·abort 또는 종료와 시각만 수집할 수 있도록 먼저 준비한다. 예를 들어 검증용 중계에서 헤더를 부여하고 서빙 측의 요청별 취소 이벤트와 대응시킨다. 정상 요청 한 건으로 ID 전파를 먼저 입증한다. 사용 중인 이미지에서 요청별 이벤트를 확보할 수 없다면 해당 항목은 미확인으로 남긴다. 대기열·GPU 사용률·다음 요청의 응답은 보조 증거다. 단순 웹 연결 단절 뒤에도 동기 생성이 계속된다면 관측한 동작 그대로 기록한다. 조회를 위한 추천 재전송은 별도 추론과 DB 기록을 만든다.
+
+검증 종료 또는 복구 시 검증 웹의 `AGENT_INFERENCE_PROVIDER=mock`을 적용·재시작한다. Readiness 200, 같은 합성 사용자의 Mock 5 LOOK 및 그 시간대 vLLM 호출 증가가 없는지 확인한다. Qwen 상태에서 실패한 요청도 결과에 남긴다. 코드 자체에 문제가 있으면 검증 웹을 마지막으로 확인한 Mock 배포로 되돌린다. GPU는 승인된 기한 또는 검증 완료 중 이른 시점에 정지하고 실제 정지 상태·보존 볼륨을 확인한다. production 전환은 별도 승인 대상이다. [Runpod HTTPS 연결](https://docs.runpod.io/pods/configuration/expose-ports)
