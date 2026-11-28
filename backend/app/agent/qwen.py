@@ -1,5 +1,6 @@
 """Synchronous, opt-in adapter for a local OpenAI-compatible Qwen server."""
 
+import asyncio
 import json
 import logging
 from collections.abc import Mapping
@@ -8,6 +9,7 @@ from typing import Any
 
 import httpx
 
+from app.agent.cancellation import RecommendationScope, current_scope
 from app.agent.contracts import AgentDraft, AgentPlan, AgentRecommendationRequest, ToolName
 from app.agent.display_names import ground_display_names, has_performance_claim
 from app.agent.errors import (
@@ -84,6 +86,10 @@ class QwenInferenceEngine:
         self._transport = transport
         self._planner = RuleBasedToolPlanner()
 
+    @property
+    def request_timeout_seconds(self) -> float:
+        return self._settings.timeout_seconds
+
     def plan(self, request: AgentRecommendationRequest) -> AgentPlan:
         return self._planner.plan(request)
 
@@ -124,6 +130,9 @@ class QwenInferenceEngine:
         if self._settings.send_chat_template_kwargs:
             payload["chat_template_kwargs"] = {"enable_thinking": False}
         raw = self._request_completion(payload)
+        scope = current_scope()
+        if scope is not None:
+            scope.checkpoint()
         try:
             output = _load_json(_completion_content(raw))
             if not isinstance(output, dict) or output.keys() != {"looks"}:
@@ -155,6 +164,8 @@ class QwenInferenceEngine:
         reason_constraints = wardrobe.constraints
         if performance_conditions and not any(look.status == "available" for look in looks[3:]):
             reason_constraints = replace(reason_constraints, unverified=True)
+        if scope is not None:
+            scope.checkpoint()
         explained = grounded_reasons(looks, request, tool_results, constraints=reason_constraints)
         return draft.model_copy(update={"looks": ground_display_names(explained, wardrobe.by_id)})
 
@@ -163,33 +174,83 @@ class QwenInferenceEngine:
         key = self._settings.api_key.get_secret_value()
         if key:
             headers["Authorization"] = f"Bearer {key}"
+        scope = current_scope()
+        seconds = self.request_timeout_seconds
+        timeout = httpx.Timeout(seconds, connect=min(seconds, 5))
+        url = f"{self._settings.base_url}/chat/completions"
         try:
-            timeout = self._settings.timeout_seconds
-            with httpx.Client(
-                timeout=httpx.Timeout(timeout, connect=min(timeout, 5.0)),
-                follow_redirects=False,
-                trust_env=False,
-                transport=self._transport,
-            ) as client:
-                with client.stream(
-                    "POST",
-                    f"{self._settings.base_url}/chat/completions",
-                    json=payload,
-                    headers=headers,
-                ) as response:
-                    self._check_status(response.status_code)
-                    raw = bytearray()
-                    for chunk in response.iter_bytes():
-                        if len(raw) + len(chunk) > self._settings.max_response_bytes:
-                            raise InferenceResponseError("Qwen 응답이 허용된 크기를 초과했습니다.")
-                        raw.extend(chunk)
-                    return bytes(raw)
+            if scope is not None:
+                scope.checkpoint()
+                headers["X-Request-Id"] = scope.request_id
+                return asyncio.run(self._scoped_completion(scope, url, headers, timeout, payload))
+            # Synchronous direct callers retain their transport and lifetime.
+            with (
+                httpx.Client(
+                    timeout=timeout,
+                    follow_redirects=False,
+                    trust_env=False,
+                    transport=self._transport,
+                ) as client,
+                client.stream("POST", url, json=payload, headers=headers) as response,
+            ):
+                self._check_status(response.status_code)
+                raw = bytearray()
+                for chunk in response.iter_bytes():
+                    self._append_chunk(raw, chunk)
+                return bytes(raw)
         except httpx.TimeoutException:
             raise InferenceTimeoutError("Qwen 응답 대기 시간이 초과되었습니다.") from None
         except httpx.RequestError:
             raise InferenceUnavailableError("Qwen 서버에 연결하지 못했습니다.") from None
         except UnicodeEncodeError:
             raise InferenceInputError("추천에 필요한 정보를 모델에 전송할 수 없습니다.") from None
+
+    def _append_chunk(self, raw: bytearray, chunk: bytes) -> None:
+        if len(raw) + len(chunk) > self._settings.max_response_bytes:
+            raise InferenceResponseError("Qwen 응답이 허용된 크기를 초과했습니다.")
+        raw.extend(chunk)
+
+    async def _scoped_completion(
+        self,
+        scope: RecommendationScope,
+        url: str,
+        headers: dict[str, str],
+        timeout: httpx.Timeout,
+        payload: dict[str, Any],
+    ) -> bytes:
+        transport = self._transport
+        if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
+            # An arbitrary sync-only test transport cannot interrupt an in-flight request.
+            raise InferenceConfigurationError(
+                "추천 요청에는 취소할 수 있는 HTTP 전송이 필요합니다."
+            )
+        loop = asyncio.get_running_loop()
+        task = asyncio.current_task()
+        assert task is not None
+        remaining = scope.remaining_seconds
+        deadline = None if remaining is None else loop.call_later(remaining, scope.expire)
+        try:
+            with scope.interrupt_model(lambda: loop.call_soon_threadsafe(task.cancel)):
+                async with (
+                    httpx.AsyncClient(
+                        timeout=timeout,
+                        follow_redirects=False,
+                        trust_env=False,
+                        transport=transport,
+                    ) as client,
+                    client.stream("POST", url, json=payload, headers=headers) as response,
+                ):
+                    self._check_status(response.status_code)
+                    raw = bytearray()
+                    async for chunk in response.aiter_bytes():
+                        self._append_chunk(raw, chunk)
+                    return bytes(raw)
+        except asyncio.CancelledError:
+            scope.checkpoint()
+            raise
+        finally:
+            if deadline is not None:
+                deadline.cancel()
 
     @staticmethod
     def _check_status(status_code: int) -> None:

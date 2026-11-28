@@ -1,16 +1,20 @@
 """WBS 4.5 Agent Core·Tool Calling HTTP 엔드포인트."""
 
 import json
+import logging
+import re
 from functools import lru_cache
 from typing import Annotated
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, status
+import anyio
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.agent.cancellation import ClientDisconnected, RecommendationScope, current_scope
 from app.agent.clarification import (
     ClarificationPolicy,
     ClarificationRequest,
@@ -57,6 +61,7 @@ from app.services.google_calendar import (
     CalendarResponseError,
 )
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/agent", tags=["Agent"])
 CurrentUser = Annotated[dict, Depends(get_current_user)]
 Database = Annotated[Session, Depends(get_db)]
@@ -85,6 +90,9 @@ def save_recommendation(
         ensure_ascii=False,
     )
 
+    scope = current_scope()
+    if scope is not None:
+        scope.checkpoint()
     db.execute(
         text("""
             INSERT INTO recommendation_runs
@@ -99,28 +107,99 @@ def save_recommendation(
         },
     )
 
+    if scope is not None:
+        # Cancellation before admission rolls back this INSERT. Once admitted, COMMIT owns it.
+        scope.begin_commit()
     db.commit()
     return recommendation_id
 
 
 @router.post("/recommend", response_model=AgentRecommendationResponse)
-def recommend(
+async def recommend(
+    request: Request,
+    response: Response,
     payload: AgentRecommendationRequest,
     user: CurrentUser,
     db: Database,
     _: CsrfCheck,
     service: Annotated[AgentService, Depends(get_agent_service)],
 ) -> AgentRecommendationResponse:
-    try:
-        result = service.recommend(
-            payload,
-            ToolRuntime(db=db, user_id=user["id"]),
+    scope = RecommendationScope(uuid4().hex, getattr(service, "request_timeout_seconds", None))
+    request_headers = {"X-Recommendation-Request-Id": scope.request_id}
+    response.headers.update(request_headers)
+    edge_id = request.headers.get("x-railway-request-id", "")
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", edge_id):
+        edge_id = "-"
+    outcome: AgentRecommendationResponse | Exception
+
+    def log_event(event: str) -> None:
+        logger.warning(
+            "Recommendation %s request_id=%s railway_request_id=%s commit_admitted=%s",
+            event,
+            scope.request_id,
+            edge_id,
+            scope.commit_started,
         )
 
+    async def work() -> None:
+        nonlocal outcome
+        try:
+            # The watcher never uses the request's SQLAlchemy session. Join this worker
+            # even if the ASGI task is cancelled, before dependency cleanup closes it.
+            with scope.activate(), anyio.CancelScope(shield=True):
+                outcome = await anyio.to_thread.run_sync(
+                    _recommend_and_save, payload, user["id"], db, service, scope
+                )
+        except Exception as exc:
+            outcome = exc
+        finally:
+            group.cancel_scope.cancel()
+
+    async with anyio.create_task_group() as group:
+        group.start_soon(work)
+        try:
+            # FastAPI has already consumed the request body.
+            with anyio.move_on_after(scope.remaining_seconds) as timer:
+                while (await request.receive())["type"] != "http.disconnect":
+                    pass
+            if timer.cancel_called:
+                scope.expire()
+                log_event("deadline_reached")
+            else:
+                scope.cancel()
+                log_event("client_disconnected")
+        finally:
+            # Covers cancellation of the ASGI application itself while work is running.
+            scope.cancel()
+
+    if isinstance(outcome, HTTPException):
+        outcome.headers = {**(outcome.headers or {}), **request_headers}
+        if outcome.status_code == 504:
+            log_event("timeout_response")
+    if isinstance(outcome, Exception):
+        raise outcome
+    return outcome
+
+
+def _recommend_and_save(
+    payload: AgentRecommendationRequest,
+    user_id: int,
+    db: Session,
+    service: AgentService,
+    scope: RecommendationScope,
+) -> AgentRecommendationResponse:
+    try:
+        scope.checkpoint()
+        result = service.recommend(
+            payload,
+            ToolRuntime(db=db, user_id=user_id),
+        )
+
+        scope.checkpoint()
         try:
             recommendation_id = save_recommendation(
                 db=db,
-                user_id=user["id"],
+                user_id=user_id,
                 result=result,
             )
         except SQLAlchemyError as exc:
@@ -134,7 +213,11 @@ def recommend(
             **result.model_dump(),
             recommendation_id=recommendation_id,
         )
+    except ClientDisconnected:
+        db.rollback()
+        raise HTTPException(status_code=499, detail="추천 요청의 연결이 종료되었습니다.") from None
     except InferenceTimeoutError as exc:
+        db.rollback()
         raise HTTPException(status_code=504, detail=str(exc)) from None
     except (InferenceConfigurationError, InferenceUnavailableError) as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from None

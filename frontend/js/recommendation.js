@@ -17,6 +17,7 @@ export function createRecommendationController({ navigate, onSessionChange, onSe
   // CLOMORI_RECOMMENDATION_FIXES_V3
   // Session-only, account-scoped snapshot: validated before a reload restores it.
   let memory = null, unverified = null;
+  let pendingRecommendation = null;
   const controls = new Map();
   const interactions = createLookInteractions({
     captureContext() {
@@ -81,6 +82,8 @@ export function createRecommendationController({ navigate, onSessionChange, onSe
     interactions.refreshControls();
   }
   function reset() {
+    pendingRecommendation?.abort();
+    pendingRecommendation = null;
     rememberDraft();
     epoch += 1;
     active = false; ownerId = null; busy = false; ready = false; operation = "";
@@ -386,11 +389,13 @@ export function createRecommendationController({ navigate, onSessionChange, onSe
     busy = true; operation = "recommend";
     message();
     refreshControls();
+    const controller = new AbortController();
+    pendingRecommendation = controller;
     let generated = false;
     try {
       if (!await verifyOwner(ticket, expectedId)) return;
       const result = validateRecommendation(await authenticatedRequest("/agent/recommend", {
-        method: "POST", body: payload, timeoutMs: 90000,
+        method: "POST", body: payload, timeoutMs: 90000, signal: controller.signal,
       }));
       if (!requestIsCurrent(ticket, expectedId)) return;
       unverified = { kind: "recommend", ownerId: expectedId, result, draft };
@@ -409,6 +414,7 @@ export function createRecommendationController({ navigate, onSessionChange, onSe
           ? " 요청을 자동으로 반복하지 않았어요. 다시 요청하면 새 추천을 만들어요." : ""));
       }
     } finally {
+      if (pendingRecommendation === controller) pendingRecommendation = null;
       if (live(ticket)) {
         busy = false; operation = "";
         renderResults(); refreshControls();

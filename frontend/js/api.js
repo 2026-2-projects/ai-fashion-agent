@@ -54,7 +54,7 @@ export async function apiRequest(path, options = {}) {
     throw new Error("API path must be relative to /api/v1.");
   }
 
-  const { method = "GET", body, csrfToken, timeoutMs = 15000 } = options;
+  const { method = "GET", body, csrfToken, timeoutMs = 15000, signal } = options;
   const headers = new Headers({ Accept: "application/json" });
   let requestBody;
 
@@ -68,7 +68,10 @@ export async function apiRequest(path, options = {}) {
   if (csrfToken) headers.set("X-CSRF-Token", csrfToken);
 
   const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+  const abort = () => controller.abort();
+  if (signal?.aborted) abort();
+  else signal?.addEventListener("abort", abort, { once: true });
+  const timer = window.setTimeout(abort, timeoutMs);
 
   try {
     const response = await fetch(`${API_PREFIX}${path}`, {
@@ -104,10 +107,12 @@ export async function apiRequest(path, options = {}) {
   } catch (error) {
     if (error instanceof ApiError) throw error;
     if (error.name === "AbortError") {
+      if (signal?.aborted) throw new ApiError("요청을 취소했습니다.");
       throw new ApiError("요청 시간이 초과되었습니다. 연결 상태를 확인하고 다시 시도해 주세요.");
     }
     throw new ApiError("서버에 연결할 수 없습니다. 연결 상태를 확인해 주세요.");
   } finally {
     window.clearTimeout(timer);
+    signal?.removeEventListener("abort", abort);
   }
 }

@@ -1,4 +1,4 @@
-"""Ground functional product descriptions after model selection and reason validation."""
+"""Ground owned item names and qualify functional claims after selection."""
 
 import re
 
@@ -105,9 +105,6 @@ def ground_display_names(looks: list[FashionLook], registered: dict) -> list[Fas
                     continue
                 if has_performance_claim(source.get("item_type"), piece.slot):
                     registered_feature_slots.append(SLOT_LABELS[piece.slot])
-                elif not features:
-                    items.append(piece)
-                    continue
                 label = " ".join(
                     v.strip()
                     for v in (source.get("color"), source.get("item_type"))

@@ -1,5 +1,6 @@
 """Inference, Router, Tool 실행, 고정 JSON 검증을 연결하는 Agent Core."""
 
+from app.agent.cancellation import current_scope
 from app.agent.contracts import (
     AgentRecommendationRequest,
     AgentRecommendationResult,
@@ -19,6 +20,10 @@ class AgentService:
         self._inference = inference
         self._tools = tools
 
+    @property
+    def request_timeout_seconds(self) -> float | None:
+        return getattr(self._inference, "request_timeout_seconds", None)
+
     def recommend(
         self,
         request: AgentRecommendationRequest,
@@ -29,7 +34,12 @@ class AgentService:
         if not {"get_user_context", "get_wardrobe"}.issubset(names):
             raise AgentRoutingError("5 LOOK 추천에는 사용자 Context와 옷장 조회가 필요합니다.")
         tool_results = self._tools.execute(plan, runtime)
+        scope = current_scope()
+        if scope is not None:
+            scope.checkpoint()
         draft = self._inference.generate(request, tool_results)
+        if scope is not None:
+            scope.checkpoint()
         looks = self._validate_wardrobe_looks(draft.looks, tool_results["get_wardrobe"])
         return AgentRecommendationResult(
             called_tools=list(tool_results),

@@ -133,3 +133,28 @@ def test_registered_feature_guard_uses_slot_sensitive_claims():
 )
 def test_registered_type_proof_requires_a_single_whole_known_type(text, slot, expected):
     assert performance_base_kind(text, slot) == expected
+
+
+@pytest.mark.parametrize(
+    ("look_id", "role", "model_name", "color", "kind"),
+    [
+        (4, "wardrobe_best", "회색 스니커즈", "검정", "스니커즈"),
+        (5, "wardrobe_alternative", "검정 로퍼", "청록", "앵클 부츠"),
+    ],
+)
+def test_owned_display_names_always_use_selected_registration(
+    look_id, role, model_name, color, kind
+):
+    before = look(model_name, owned=True).model_copy(update={"look_id": look_id, "role": role})
+    registered = {
+        8: {"category": "shoes", "color": "회색", "item_type": "스니커즈"},
+        2: {"category": "bottom", "color": "남색", "item_type": "청바지"},
+        3: {"category": "shoes", "color": color, "item_type": kind},
+        1: {"category": "top", "color": "흰색", "item_type": "셔츠"},
+    }
+
+    (after,) = ground_display_names([before], registered)
+
+    assert [piece.name for piece in after.items] == ["흰색 셔츠", "남색 청바지", f"{color} {kind}"]
+    exclude_names = {"items": {"__all__": {"name"}}}
+    assert after.model_dump(exclude=exclude_names) == before.model_dump(exclude=exclude_names)
