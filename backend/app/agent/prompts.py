@@ -28,7 +28,7 @@ PLAIN_WARDROBE_REQUEST = re.compile(
 )
 
 
-def _looks_schema(*, missing_wardrobe_slot: bool = False) -> dict[str, Any]:
+def _looks_schema() -> dict[str, Any]:
     """Training FR output is {looks}; photo and summary fields belong to the backend."""
     schema = AgentDraft.model_json_schema()
     del schema["properties"]["context_summary"]
@@ -36,38 +36,45 @@ def _looks_schema(*, missing_wardrobe_slot: bool = False) -> dict[str, Any]:
     del schema["$defs"]["OutfitItem"]["properties"]["image_url"]
     schema["title"] = "ClomoriFiveLooks"
     schema.pop("description", None)
-    if missing_wardrobe_slot:
-        look = schema["$defs"]["FashionLook"]
-        fields = look["properties"]
-        generic = {**fields, "look_id": {"enum": [1, 2, 3]}}
-        unavailable = {
-            **fields,
-            "look_id": {"enum": [4, 5]},
-            "status": {"const": "unavailable"},
-            "style": {"type": "null"},
-            "items": {"const": []},
-        }
-        schema["$defs"]["FashionLook"] = {
-            "anyOf": [{**look, "properties": generic}, {**look, "properties": unavailable}]
-        }
     return schema
 
 
 LOOKS_SCHEMA = _looks_schema()
-NO_WARDROBE_LOOKS_SCHEMA = _looks_schema(missing_wardrobe_slot=True)
 
 
-def looks_schema_for(
-    wardrobe: list[dict[str, Any]], *, no_verified_candidate: bool = False
-) -> dict[str, Any]:
-    slots = {
-        normalize_wardrobe_slot(item.get("category"))
-        for item in wardrobe
-        if isinstance(item, dict)
+def _with_fields(schema: dict, **fields: dict) -> dict:
+    return {**schema, "properties": {**schema["properties"], **fields}}
+
+
+def looks_schema_for(wardrobe: WardrobeCandidates) -> dict[str, Any]:
+    defs = LOOKS_SCHEMA["$defs"]
+    look, item = defs["FashionLook"], defs["OutfitItem"]
+    ids_by_slot: dict[str, list[int]] = {}
+    for iid, source in wardrobe.by_id.items():
+        ids_by_slot.setdefault(source["category"], []).append(iid)
+
+    generic = _with_fields(look, look_id={"enum": [1, 2, 3]})
+    owned = _with_fields(look, look_id={"enum": [4, 5]})
+    if not set(wardrobe.required).issubset(ids_by_slot) or (
+        not wardrobe.examples and (wardrobe.constraints.items or wardrobe.constraints.unverified)
+    ):
+        owned = _with_fields(
+            owned, status={"const": "unavailable"}, style={"type": "null"}, items={"const": []}
+        )
+    else:
+        allowed_items = [
+            _with_fields(item, slot={"const": slot}, item_id={"enum": sorted(ids)})
+            for slot, ids in sorted(ids_by_slot.items())
+        ]
+        owned = _with_fields(owned, items={"type": "array", "items": {"anyOf": allowed_items}})
+    return {
+        **LOOKS_SCHEMA,
+        "$defs": {
+            **defs,
+            "OutfitItem": _with_fields(item, item_id={"type": "null"}),
+            "FashionLook": {"anyOf": [generic, owned]},
+        },
     }
-    if not no_verified_candidate and {"top", "bottom", "shoes"}.issubset(slots):
-        return LOOKS_SCHEMA
-    return NO_WARDROBE_LOOKS_SCHEMA
 
 
 SYSTEM_PROMPT = """너는 개인 맞춤형 패션 코디 생성기다.

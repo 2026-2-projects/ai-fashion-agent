@@ -482,9 +482,11 @@ def test_generation_schema_uses_verified_eligibility(phrase, blocked):
     def reply(sent):
         schema = json.loads(sent.content)["response_format"]["json_schema"]["schema"]
         look = schema["$defs"]["FashionLook"]
-        assert ("anyOf" in look) == blocked
+        owned = look["anyOf"][1]["properties"]
         if blocked:
-            assert look["anyOf"][1]["properties"]["items"] == {"const": []}
+            assert owned["items"] == {"const": []}
+        else:
+            assert "available" in owned["status"]["enum"]
         body = {"looks": [_unavailable(i) for i in range(1, 6)]}
         return httpx.Response(
             200,
@@ -505,3 +507,139 @@ def test_generation_schema_uses_verified_eligibility(phrase, blocked):
     engine.generate(
         request, {"get_user_context": {"preference": PREFERENCE}, "get_wardrobe": WARDROBE}
     )
+
+
+@pytest.mark.parametrize(
+    ("bad_look", "bad_slot", "wrong_id"),
+    [(4, "bottom", 73), (5, "shoes", 71), (5, "top", 72)],
+)
+def test_registered_cross_slot_id_is_repaired_without_losing_other_look(
+    monkeypatch, caplog, bad_look, bad_slot, wrong_id
+):
+    wardrobe = [_piece("하의", 984, "올리브", "치노"), *reversed(WARDROBE)]
+    looks = [_available(i) for i in range(1, 6)]
+    looks[4]["items"][1].update(item_id=984, name="올리브 치노")
+    expected = [{p["slot"]: p["item_id"] for p in look["items"]} for look in looks[3:]]
+    wrong = next(p for p in looks[bad_look - 1]["items"] if p["slot"] == bad_slot)
+    wrong["item_id"] = wrong_id
+    caplog.set_level("INFO", logger="app.agent.qwen")
+    result, _ = _recommend(
+        monkeypatch,
+        AgentRecommendationRequest(message="내 옷으로 코디를 추천해 줘."),
+        wardrobe,
+        looks,
+    )
+    assert _selection(result.looks) == expected
+    assert any(
+        getattr(record, "wardrobe_correction", {}).get("cause") == "registered_slot_mismatch"
+        for record in caplog.records
+    )
+
+
+def test_wrong_optional_ids_are_rebound_by_slot_without_touching_a_valid_layer(monkeypatch):
+    wardrobe = [
+        *WARDROBE,
+        _piece("아우터", 867, "크림", "재킷"),
+        _piece("액세서리", 891, "초록", "머플러"),
+    ]
+    looks = [_available(i) for i in range(1, 6)]
+    looks[4]["items"] += [
+        {"slot": "outer", "name": "미확정", "item_id": 891},
+        {"slot": "accessory", "name": "미확정", "item_id": 867},
+    ]
+    result, _ = _recommend(
+        monkeypatch, AgentRecommendationRequest(message="코디를 골라 줘."), wardrobe, looks
+    )
+    base = {"top": 71, "bottom": 72, "shoes": 73}
+    assert _selection(result.looks) == [base, {**base, "outer": 867, "accessory": 891}]
+
+
+def test_wrong_slot_cannot_invent_a_second_distinct_outfit(monkeypatch):
+    looks = [_available(i) for i in range(1, 6)]
+    looks[4]["items"][-1]["item_id"] = 71
+    result, _ = _recommend(
+        monkeypatch, AgentRecommendationRequest(message="코디를 골라 줘."), WARDROBE, looks
+    )
+    assert _selection(result.looks) == [{"top": 71, "bottom": 72, "shoes": 73}, {}]
+
+
+def test_schema_keeps_generic_ids_null_and_separates_owned_ids_by_slot():
+    schemas = []
+
+    def complete(sent):
+        schemas.append(json.loads(sent.content)["response_format"]["json_schema"]["schema"])
+        body = {"looks": [_unavailable(i) for i in range(1, 6)]}
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "finish_reason": "stop",
+                        "message": {"role": "assistant", "content": json.dumps(body)},
+                    }
+                ]
+            },
+        )
+
+    engine = QwenInferenceEngine(
+        QwenSettings(base_url="http://127.0.0.1:8001/v1", model="fixture"),
+        transport=httpx.MockTransport(complete),
+    )
+    wardrobe = [
+        *WARDROBE,
+        _piece("아우터", 105, "크림", "재킷"),
+        _piece("액세서리", 103, "초록", "모자"),
+    ]
+    request = AgentRecommendationRequest(message="두 코디를 추천해 줘.")
+    for delta in (0, 700):
+        rows = [{**row, "item_id": row["item_id"] + delta} for row in reversed(wardrobe)]
+        engine.generate(request, {"get_wardrobe": rows})
+    for delta, schema in zip((0, 700), schemas, strict=True):
+        defs = schema["$defs"]
+        generic, owned = [v["properties"] for v in defs["FashionLook"]["anyOf"]]
+        assert generic["look_id"]["enum"] == [1, 2, 3] and owned["look_id"]["enum"] == [4, 5]
+        assert generic["items"]["items"] == {"$ref": "#/$defs/OutfitItem"}
+        assert defs["OutfitItem"]["properties"]["item_id"] == {"type": "null"}
+        pairs = {
+            (item["properties"]["slot"]["const"], iid)
+            for item in owned["items"]["items"]["anyOf"]
+            for iid in item["properties"]["item_id"]["enum"]
+        }
+        assert pairs == {
+            (slot, iid + delta)
+            for slot, iid in (
+                ("top", 71),
+                ("bottom", 72),
+                ("shoes", 73),
+                ("outer", 105),
+                ("accessory", 103),
+            )
+        }
+
+
+def test_crossed_id_may_not_certify_an_unverified_occasion(monkeypatch):
+    looks = [_available(i) for i in range(1, 6)]
+    looks[4]["items"][-1]["item_id"] = 71
+    with pytest.raises(AgentResultError, match="등록되지 않은"):
+        _recommend(
+            monkeypatch,
+            AgentRecommendationRequest(message="내 옷으로 야외 결혼식 코디를 골라 줘."),
+            [*WARDROBE, _piece("상의", 702, "흰색", "니트")],
+            looks,
+        )
+
+
+@pytest.mark.parametrize("second_shoe", [71, 73], ids=["crossed", "valid-but-duplicate"])
+def test_repair_can_change_top_when_shared_shoe_would_duplicate_the_best(monkeypatch, second_shoe):
+    looks = [_available(i) for i in range(1, 6)]
+    looks[4]["items"][-1]["item_id"] = second_shoe
+    result, _ = _recommend(
+        monkeypatch,
+        AgentRecommendationRequest(message="제 옷으로 코디를 골라 줘."),
+        [*WARDROBE, _piece("상의", 702, "흰색", "니트")],
+        looks,
+    )
+    assert _selection(result.looks) == [
+        {"top": 71, "bottom": 72, "shoes": 73},
+        {"top": 702, "bottom": 72, "shoes": 73},
+    ]

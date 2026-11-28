@@ -166,15 +166,15 @@ def test_schema_restricts_only_physically_impossible_wardrobe_looks(tool_results
     def handler(request):
         schema = json.loads(request.content)["response_format"]["json_schema"]["schema"]
         look = schema["$defs"]["FashionLook"]
+        generic, owned = (branch["properties"] for branch in look["anyOf"])
         if missing:
-            generic, owned = (branch["properties"] for branch in look["anyOf"])
             assert generic["look_id"]["enum"] == [1, 2, 3]
             assert owned["look_id"]["enum"] == [4, 5]
             assert owned["status"] == {"const": "unavailable"}
             assert owned["items"] == {"const": []}
             assert owned["style"] == {"type": "null"}
         else:
-            assert "available" in look["properties"]["status"]["enum"]
+            assert "available" in owned["status"]["enum"]
         return httpx.Response(200, json=completion(draft))
 
     engine_for(handler).generate(REQUEST, tool_results)

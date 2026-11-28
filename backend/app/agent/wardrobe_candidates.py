@@ -1,12 +1,11 @@
 """Build and check the same ID-based, complete owned outfits for the Qwen path."""
 
 from collections import defaultdict
-from itertools import islice, product
+from itertools import chain, islice, product
 
 from app.agent.contracts import AgentRecommendationRequest, FashionLook, OutfitItem
 from app.agent.display_names import performance_base_kind
 from app.agent.errors import InferenceResponseError
-from app.agent.inference import wardrobe_only_requested
 from app.agent.requirements import ItemCondition, color_name, kind_name, parse_constraints
 
 REQUIRED_SLOTS = ("top", "bottom", "shoes")
@@ -19,7 +18,7 @@ class WardrobeCandidates:
         self.has_schedule = any((request.place, request.date, request.time))
         self.can_fill = (
             self.constraints.complete
-            and (bool(self.constraints.items) or wardrobe_only_requested(request.message))
+            and (bool(self.constraints.items) or self.constraints.wardrobe_requested)
             and not self.has_schedule
         )
         self.by_id = {
@@ -47,16 +46,17 @@ class WardrobeCandidates:
         )
         self.examples = self._examples(self.eligible)
 
-    def _examples(self, eligible: dict[int, str]) -> list[dict]:
+    def _examples(self, eligible: dict[int, str], include: tuple[str, ...] = ()) -> list[dict]:
         slots = defaultdict(list)
         for iid, slot in eligible.items():
             slots[slot].append(iid)
         # The contract needs at most two different complete combinations, including optional layers.
-        complete = product(*(slots[s] for s in self.required))
-        examples = [dict(zip(self.required, ids, strict=True)) for ids in islice(complete, 2)]
+        required = (*self.required, *(s for s in include if s not in self.required and slots[s]))
+        complete = product(*(slots[s] for s in required))
+        examples = [dict(zip(required, ids, strict=True)) for ids in islice(complete, 2)]
         if len(examples) == 1:
             for optional in OPTIONAL_SLOTS:
-                if optional not in self.required and slots[optional]:
+                if optional not in required and slots[optional]:
                     examples.append({**examples[0], optional: slots[optional][0]})
                     break
         return examples
@@ -100,6 +100,40 @@ class WardrobeCandidates:
             reason="등록된 품목을 조합했습니다.",
         )
 
+    def _repair_slots(
+        self,
+        owned: list[FashionLook],
+        mismatched: set[int],
+        eligible: dict[int, str],
+        examples: list[dict],
+    ) -> list[FashionLook]:
+        # Reserve intact choices before repairing either role. One other LOOK can occupy
+        # at most one combination, so two distinct examples suffice.
+        used = []
+        for look in owned:
+            combo = {p.slot: p.item_id for p in look.items}
+            if look.look_id not in mismatched and self._accepts(combo, eligible):
+                used.append(combo)
+
+        repaired = []
+        for look in owned:
+            if look.look_id not in mismatched:
+                repaired.append(look)
+                continue
+            fixed = {p.slot: p.item_id for p in look.items if eligible.get(p.item_id) == p.slot}
+            compatible = {i: s for i, s in eligible.items() if s not in fixed or fixed[s] == i}
+            layers = tuple(p.slot for p in look.items if p.slot in OPTIONAL_SLOTS)
+            candidates = chain(self._examples(compatible, layers), examples)
+            combo = next((c for c in candidates if c not in used), None)
+            if combo is None:
+                repaired.append(
+                    look.model_copy(update={"status": "unavailable", "style": None, "items": []})
+                )
+            else:
+                repaired.append(self._owned_look(look, combo))
+                used.append(combo)
+        return repaired
+
     def reconcile(
         self,
         looks: list[FashionLook],
@@ -108,15 +142,17 @@ class WardrobeCandidates:
         unverified_performance: tuple[ItemCondition, ...] = (),
     ) -> tuple[list[FashionLook], list[dict]]:
         """Retain valid model choices first. Fill gaps only if inventory can prove feasibility."""
-        # Leave source integrity errors to AgentService, even if the offending LOOK would disappear.
-        owned = looks[3:]
-        for look in owned:
+        originals = looks[3:]
+        mismatched = set()
+        for look in originals:
             for piece in look.items:
-                if (
-                    self.by_id.get(piece.item_id, {}).get("category") != piece.slot
-                    or piece.image_url is not None
-                ):
+                if piece.item_id not in self.by_id or piece.image_url is not None:
+                    # Keep the final ownership and photo checks fail-closed.
                     return looks, []
+                if self.by_id[piece.item_id]["category"] != piece.slot:
+                    mismatched.add(look.look_id)
+        if mismatched and (self.has_schedule or contextual or not self.constraints.complete):
+            return looks, []  # Inventory alone cannot certify the replacement in this context.
 
         uncertain = set()
         eligible = self.eligible
@@ -130,6 +166,11 @@ class WardrobeCandidates:
             eligible = {iid: slot for iid, slot in self.eligible.items() if iid not in uncertain}
             examples = self._examples(eligible)
 
+        owned = (
+            self._repair_slots(originals, mismatched, eligible, examples)
+            if mismatched
+            else originals
+        )
         choices = []
         used = []
         for look in owned:
@@ -158,7 +199,7 @@ class WardrobeCandidates:
 
         result = list(looks[:3])
         changes = []
-        for index, original in enumerate(owned):
+        for index, original in enumerate(originals):
             if index < len(choices):
                 updated = choices[index].model_copy(
                     update={"look_id": original.look_id, "role": original.role}
@@ -182,6 +223,8 @@ class WardrobeCandidates:
             if original.status != updated.status or before != after:
                 if self.constraints.unverified or uncertain.intersection(before.values()):
                     why = "unverified_constraint"
+                elif original.look_id in mismatched:
+                    why = "registered_slot_mismatch"
                 elif original.status == "unavailable":
                     why = "eligible_outfit_omitted"
                 elif not self._accepts(before, eligible):

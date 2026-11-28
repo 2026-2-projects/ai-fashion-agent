@@ -119,13 +119,7 @@ class QwenInferenceEngine:
             payload["response_format"]["json_schema"] = {
                 "name": "clomori_five_looks",
                 "strict": True,
-                "schema": looks_schema_for(
-                    tool_results.get("get_wardrobe", []),
-                    no_verified_candidate=(
-                        not wardrobe.examples
-                        and bool(wardrobe.constraints.items or wardrobe.constraints.unverified)
-                    ),
-                ),
+                "schema": looks_schema_for(wardrobe),
             }
         if self._settings.send_chat_template_kwargs:
             payload["chat_template_kwargs"] = {"enable_thinking": False}

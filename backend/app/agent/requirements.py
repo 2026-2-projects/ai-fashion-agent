@@ -126,6 +126,10 @@ WARDROBE_FRAME = re.compile(
     "(?:" + "|".join(map(re.escape, WARDROBE_ONLY_KEYWORDS)) + r")\s*"
     r"(?:(?:써서|써(?=\s|$)|사용해서|활용해서)\s*)?(?:입을\s*수\s*있는\s*)?"
 )
+# Sourcing from one's wardrobe does not disable generic LOOKs or establish occasion fit.
+OWNED_SOURCE = re.compile(
+    r"^(?:내|제|보유한|등록된)\s+옷(?:으로|을\s*(?:써서|사용해서|활용해서))\s*"
+)
 REQUEST_FRAME = re.compile(
     r"(?:코디해|(?:코디|옷차림|조합)(?:를|을)?\s*(?:추천해|골라)?|추천해|골라)\s*"
     r"(?:줘요?|주세요)?\s*$"
@@ -138,6 +142,7 @@ class Constraints:
     items: tuple[ItemCondition, ...]
     unverified: bool
     complete: bool
+    wardrobe_requested: bool
 
 
 def _item(phrase, restricted_slot, catalog, colors, excluded):
@@ -176,6 +181,7 @@ def parse_constraints(message: str, inventory: list[dict]) -> Constraints:
             catalog.setdefault(kind, set()).add(item["category"])
 
     text = normalized(message)
+    wardrobe_requested = bool(WARDROBE_FRAME.search(text) or OWNED_SOURCE.match(text))
     # Split coordinated requirements without treating alternatives as conjunctions.
     text = re.sub(r"필수(?:이고|고|이며|이고요)\s*", "필수. ", text)
     text = re.sub(r"(?:제외하고|말고)(?:\s+|(?=[.!?,;]|$))", " 제외. ", text)
@@ -185,7 +191,7 @@ def parse_constraints(message: str, inventory: list[dict]) -> Constraints:
     complete = True
     for part in re.split(r"[.!?~,;\n]+|\s+그리고\s+|지만\s+", text):
         clause = WARDROBE_FRAME.sub(" ", part).strip()
-        clause = REQUEST_FRAME.sub("", clause).strip()
+        clause = REQUEST_FRAME.sub("", OWNED_SOURCE.sub("", clause)).strip()
         clause = re.sub(r"\s*(?:줘요?|주세요)$", "", clause).strip()
         if not clause:
             continue
@@ -223,4 +229,4 @@ def parse_constraints(message: str, inventory: list[dict]) -> Constraints:
             complete = False
     required_slots = {c.slot for c in conditions if not c.excluded}
     unknown |= not other_slots.issubset(required_slots)
-    return Constraints(tuple(conditions), unknown, complete and not unknown)
+    return Constraints(tuple(conditions), unknown, complete and not unknown, wardrobe_requested)
